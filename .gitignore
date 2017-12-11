@@ -1,0 +1,17 @@
+*.pyc
+*.swp
+profile_pic/
+request_doc/
+request_pic/
+request_sounds/
+request_text/
+translate_result/
+app/docs
+.coverage
+.cache/
+.tox/
+coverage*
+src/warning_application.py
+.idea/
+.DS_Store
+test/.DS_Store

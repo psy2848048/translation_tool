@@ -1,0 +1,28 @@
+#faqSection{
+    border:0px solid #999999;
+    width:100%;
+    box-sizing: border-box;
+    padding:0;
+    margin-bottom: 30px;
+}
+
+#faqSection div h4,
+#faqSection div p{
+    margin:0;
+    padding:0;
+}
+
+#faqSection div h4{
+    border-top:1px solid rgb(212, 208, 208);
+    background-color:rgba(20, 83, 104, 0.123);
+    /*background-image: linear-gradient(rgb(215, 220, 224), rgba(246, 247, 248, 0.212));*/
+    padding:8px;
+    color:#333;
+    cursor:pointer;
+}
+
+#faqSection div p{
+    padding:12px;    
+    padding-left:25px;
+    text-align: justify;
+}
