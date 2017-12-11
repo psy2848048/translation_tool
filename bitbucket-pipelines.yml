@@ -11,4 +11,5 @@ pipelines:
         caches:
           - pip3
         script: # Modify the commands below to build your repository.
+          - sh dependency_install.sh
           - pip3 install -r requirements.txt
