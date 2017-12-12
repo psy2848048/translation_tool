@@ -1,207 +1,344 @@
-html, body { 
-    /* height가 100% 적용되지 않을 때 */
-    height:100%; 
+html,
+body {
+    height: 98%;
+    overflow: hidden;
 }
 
 
-#dvLoading
-{
-   background:transparent url(../../img/loading3.gif) no-repeat center center;
-   height: 100px;
-   width: 100px;
-   position: fixed;
-   z-index: 1000;
-   left: 50%;
-   top: 50%;
-   margin: -25px 0 0 -25px;
-}	
-#dvLoading2
-{
-   background:transparent url(../../img/loading.gif) no-repeat center center;
-   height: 100px;
-   width: 100px;
-   position: relative;
-   z-index: 1000;
-   left: 50%;
-   top: 50%;
-   margin: -25px 0 0 -25px;
-}	
-#mask {  
-    position:absolute;  
-    left:0;
-    top:0;
-    z-index:100;  
-    background-color:#000;  
-    opacity:0.3;
-    display:block;  
-}
-
-
-#mainWrap{
-    border:0px solid rgb(207, 204, 204);
-    box-sizing: border-box;
-    width:100%;
-    margin:0 auto;
-    padding:10px;
-    height:100%;
-}
-#topGroups{
-    border:0px solid red;
-    box-sizing: border-box;
-    width:100%;
-    height:30px;
-}
-h1{
-    float:left;
-    font-size:20px;
-    font-weight:bold;
-    text-align: center;
-    margin:0;
-}
-h1 img{
-    width:30px;    
-}
-#topMenu{      
-    float:right; 
-    font-size:14px;
-}
-#topMenu li{
-    float:left;
-    padding:5px;
-    border-radius:5px;
-    margin:1px;
-    height:12px;
-    line-height:12px;
-    vertical-align: middle;
-    font-size:12px;
-}
-#topMenu li:nth-of-type(4){
-    padding-left:30px;
-}
-.tmColor{
-    background-color: #ff7ae9; 
-}
-.tbColor{
-    background-color: #ffca7a;
-}
-.mtColor{
-    background-color:#7acaff
-}
-#topMenu li:nth-of-type(4){
-    padding-left:30px;
-}
 /*#############################################################*/
-#transArea{
-    border-bottom:1px solid rgb(207, 204, 204);
-    clear:both;
-    float:left;
-    width:69%;
-    height:96%;
+
+#dvLoading {
+    background: transparent url(../../img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    margin: -25px 0 0 -25px;
+}
+
+#dvLoading2 {
+    background: transparent url(../../img/loading.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: relative;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    margin: -25px 0 0 -25px;
+}
+
+#mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background-color: #000;
+    opacity: 0.3;
+    display: block;
+}
+
+
+/*-------------------------------------------------------------*/
+
+#mainWrap {
+    border: 0px solid rgb(207, 204, 204);
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+    padding: 10px;
+    height: 100%;
+}
+
+
+/*#############################################################*/
+
+#topGroups {
+    display: inline-block;
+    border: 0px solid red;
+    box-sizing: border-box;
+    width: 100%;
+    height: 30px;
+}
+
+#topGroups h1 {
+    float: left;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    margin-left: 10px;
+}
+
+#topGroups h1 img {
+    width: 30px;
+}
+
+
+/*-------------------------------------------------------------*/
+
+#topGroups ul {
+    float: right;
+    font-size: 14px;
+}
+
+#topGroups ul li {
+    float: left;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 1px;
+    height: 12px;
+    line-height: 12px;
+    vertical-align: middle;
+    font-size: 12px;
+}
+
+#topGroups ul li:nth-of-type(4) {
+    padding-left: 30px;
+}
+
+
+/*#############################################################*/
+
+#transArea {
+    border-bottom: 0px solid rgb(231, 12, 12);
+    box-sizing: border-box;
+    clear: both;
+    float: left;
+    width: 69%;
+    height: 96%;
     overflow-y: scroll;
 }
-#mainTbl{
-    border:1px solid rgb(207, 204, 204);
+
+
+/*-------------------------------------------------------------*/
+
+#mainTbl,
+#tran1section,
+#tran2section {
+    border: 2px solid rgb(153, 163, 175);
+}
+
+#mainTbl {
     box-sizing: border-box;
-    width:100%;
-    margin-bottom:10px;
+    width: 98%;
+    margin-bottom: 10px;
 }
-#mainTbl th{
-    background-color:rgba(235, 231, 231, 0.274);
+
+#mainTbl tr:nth-of-type(1) {
+    background-color: rgb(229, 231, 238);
 }
-#mainTbl th,
-#mainTbl td{
-    border:1px solid rgb(207, 204, 204);
-    vertical-align: middle;
-    padding:7px;
-}
-#mainTbl td:nth-of-type(1){
+
+#mainTbl tr th {
     text-align: center;
-    background-color:rgba(235, 231, 231, 0.274);
     vertical-align: middle;
 }
-#mainTbl td:nth-of-type(2){
-    cursor:pointer;
+
+#mainTbl tr:nth-of-type(1) th:nth-of-type(4),
+#mainTbl tr:nth-of-type(1) th:nth-of-type(5),
+#mainTbl tr:nth-of-type(1) th:nth-of-type(6) {
+    font-size: 12px;
 }
+
+#mainTbl th {
+    background-color: rgba(235, 231, 231, 0.274);
+}
+
+#mainTbl th,
+#mainTbl td {
+    border: 1px solid rgb(207, 204, 204);
+    text-align: justify; /* 좌우공백제거 */
+    vertical-align: middle;
+    padding: 7px;
+}
+
+#mainTbl td {
+    font-size: 14px;
+}
+
+#mainTbl td:nth-of-type(1) {
+    text-align: center;
+    background-color: rgba(235, 231, 231, 0.274);
+    vertical-align: middle;
+}
+
+#mainTbl td:nth-of-type(2) {
+    cursor: pointer;
+}
+
+#mainTbl td:nth-of-type(2):hover {
+    color: #f88707;
+}
+
 #mainTbl td:nth-of-type(4),
 #mainTbl td:nth-of-type(5),
-#mainTbl td:nth-of-type(6){
+#mainTbl td:nth-of-type(6) {
     text-align: center;
 }
-#mainTbl td:nth-of-type(2):hover{
-    color:#f88707;
-}
-#mainTbl td{
-    font-size:14px;
-}
-#mainTbl textarea{
-    border:0px solid red;
-    width: 100%;    
-    height:21px;
+
+#mainTbl td textarea {
+    border: 0px solid red;
+    width: 100%;
+    height: 21px;
     resize: none;
-    overflow-y: hidden; 
-    font-size:14px;   
+    overflow-y: hidden;
+    font-size: 14px;
+    text-align: justify; /* 좌우공백제거 */
 }
+
+
 /*#############################################################*/
-#resultArea{
-    border:0px solid rgba(207, 204, 204, 0.404);
-    border-top:1px solid rgba(207, 204, 204, 0.404);
+
+#resultArea {
+    border-top: 1px solid rgba(207, 204, 204, 0.404);
     box-sizing: border-box;
-    border-collapse:collapse; 
-    border-spacing:0;
-    float:right;
-    width:30%;
-    height:96%;
-    line-height:96%;
-    vertical-align: middle;
-    background-color:#e1e4e618;
-    position:relative;
+    border-collapse: collapse;
+    border-spacing: 0;
+    float: right;
+    width: 30%;
+    height: 99%;
+    line-height: 99%;
+    vertical-align: top;
+    background-color: #e1e4e618;
+    position: relative;
+    padding-bottom: 0;
+}
+
+#resultArea h2 {
+    position: absolute;
+    top: 0px;
+    margin-top: 0;
+    margin-left: 5px;
+}
+
+#tran1section,
+#tran2section {
+    position: absolute;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 5px;
+    height: calc(43%);
+}
+
+
+/*-------------------------------------------------------------*/
+
+#tran1section {
+    top: 0px;
 }
 #resultTbl,
-#resultTbl2{
-    border:1px solid rgba(207, 204, 204, 0.404); 
-    width:100%;
-    box-sizing:border-box;
-    margin:2px;
-    font-size:13px;
+#resultTbl2 {
+    border: 1px solid rgba(207, 204, 204, 0.404);
+    width: 100%;
+    box-sizing: border-box;
+    margin: 2px;
+    font-size: 13px;
 }
-#resultTbl{
-    cursor:pointer;
+
+#resultTbl {
+    cursor: pointer;
+    margin-top:40px !important;
 }
-#resultTbl tr:hover{
-    opacity:0.8;
-    color:red;
+
+#resultTbl2 {
+    margin-top: 0px;
 }
-#resultTbl td,
-#resultTbl2 td{
-    padding:7px;
-    border:1px solid rgba(207, 204, 204, 0.404);     
+
+#resultTbl tr:hover {
+    opacity: 0.8;
+    color: red;
 }
-#txtPublicSearch{
-    width:65%;
+
+#resultTbl tr td,
+#resultTbl2 tr td {
+    padding: 7px;
+    border: 1px solid rgba(207, 204, 204, 0.404);
+    text-align: justify; /* 좌우공백제거 */
 }
-#btnPublicSearch{
-    width:29%;
+
+
+/*-------------------------------------------------------------*/
+
+#tran2section {
+    top: calc(46%);
+    padding: 5px;
 }
-#tabTbl{    
-    border:0px solid blue;
-    width:100%;
-    height:20px;    
-    position:absolute;
-    bottom:0px;
+
+#tran2section table {
+    position: relative;
+    top: 40px;
+    border: 0px solid blue;
+    width: 100%;
+    box-sizing: border-box;
 }
-#tabTbl td{
-    border:1px solid rgba(207, 204, 204, 0.404);
-    padding:12px;
-    text-align:center;   
-    cursor:pointer; 
+
+#tran2section table td div {
+    border: 0px solid red;
+    margin: 10px;
+    font-size: 14px;
 }
-#tabTbl td:nth-of-type(1){
-    font-weight:bold;
-    border-left:0px;
-    border-top:0px;
+
+#tran2section table td div input[type=button] {
+    border: 1px solid rgba(216, 208, 208, 0.644);
+    background-color: rgba(235, 229, 229, 0.514);
+    cursor: pointer;
 }
-#tabTbl td:nth-of-type(2){
-    border-right:0px;
-    border-bottom:0px;
-    background-color:#fff;
+
+#txtPublicSearch,
+#btnPublicSearch {
+    padding: 5px;
+    box-sizing: border-box;
+    font-size: 14px;
 }
+
+#txtPublicSearch,
+#btnPublicSearch {
+    border: 1px solid rgb(197, 151, 52);
+}
+
+#txtPublicSearch {
+    border-radius: 5px;
+    width: 69%;
+}
+
+#btnPublicSearch {
+    width: 29%;
+    cursor: pointer;
+    background-color: rgba(238, 226, 226, 0.596);
+}
+
+
+/*-------------------------------------------------------------*/
+
+#tabTbl {
+    border: 0px solid blue;
+    width: 100%;
+    height: 20px;
+    position: absolute;
+    bottom: 0px;
+}
+
+#tabTbl td {
+    border: 1px solid rgba(207, 204, 204, 0.404);
+    padding: 12px;
+    text-align: center;
+    cursor: pointer;
+}
+
+#tabTbl td:nth-of-type(1) {
+    font-weight: bold;
+    border-left: 0px;
+    border-top: 0px;
+}
+
+#tabTbl td:nth-of-type(2) {
+    border-right: 0px;
+    border-bottom: 0px;
+    background-color: #fff;
+}
+
+
+/*#############################################################*/

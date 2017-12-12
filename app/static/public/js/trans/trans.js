@@ -29,8 +29,42 @@ var PageScript = function(){
         jqxhr.always(function() {
             if($('#mainTbl tbody tr').length < 1) location.href=location.href;
         });
-	},
-	this.regEvents = function(){        	
+	};
+	this.regEvents = function(){      
+        // 단어장 검색버튼
+        $('#btnPublicSearch').on('click', function(e){
+            e.preventDefault();       
+            //alert('1. 디비에 저장된 현재 해석문 삭제\n2. 아이콘 체크에서 엑스로 변경');   
+            /* 샘플	
+            $.ajax({
+                url: '/groups/sortGroup',  
+                type:'post',
+                data:data,
+                success:function(args){   
+                    alert('ok');
+                },   
+                error:function(e){  
+                    alert('fail');  
+                    console.log(e.responseText);  
+                }  
+            });		
+            */            
+            var keyword = $('#txtPublicSearch').val();
+            alert(keyword + ' 검색(개발중)');
+
+            var result = '<div>';
+            result += '    <input type="button" value="저장">';
+            result += '    <span class="boldWord">super</span>';
+            result += '    <span class="miniWord">1. 대단한, 굉장히 좋은 2. 특별히 3. 경찰서장</span>';
+            result += '</div>';
+
+            $('#tran2section table td').prepend(result);
+            $('#tran2section table div input[type=button]').on('click', function(e){
+                e.preventDefault();
+                alert($(this).closest('div').find('.boldWord').text() + ' 저장');
+            });
+            
+        });
         // 원문 클릭
         $('#mainTbl tr td:nth-of-type(2)').on('click', function(e){   
             e.preventDefault();  
@@ -60,6 +94,9 @@ var PageScript = function(){
 
             // MT
             local.getMtAjax(thisText, this_idx);
+
+            // TB
+            local.getTBAjax();
         });
         // 선택된 해석문 textarea 클릭
         // keyup 으로 하면 로딩부터 실행 주의!
@@ -134,6 +171,8 @@ var PageScript = function(){
             $('#resultTbl2').hide();
             $('#tabTbl td:nth-of-type(1)').css({'font-weight':'bold','border':'1px solid rgba(207, 204, 204, 0.404)', 'border-top':'0px', 'border-left':'0px', 'background-color':'rgb(252, 253, 252)'});
             $('#tabTbl td:nth-of-type(2)').css({'border':'1px solid rgba(207, 204, 204, 0.404)', 'border-right':'0px', 'border-bottom':'0px', 'font-weight':'normal', 'background-color':'#fff'});            
+            $('#tran1section').show();
+            $('#tran2section').show();
         });
         // 탭2
         $('#tabTbl td:nth-of-type(2)').on('click', function(e){
@@ -143,6 +182,8 @@ var PageScript = function(){
             $('#resultTbl2').show();
             $('#tabTbl td:nth-of-type(1)').css({'font-weight':'normal', 'border-bottom':'0px', 'border-left':'0px', 'border-top':'1px solid rgba(207, 204, 204, 0.404)', 'background-color':'#fff'});            
             $('#tabTbl td:nth-of-type(2)').css({'font-weight':'bold', 'border':'1px solid rgba(207, 204, 204, 0.404)', 'border-top':'0px', 'border-right':'0px', 'background-color':'rgb(252, 253, 252)'});            
+            $('#tran1section').hide();
+            $('#tran2section').hide();
         });
 
         // 완전히 로딩 후 로더 숨김
@@ -152,7 +193,7 @@ var PageScript = function(){
         //애니메이션 효과 - 일단 1초동안 초기화 됐다가 0% 불투명도로 변화.
         $('#mask').fadeIn(1000);      
         $('#mask').fadeTo("slow",1000).hide();    
-    },
+    };
     this.textAreaExpand = function(){
         $('#mainTbl').on( 'keyup', 'textarea', function (e){
             e.preventDefault();            
@@ -168,7 +209,7 @@ var PageScript = function(){
         
         //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
         $('#mask').css({'width':maskWidth,'height':maskHeight});  
-    },    
+    };   
     this.getTmAjax = function(news_id, sentence_id, thisText, this_idx){
         var jqxhr = $.get( "http://ciceron.xyz:5000/api/v2/mypick/" + news_id + "/" + sentence_id , function(data) {
             console.log('result1');
@@ -208,7 +249,7 @@ var PageScript = function(){
         })
         .always(function() {});
         jqxhr.always(function() {});  
-    },
+    };
     this.getMtAjax = function(thisText, this_idx){
         var data = {
             "source_lang_id":2, // 1: 한국어 2: 영어
@@ -257,7 +298,45 @@ var PageScript = function(){
                 console.log(e.responseText);  
             }  
         });
-    },
+        this.getTBAjax = function(){
+            $('#tran2section table td').empty();
+            
+            var result = '';       
+            //alert('1. 디비에 저장된 현재 해석문 삭제\n2. 아이콘 체크에서 엑스로 변경');   
+            /* 샘플	
+            $.ajax({
+                url: '/groups/sortGroup',  
+                type:'post',
+                data:data,
+                success:function(args){   
+                    alert('ok');
+                },   
+                error:function(e){  
+                    alert('fail');  
+                    console.log(e.responseText);  
+                }  
+            });		
+            */            
+            result += '<div>';
+            result += '<input type="button" value="저장"> ';
+            result += '<span class="boldWord">book</span> ';
+            result += '<span class="miniWord">1. 책 2. (종이・전자 형태의) 저서, 도서, 책 3. (글을 쓸 수 있게 책 모양으로 엮은) 종이 묶음</span>';
+            result += '</div>';
+
+            result += '<div>';
+            result += '    <input type="button" value="저장"> ';
+            result += '    <span class="boldWord">apple</span> ';
+            result += '    <span class="miniWord">사과</span> ';
+            result += '</div>';
+
+            $('#tran2section table td').append(result);
+
+            $('#tran2section table div input[type=button]').on('click', function(e){
+                e.preventDefault();
+                alert($(this).closest('div').find('.boldWord').text() + ' 저장');
+            });
+        };
+    };
 	this.bind = function(){
         local.preInits();
 	};
