@@ -37,7 +37,7 @@ var PageScript = function(){
                 row += '    <td><input type="checkbox"></td>';
                 row += '    <td>' + parseInt(idx+1) + '</td>';
                 row += '    <td>60%</td>';
-                row += '    <td style="width:calc(100%);text-align:left;vertical-align:middle;" class="oneline_wrap"><a target="_blank" href="../trans/trans.html?news_id=' + res.id + '">' + res.name + '</a></td>';
+                row += '    <td style="width:calc(100%);text-align:left;vertical-align:middle;" class="oneline_wrap"><a target="_blank" title="' + res.name  + '" href="../trans/trans.html?news_id=' + res.id + '">' + res.name + '</a></td>';
                 row += '    <td>신규</td>';
                 row += '    <td><a target="_blank" href="http://ciceron.me/translated/38/45">링크</a></td>';
                 row += '    <td>KO<span class="super">KR</span></td>';

@@ -238,3 +238,28 @@ section > p{
 #logoArea ul li{
   background-color:transparent !important;
 }
+
+hr.style-six {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+
+.tmColor {
+  background-color: #ff7ae9;
+}
+.tbColor {
+  background-color: #ffca7a;
+}
+.mtColor {
+  background-color: #7acaff
+}
+
+.boldWord{
+  font-weight: bold;
+}
+.miniWord{
+  font-size:12px;
+}
