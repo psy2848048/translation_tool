@@ -50,20 +50,37 @@ var PageScript = function(){
             });		
             */            
             var keyword = $('#txtPublicSearch').val();
-            alert(keyword + ' 검색(개발중)');
 
-            var result = '<div>';
-            result += '    <input type="button" value="저장">';
-            result += '    <span class="boldWord">super</span>';
-            result += '    <span class="miniWord">1. 대단한, 굉장히 좋은 2. 특별히 3. 경찰서장</span>';
-            result += '</div>';
+            var result = '';
+            if(confirm('검색단어가 있을경우')){
+                result = '<div>';
+                result += '    <input type="button" value="수정"> ';
+                result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
+                result += '    <input type="text" class="miniWord" value="' + $('#txtPublicSearch').val() + ' 해석">';
+                result += '</div>';
 
-            $('#tran2section table td').prepend(result);
-            $('#tran2section table div input[type=button]').on('click', function(e){
-                e.preventDefault();
-                alert($(this).closest('div').find('.boldWord').text() + ' 저장');
-            });
-            
+                $('#tran2section table tr:nth-of-type(2) td').prepend(result);
+                //console.log(result);
+                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({'border':'1px solid #999','border-radius':'5px','width':'150px', 'padding-left':'5px'});
+                $('#tran2section table div input[type=button]').on('click', function(e){
+                    e.preventDefault();
+                    alert($(this).closest('div').find('.boldWord').text() + ' 수정');
+                });
+            }else{
+                result = '<div>';
+                result += '    <input type="button" value="등록"> ';
+                result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
+                result += '    <input type="text" class="miniWord" value="">';
+                result += '</div>';
+
+                $('#tran2section table tr:nth-of-type(2) td').prepend(result);
+                //console.log(result);
+                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({'border':'1px solid #999','border-radius':'5px','width':'150px', 'padding-left':'5px'});
+                $('#tran2section table div input[type=button]').on('click', function(e){
+                    e.preventDefault();
+                    alert($(this).closest('div').find('.boldWord').text() + ' 등록');
+                });
+            }
         });
         // 원문 클릭
         $('#mainTbl tr td:nth-of-type(2)').on('click', function(e){   
@@ -85,9 +102,12 @@ var PageScript = function(){
                 console.log('thisText : ' + thisText);                
                 console.log('this_idx : ' + this_idx);              
                 console.log('news_id : ' + news_id);                
-                console.log('sentence_id : ' + sentence_id);      
-
-            $('#resultTbl').html('');
+                console.log('sentence_id : ' + sentence_id); 
+    
+            $('#originSentence').html('');
+            $('#originSentence').text(thisText);      
+            
+            $('#resultTbl').html('');          
 
             // TM
             local.getTmAjax(news_id, sentence_id, thisText, this_idx);
@@ -96,7 +116,7 @@ var PageScript = function(){
             local.getMtAjax(thisText, this_idx);
 
             // TB
-            local.getTBAjax();
+            local.getTBAjax();             
         });
         // 선택된 해석문 textarea 클릭
         // keyup 으로 하면 로딩부터 실행 주의!
@@ -201,7 +221,7 @@ var PageScript = function(){
             $(this).height( this.scrollHeight );
         });
         //$('#mainTbl').find( 'textarea' ).keyup();
-    },
+    };
     this.mask = function(){
         //화면의 높이와 너비를 구한다.
         var maskHeight = $(document).height();  
@@ -213,13 +233,17 @@ var PageScript = function(){
     this.getTmAjax = function(news_id, sentence_id, thisText, this_idx){
         var jqxhr = $.get( "http://ciceron.xyz:5000/api/v2/mypick/" + news_id + "/" + sentence_id , function(data) {
             console.log('result1');
-            console.log(data);
+            console.log(data);          
             
-            var tm_html = '<tr>';
+            var tm_html = '';
+            //tm_html += '<tr>';
+            //tm_html += '    <td colspan=3>' + thisText + ' </td>';
+            //tm_html += '</tr>';
+
+            tm_html += '<tr>';
             tm_html += '    <td width="4%" style="text-align:center;">1</td>';
-            tm_html += '    <td width="45%">' + thisText + ' </td>';
             tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';                       
-            tm_html += '    <td width="46%">' + data.translated + '</td>';
+            tm_html += '    <td width="91%">' + data.translated + '</td>';
             tm_html += '</tr>';
 
             $('#resultArea').css({'border-top':'0'});
@@ -228,7 +252,7 @@ var PageScript = function(){
             $('#resultTbl tr').on('click', function(e){
                 e.preventDefault();
                 //alert('1. 좌측에 해석문 입력\n2. 아이콘 x 로 변경 혹은 유지\n3. TM/TB/MT 선택에 따른 변경');
-                var transType = $(this).find('td:eq(2)').text();
+                var transType = $(this).find('td:eq(1)').text();
                 var transBgClass = '';
                 switch (transType) {
                     case 'TM' : transBgClass = 'tmColor'; break;
@@ -236,18 +260,19 @@ var PageScript = function(){
                     case 'MT' : transBgClass = 'mtColor'; break;
                     default :; break;
                 }
-                $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(4)').text()).keyup();
+                $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                 $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                 $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
                 $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).html(transType);
-            });                
+            });          
         })
         .done(function() {
         })
         .fail(function() {
             alert( "error" );
         })
-        .always(function() {});
+        .always(function() {
+        });
         jqxhr.always(function() {});  
     };
     this.getMtAjax = function(thisText, this_idx){
@@ -266,11 +291,15 @@ var PageScript = function(){
             success:function(args){  
                 console.log('result2');
                 console.log(args);
-                var mt_html = '<tr>';
+                var mt_html = '';
+                //mt_html += '<tr>';
+                //mt_html += '    <td colspan=3>' + thisText + ' </td>';
+                //mt_html += '</tr>'; 
+
+                mt_html += '<tr>';
                 mt_html += '    <td width="4%" style="text-align:center;">2</td>';
-                mt_html += '    <td width="45%">' + thisText + ' </td>';
                 mt_html += '    <td width="5%" class="mtColor" style="tsext-align:center;">MT</td>';                      
-                mt_html += '    <td width="46%">' + args.google + '</td>';
+                mt_html += '    <td width="91%">' + args.google + '</td>';
                 mt_html += '</tr>';   
                 
                 $('#resultArea').css({'border-top':'0'});
@@ -279,7 +308,7 @@ var PageScript = function(){
                 $('#resultTbl tr').on('click', function(e){
                     e.preventDefault();
                     //alert('1. 좌측에 해석문 입력\n2. 아이콘 x 로 변경 혹은 유지\n3. TM/TB/MT 선택에 따른 변경');
-                    var transType = $(this).find('td:eq(2)').text();
+                    var transType = $(this).find('td:eq(1)').text();
                     var transBgClass = '';
                     switch (transType) {
                         case 'TM' : transBgClass = 'tmColor'; break;
@@ -287,7 +316,7 @@ var PageScript = function(){
                         case 'MT' : transBgClass = 'mtColor'; break;
                         default :; break;
                     }
-                    $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(4)').text()).keyup();
+                    $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx+1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).html(transType);
@@ -298,9 +327,7 @@ var PageScript = function(){
                 console.log(e.responseText);  
             }  
         });
-        this.getTBAjax = function(){
-            $('#tran2section table td').empty();
-            
+        this.getTBAjax = function(){           
             var result = '';       
             //alert('1. 디비에 저장된 현재 해석문 삭제\n2. 아이콘 체크에서 엑스로 변경');   
             /* 샘플	
@@ -317,24 +344,25 @@ var PageScript = function(){
                 }  
             });		
             */            
-            result += '<div>';
-            result += '<input type="button" value="저장"> ';
-            result += '<span class="boldWord">book</span> ';
-            result += '<span class="miniWord">1. 책 2. (종이・전자 형태의) 저서, 도서, 책 3. (글을 쓸 수 있게 책 모양으로 엮은) 종이 묶음</span>';
+            result = '<div>';
+            result += '    <input type="button" value="수정"> ';
+            result += '    <span class="boldWord">book</span> ';
+            result += '    <input type="text" class="miniWord" value="책">';
             result += '</div>';
 
             result += '<div>';
-            result += '    <input type="button" value="저장"> ';
+            result += '    <input type="button" value="수정"> ';
             result += '    <span class="boldWord">apple</span> ';
-            result += '    <span class="miniWord">사과</span> ';
+            result += '    <input type="text" class="miniWord" value="사과">';
             result += '</div>';
 
-            $('#tran2section table td').append(result);
-
+            $('#tran2section table tr:nth-of-type(2) td').empty().append(result);
+            //console.log(result);
+            $('#tran2section table tr:nth-of-type(2) input[type=text]').css({'border':'1px solid #999','border-radius':'5px','width':'150px', 'padding-left':'5px'});
             $('#tran2section table div input[type=button]').on('click', function(e){
                 e.preventDefault();
-                alert($(this).closest('div').find('.boldWord').text() + ' 저장');
-            });
+                alert($(this).closest('div').find('.boldWord').text() + ' 수정');
+            });           
         };
     };
 	this.bind = function(){

@@ -230,17 +230,24 @@ body {
     top: 0px;
 }
 #resultTbl,
-#resultTbl2 {
-    border: 1px solid rgba(207, 204, 204, 0.404);
-    width: 100%;
+#resultTbl2,
+#originSentence {
+    border: 1px solid rgba(167, 148, 95, 0.863);
+    width: 99%;
     box-sizing: border-box;
     margin: 2px;
     font-size: 13px;
+    text-align:justify;
+}
+
+#originSentence{
+    margin-top:40px !important;
+    padding:10px;    
 }
 
 #resultTbl {
     cursor: pointer;
-    margin-top:40px !important;
+    /*margin-top:40px !important;*/
 }
 
 #resultTbl2 {
@@ -255,8 +262,7 @@ body {
 #resultTbl tr td,
 #resultTbl2 tr td {
     padding: 7px;
-    border: 1px solid rgba(207, 204, 204, 0.404);
-    text-align: justify; /* 좌우공백제거 */
+    border: 1px solid rgba(167, 148, 95, 0.863);
 }
 
 

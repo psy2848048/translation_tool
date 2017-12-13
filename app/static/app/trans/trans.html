@@ -47,9 +47,15 @@
                     <th>#</th>
                     <th>원문</th>
                     <th>해석문</th>
-                    <th><i class="fa fa-check" aria-hidden="true"></i></th>
-                    <th><img src="../../public/img/tool_icon2.png" width="17px"></th>
-                    <th><img src="../../public/img/talk_icon.png" width="17px"></th>
+                    <th>
+                        <i class="fa fa-check" aria-hidden="true"></i>
+                    </th>
+                    <th>
+                        <img src="../../public/img/tool_icon2.png" width="17px">
+                    </th>
+                    <th>
+                        <img src="../../public/img/talk_icon.png" width="17px">
+                    </th>
                 </tr>
             </table>
         </div>
@@ -58,7 +64,8 @@
 
 
             <section id="tran1section">
-                <h2>문장번역</h2>                
+                <h2>문장번역</h2>
+                <div id="originSentence">좌측 원문을 선택해주세요</div>                        
                 <table id="resultTbl">
                     <colgroup>
                         <col width="4%" style="text-align:center;">
@@ -80,7 +87,7 @@
                         </th>
                     </tr>
                     <tr>
-                        <td>                            
+                        <td>
                         </td>
                     </tr>
                 </table>
@@ -105,11 +112,11 @@
             </table>
 
 
+            </div>
         </div>
-    </div>
-    <script src="../../public/js/jquery-1.12.4.min.js"></script>
-    <script src="../../public/js/common.js"></script>
-    <script src="../../public/js/trans/trans.js"></script>
+        <script src="../../public/js/jquery-1.12.4.min.js"></script>
+        <script src="../../public/js/common.js"></script>
+        <script src="../../public/js/trans/trans.js"></script>
 </body>
 
 </html>
