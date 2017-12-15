@@ -1,242 +1,300 @@
-﻿html, .root {
+﻿html,
+.root {
   font-size: 16px;
   line-height: 21px;
 }
-body, .article {
+
+body,
+.article {
   font-family: sans-serif;
   font-size: 1em;
   line-height: 1.3125em;
   margin: auto;
 }
-h1, .h1 {
+
+h1,
+.h1 {
   font-size: 1.75em;
   line-height: 1.5em;
   margin-top: 0.75em;
   margin-bottom: 1.5em;
 }
-h2, .h2 {
+
+h2,
+.h2 {
   font-size: 1.4375em;
   line-height: 1.82608696em;
   margin-top: 0.91304348em;
   margin-bottom: 0.91304348em;
 }
-h3, .h3 {
+
+h3,
+.h3 {
   font-size: 1.1875em;
   line-height: 1.10526316em;
   margin-top: 1.10526316em;
   margin-bottom: 0em;
 }
-h4, .h4 {
+
+h4,
+.h4 {
   font-size: 1em;
   line-height: 1.3125em;
   margin-top: 1.3125em;
   margin-bottom: 0em;
 }
-h5, .h5 {
+
+h5,
+.h5 {
   font-size: 1em;
   line-height: 1.3125em;
   margin-top: 1.3125em;
   margin-bottom: 0em;
 }
-p, ul, ol, pre, table, blockquote {
+
+p,
+ul,
+ol,
+pre,
+table,
+blockquote {
   margin-top: 0em;
   margin-bottom: 1.3125em;
 }
-ul ul, ol ol, ul ol, ol ul {
+
+ul ul,
+ol ol,
+ul ol,
+ol ul {
   margin-top: 0em;
   margin-bottom: 0em;
 }
 
+
 /* Let's make sure all's aligned */
-hr, .hr {
-  border: 1px solid;
+
+hr,
+.hr {
+  border: 1px solid rgb(214, 209, 209);
   margin: -1px 0;
 }
-a, b, i, strong, em, small, code {
+
+a,
+b,
+i,
+strong,
+em,
+small,
+code {
   line-height: 0;
 }
-/*
-sub, sup {
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-sup {
-  top: -0.5em;
-}
-sub {
-  bottom: -0.25em;
-}
-*/
+
 
 /*************************************************/
 
-/* HEIGHT:100% 적용 */
-html, body{
-  /*height:100%; 
-  overflow:auto;*/
-  /*background-color: #E9F4F8;*/
-
-  /*background-image: url('../img/macbook.jpg');
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;*/     
-}
-
-section > p{
+section>p {
   text-align: justify;
 }
 
-/*************************************************/
 
 /* 위첨자 */
+
 .super {
   vertical-align: super;
   font-size: 0.7em;
-  background:transparent;
-} 
+  background: transparent;
+}
+
+
 /* 아래첨자 */
+
 .sub {
   vertical-align: sub;
   font-size: 0.7em;
   background: transparent;
 }
 
+
 /* 글자잘림 : width 지정 해줘야함 */
-.oneline_wrap{
-  display:inline-block;
-  white-space:nowrap;
-  overflow:hidden;
+
+.oneline_wrap {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
 }
+
+
 /* 글자잘림 + ... : width 지정 해줘야함 */
-.oneline_wrap_comma{
-  display:inline-block;
-  white-space:nowrap;
-  overflow:hidden;
+
+.oneline_wrap_comma {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
+
+/* 우측 회원사진 */
+
+.circle {
+  border: 1px solid green;
+  border-radius: 50%;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  text-align: center;
+  background: url(/public/img/kjh.jpg);
+  background-size: 100%;
+  border: 1px solid #9b9aa6;
+  background-repeat: no-repeat;
+  background-position-y: center;
+  background-color: #fff;
+}
+
+.tmColor {
+  background-color: #ff7ae9;
+}
+
+.tbColor {
+  background-color: #ffca7a;
+}
+
+.mtColor {
+  background-color: #7acaff
+}
+
+#mainWrap {
+  position: relative;
+  border: 0px solid #999;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* 고정 */
+  width: 1000px;
+  margin: 0 auto;
+}
+
+
 /*************************************************/
 
-#mainWrap{
-  position:relative;
-  border:0px solid #999;
-  border-radius: 5px;
-  box-sizing: border-box; 
-  width:1000px; /* 고정 */
-  margin:0 auto;
-  /*background-color: #fff;*/
-}
-
-#mainHeader{
+#mainHeader {
   position: relative;
-  top:0;
-  border-bottom:1px solid #f0f0f0;
-  padding-bottom:10px;
-  margin-bottom:10px;
-  width:100%;
-  height:60px;
+  top: 0;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 60px;
 }
 
-#mainHeader ul{
-  border:0px solid green;
-  display:inline-block;
-  height:60px;
-  line-height:60px;
-  vertical-align:bottom;
+#mainHeader ul {
+  border: 0px solid green;
+  display: inline-block;
+  height: 60px;
+  line-height: 60px;
+  vertical-align: bottom;
   box-sizing: border-box;
 }
 
-#mainHeader ul:nth-of-type(1){
-  float:left;
+#mainHeader ul:nth-of-type(1) {
+  float: left;
 }
 
-#mainHeader ul:nth-of-type(2){
-  float:right;
+#mainHeader ul:nth-of-type(2) {
+  float: right;
 }
 
-#mainHeader ul li{
-  border:0px solid orange; 
-  float:left;
+#mainHeader ul li {
+  border: 0px solid orange;
+  float: left;
 }
 
-#mainHeader ul:nth-of-type(1) li{
-  height:50px;
-  padding-top:10px;
+#mainHeader ul:nth-of-type(1) li {
+  height: 50px;
+  padding-top: 10px;
 }
 
-#mainHeader ul:nth-of-type(1) li img{
-  height:50px;
+#mainHeader ul:nth-of-type(1) li img {
+  height: 50px;
 }
 
-#mainHeader ul:nth-of-type(2) li{
-  padding-left:15px;
-  padding-right:15px;  
+#mainHeader ul:nth-of-type(2) li {
+  padding-left: 15px;
+  padding-right: 15px;
   line-height: 100px;
   box-sizing: border-box;
   vertical-align: bottom;
 }
 
-#mainHeader ul:nth-of-type(2) li a{
+#mainHeader ul:nth-of-type(2) li a {
   text-decoration: none;
-  font-weight:bolder;
+  font-weight: bolder;
 }
 
-#mainHeader li a{
-  color:#333;
+#mainHeader li a {
+  color: #333;
 }
 
-#mainHeader ul:nth-of-type(2) li:hover{
-  opacity:0.8;
+#mainHeader ul:nth-of-type(2) li:hover {
+  opacity: 0.8;
 }
 
-#menuArea ul li a{
+
+/*************************************************/
+
+#menuArea ul li a {
   text-decoration: none;
-  color:#fff;
-  cursor:pointer;
+  color: #fff;
+  cursor: pointer;
 }
 
-#mainFooter{
-  clear:both;
-  position:relative;
-  bottom:0;
-  border:0px solid blue;
-  border-top:1px solid #f0f0f0;
-  width:100%;
-  text-align: center;  
-  font-size:12px;
-  padding:10px;
+
+/*************************************************/
+
+#mainFooter {
+  clear: both;
+  position: relative;
+  bottom: 0;
+  border: 0px solid blue;
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
   box-sizing: border-box;
 }
 
-#mainFooter ul{
-  border:0px solid orange;
-  display:inline-block;
+#mainFooter ul {
+  border: 0px solid orange;
+  display: inline-block;
   margin-bottom: 0;
 }
 
-#mainFooter ul li{  
-  border:0px solid green;
-  float:left;
-  padding-left:5px;
-  padding-right:5px;
+#mainFooter ul li {
+  border: 0px solid green;
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#mainFooter p{
+#mainFooter p {
   margin-bottom: 0;
 }
 
-#mainFooter a{
-  color:#333;
+#mainFooter a {
+  color: #333;
   text-decoration: none;
 }
 
-#mainFooter a:hover{
-  opacity:0.8;
+#mainFooter a:hover {
+  opacity: 0.8;
 }
 
-#logoArea ul li{
-  background-color:transparent !important;
+
+/*************************************************/
+
+#logoArea ul li {
+  background-color: transparent !important;
 }
 
 hr.style-six {
@@ -244,22 +302,4 @@ hr.style-six {
   height: 0;
   border-top: 1px solid rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-
-.tmColor {
-  background-color: #ff7ae9;
-}
-.tbColor {
-  background-color: #ffca7a;
-}
-.mtColor {
-  background-color: #7acaff
-}
-
-.boldWord{
-  font-weight: bold;
-}
-.miniWord{
-  font-size:12px;
 }
