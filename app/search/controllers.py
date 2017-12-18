@@ -1,5 +1,5 @@
 from flask import request, make_response, json
-import app.comments.models as model
+import app.search.models as model
 
 def index():
     return make_response(json.jsonify(msg='Search API'), 200)
