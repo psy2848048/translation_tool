@@ -154,22 +154,6 @@ h3 {
     overflow-y: auto;
 }
 
-#mainArea .circle {
-    border: 1px solid green;
-    border-radius: 50%;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    text-align: center;
-    background: url(../../img/kjh.jpg);
-    background-size: 100%;
-    border: 1px solid #9b9aa6;
-    background-repeat: no-repeat;
-    background-position-y: center;
-    background-color: #fff;
-}
-
 #txt_title{
     border:1px solid rgb(161, 149, 149);
     border-radius: 5px;

@@ -70,8 +70,35 @@ h3{
 }
 #mainArea article{
     padding:20px;
+    padding-top:5px;
     border-radius:5px;
 
+}
+#mainArea article ul ul{
+    border:0px solid red;
+    margin-top:15px;
+    padding:5px;
+    width:100%;
+}
+#mainArea article ul ul li:nth-last-of-type(1){
+    text-align: right;
+}
+#mainArea article ul ul li{
+    border:0px solid blue;
+    width:100%;
+    padding-right:20px;
+}
+#mainArea article li li input[type=button]{
+    border:1px solid #eee;
+    border-radius:5px;
+    background-color:#1797E4;
+    color:#fff;
+    font-size:13px;
+    padding:5px;
+}
+#mainArea article li li input[type=button]:disabled{
+    background-color:rgb(129, 144, 153);
+    color:rgb(196, 196, 202);
 }
 #mainArea article #txtSearchWord{
     border:1px solid #D4DBDF;
@@ -99,21 +126,6 @@ h3{
     height:45px;
     line-height:45px;
     vertical-align: middle;
-}
-.circle{
-    border:1px solid green;
-    border-radius: 50%;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    text-align: center;
-    background: url(../../img/kjh.jpg);
-    background-size: 100%;
-    border: 1px solid #9b9aa6;
-    background-repeat: no-repeat;
-    background-position-y: center;
-    background-color: #fff;
 }
 #mainArea article:nth-of-type(1),
 #mainArea article:nth-of-type(2),
