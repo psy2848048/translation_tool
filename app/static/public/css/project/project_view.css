@@ -5,7 +5,7 @@ body {
 }
 
 #dvLoading {
-    background: transparent url(/public/img/loading3.gif) no-repeat center center;
+    background: transparent url(/static/public/img/loading3.gif) no-repeat center center;
     height: 100px;
     width: 100px;
     position: relative;
@@ -133,7 +133,7 @@ h3 {
     border-radius: 5px;
     font-size: 15px;
     padding-left: 10px;
-    background: url(/public/img/search.png);
+    background: url(/static/public/img/search.png);
     background-repeat: no-repeat;
     background-position: right 10px bottom 10px;
 }

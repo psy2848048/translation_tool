@@ -89,7 +89,12 @@ code {
   line-height: 0;
 }
 
-
+hr.style-six {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
 /*************************************************/
 
 section>p {
@@ -144,7 +149,7 @@ section>p {
   height: 30px;
   vertical-align: middle;
   text-align: center;
-  background: url(/public/img/kjh.jpg);
+  background: url(/static/public/img/kjh.jpg);
   background-size: 100%;
   border: 1px solid #9b9aa6;
   background-repeat: no-repeat;
@@ -249,6 +254,10 @@ section>p {
 }
 
 
+
+#logoArea ul li {
+  background-color: transparent !important;
+}
 /*************************************************/
 
 #mainFooter {
@@ -292,14 +301,3 @@ section>p {
 
 
 /*************************************************/
-
-#logoArea ul li {
-  background-color: transparent !important;
-}
-
-hr.style-six {
-  border: 0;
-  height: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}

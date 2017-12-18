@@ -5,7 +5,31 @@ var PageScript = function () {
         // body 흐리게
         local.mask();
 
-        // 임시 alert(project_id);
+        // 좌측 프로젝트 리스트
+        setTimeout(function () {
+            var menu = '';
+
+            menu += '<ul id="ulProjectList">';
+            menu += '<li>';
+            menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
+            menu += '</li>';
+            menu += '<li>';
+            menu += '<a href="/static/front/project/project_view.html?project=2">└ 내픽뉴스 중문번역</a>';
+            menu += '</li>';
+            menu += '</ul>';
+
+            $('#left_menu_area>li:nth-of-type(1)').append(menu);
+
+            if (project_id == undefined || project_id == '1') {
+                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': 'orange'});
+                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': '#333'});
+            } else {
+                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': '#333'});
+                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': 'orange'});
+            }
+        }, 100);
+
+        // 임시 하드코딩(삭제예정)
         if (project_id == 2) { // 중문번역
             $('#dvTitle h2').text('내픽뉴스 중문번역');
             $('#tblProjectDetail tr:nth-of-type(1) td:nth-of-type(2)').text('2');
@@ -13,9 +37,11 @@ var PageScript = function () {
             $('#tblProjectDetail tr:nth-of-type(3) td:nth-of-type(2)').text('(주)민국번역 홍길동, 김미니');
         }
 
-        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_reg.html?project=' + getUrlParameter('project'));
+        // 프로젝트 신규 버튼
+        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
+        // 체크박스 전체선택, 해제
         $('#listContents th input[type=checkbox]').on('click', function (e) {
             e.preventDefault();
             if ($(this).prop('checked')) {
@@ -31,13 +57,6 @@ var PageScript = function () {
     };
     this.getProjects = function () {
         var url = project_id == '1' ? 'http://ciceron.xyz:5000/api/v2/mypick/en' : 'http://ciceron.xyz:5000/api/v2/mypick/cn';
-
-        if (project_id == '1') $('#menuArea ul li ul li:nth-of-type(1) a').css({
-            'color': 'orange'
-        });
-        else $('#menuArea ul li ul li:nth-of-type(2) a').css({
-            'color': 'orange'
-        });
 
         $(document).ajaxStart(function () {
             $('#dvLoading').show();
@@ -63,12 +82,6 @@ var PageScript = function () {
                     row += '</tr>';
                 });
                 $('#listContents table tbody').append(row);
-
-                // 툴팁 이벤트
-                /*$('#listContents table td a').hover(function(e){
-                    e.preventDefault();
-                    
-                });*/
             })
             .done(function () {})
             .fail(function () {
@@ -100,8 +113,6 @@ var PageScript = function () {
 $(function () {
     var script = new PageScript();
     script.bind();
-
-    $('#ulProjectList').show();
 
     $(document).tooltip({
         track: true

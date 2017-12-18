@@ -99,21 +99,6 @@ h3{
     line-height:45px;
     vertical-align: middle;
 }
-.circle{
-    border:1px solid green;
-    border-radius: 50%;
-    display: inline-block;
-    width: 30px;
-    height: 30px;
-    vertical-align: middle;
-    text-align: center;
-    background: url(../../img/kjh.jpg);
-    background-size: 100%;
-    border: 1px solid #9b9aa6;
-    background-repeat: no-repeat;
-    background-position-y: center;
-    background-color: #fff;
-}
 #mainArea article:nth-of-type(1),
 #mainArea article:nth-of-type(2){    
     background-color:#FFF;

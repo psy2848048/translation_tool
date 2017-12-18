@@ -1,6 +1,22 @@
 var PageScript = function () {
     var local = this;
-    this.preInits = function () {};
+    this.preInits = function () {
+
+        setTimeout(function () {
+            var menu = '';
+
+            menu += '<ul id="ulProjectList">';
+            menu += '<li>';
+            menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
+            menu += '</li>';
+            menu += '<li>';
+            menu += '<a href="/static/front/project/project_view.html?project=2">└ 내픽뉴스 중문번역</a>';
+            menu += '</li>';
+            menu += '</ul>';
+
+            $('#left_menu_area>li:nth-of-type(1)').append(menu);
+        }, 100);
+    };
     this.btnEvents = function () {
 
     };
@@ -31,6 +47,4 @@ var PageScript = function () {
 $(function () {
     var script = new PageScript();
     script.bind();
-
-    $('#ulProjectList').show();
 });
