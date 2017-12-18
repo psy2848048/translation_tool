@@ -1,0 +1,122 @@
+<!DOCType html>
+<html="ko">
+
+    <head>
+        <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+        <META http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+        <title>마로캣 웹번역기</title>
+        <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+        <link href="/static/public/css/reset.css" rel="stylesheet" />
+        <link href="/static/public/css/site.css" rel="stylesheet" />
+        <link href="/static/public/css/project/project_view.css" rel="stylesheet" />
+    </head>
+
+    <body>
+        <div id="mask"></div>
+        <div id="mainWrap">
+            <header id="menuArea">
+            </header>
+            <section id="mainArea">
+                <article id="rightMenuArticle">
+                </article>
+                <article>
+                    <div id="dvTitle">
+                        <h2>내픽뉴스 영문번역</h2>
+                        <input type="button" value=" 편집 ">
+                        <input type="button" value=" 다른 이름으로 저장 ">
+                        <input type="button" value=" 삭제 ">
+                    </div>
+                    <div id="dvContent">
+                        <table id="tblProjectDetail">
+                            <tr>
+                                <td>일련번호</td>
+                                <td>1</td>
+                                <td>상태</td>
+                                <td>신규</td>
+                            </tr>
+                            <tr>
+                                <td>원문언어</td>
+                                <td>EN
+                                    <span class="super">US</span>
+                                </td>
+                                <td>번역언어</td>
+                                <td>KO
+                                    <span class="super">KR</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>번역가</td>
+                                <td>(주)민국번역 홍길동, 김미니</td>
+                                <td>의뢰인</td>
+                                <td>(주)대한기업 김철수, 이영희</td>
+                            </tr>
+                            <tr>
+                                <td>생성일시</td>
+                                <td>2017-11-21 10:11</td>
+                                <td>만기일시</td>
+                                <td>2018-02-21 10:11</td>
+                            </tr>
+                        </table>
+                    </div>
+                </article>
+                <article>
+                    <div id="listTitleGroup">
+                        <h3>작업리스트</h3>
+                        <ul>
+                            <li>
+                                <a href="project_reg.html">신규</a>
+                            </li>
+                            <li>편집</li>
+                            <li>다운로드</li>
+                            <li>분석</li>
+                            <li>사전번역</li>
+                            <li>도구</li>
+                            <li>삭제</li>
+                        </ul>
+                    </div>
+                    <div id="listContents">
+                        <table>
+                            <colgroup>
+                                <col style="width:5%;">
+                                <col style="width:5%;">
+                                <col style="width:10%;">
+                                <col style="width:30%;">
+                                <col style="width:10%;">
+                                <col style="width:10%;">
+                                <col style="width:10%;">
+                                <col style="width:10%;">
+                                <col style="width:20%;">
+                            </colgroup>
+                            <tr>
+                                <th>
+                                    <input type="checkbox">
+                                </th>
+                                <th>번호</th>
+                                <th>진행률</th>
+                                <th>제목</th>
+                                <th>상태</th>
+                                <th>링크</th>
+                                <th>번역언어</th>
+                                <th>번역가</th>
+                                <th>만기일시</th>
+                            </tr>
+                        </table>
+                        <div id="dvLoading"></div>
+                    </div>
+                </article>
+            </section>
+        </div>
+        <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+        <script src="/static/public/js/jquery-ui-1.12.1.min.js"></script>
+        <script src="/static/public/js/common.js"></script>
+        <script src="/static/public/js/project/project_view.js"></script>
+    </body>
+
+    </html>

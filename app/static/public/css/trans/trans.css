@@ -102,7 +102,6 @@ body {
 /*#############################################################*/
 
 #transArea {
-    border-bottom: 0px solid rgb(231, 12, 12);
     box-sizing: border-box;
     clear: both;
     float: left;
@@ -111,18 +110,18 @@ body {
     overflow-y: scroll;
 }
 
-
-/*-------------------------------------------------------------*/
-
-#mainTbl,
+#transArea,
 #tran1section,
 #tran2section {
     border: 2px solid rgb(153, 163, 175);
 }
 
+
+/*-------------------------------------------------------------*/
+
 #mainTbl {
     box-sizing: border-box;
-    width: 98%;
+    width: 100%;
     margin-bottom: 10px;
 }
 
@@ -148,7 +147,8 @@ body {
 #mainTbl th,
 #mainTbl td {
     border: 1px solid rgb(207, 204, 204);
-    text-align: justify; /* 좌우공백제거 */
+    text-align: justify;
+    /* 좌우공백제거 */
     vertical-align: middle;
     padding: 7px;
 }
@@ -184,7 +184,8 @@ body {
     resize: none;
     overflow-y: hidden;
     font-size: 14px;
-    text-align: justify; /* 좌우공백제거 */
+    text-align: justify;
+    /* 좌우공백제거 */
 }
 
 
@@ -229,6 +230,7 @@ body {
 #tran1section {
     top: 0px;
 }
+
 #resultTbl,
 #resultTbl2,
 #originSentence {
@@ -237,12 +239,12 @@ body {
     box-sizing: border-box;
     margin: 2px;
     font-size: 13px;
-    text-align:justify;
+    text-align: justify;
 }
 
-#originSentence{
-    margin-top:40px !important;
-    padding:10px;    
+#originSentence {
+    margin-top: 40px !important;
+    padding: 10px;
 }
 
 #resultTbl {

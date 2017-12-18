@@ -55,12 +55,13 @@ h3{
     padding:10px;
     color:rgb(233, 232, 238);
 }
-#menuArea ul li:nth-of-type(3){
+
+#menuArea ul li:nth-of-type(5){
     background-color:#fff;
     font-weight:bolder;
     margin-top:0px;
 }
-#menuArea ul li:nth-of-type(3) a{
+#menuArea ul li:nth-of-type(5) a{
     color:#365378;
 }
 #mainArea{
@@ -69,8 +70,35 @@ h3{
 }
 #mainArea article{
     padding:20px;
+    padding-top:5px;
     border-radius:5px;
 
+}
+#mainArea article ul ul{
+    border:0px solid red;
+    margin-top:15px;
+    padding:5px;
+    width:100%;
+}
+#mainArea article ul ul li:nth-last-of-type(1){
+    text-align: right;
+}
+#mainArea article ul ul li{
+    border:0px solid blue;
+    width:100%;
+    padding-right:20px;
+}
+#mainArea article li li input[type=button]{
+    border:1px solid #eee;
+    border-radius:5px;
+    background-color:#1797E4;
+    color:#fff;
+    font-size:13px;
+    padding:5px;
+}
+#mainArea article li li input[type=button]:disabled{
+    background-color:rgb(129, 144, 153);
+    color:rgb(196, 196, 202);
 }
 #mainArea article #txtSearchWord{
     border:1px solid #D4DBDF;
@@ -100,8 +128,15 @@ h3{
     vertical-align: middle;
 }
 #mainArea article:nth-of-type(1),
-#mainArea article:nth-of-type(2){    
+#mainArea article:nth-of-type(2),
+#mainArea article:nth-of-type(3){    
     background-color:#FFF;
+}
+#mainArea article:nth-of-type(2),
+#mainArea article:nth-of-type(3){    
+    height:calc(50% - 120px);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 #dvTitle{
     height:40px;
@@ -139,17 +174,26 @@ h3{
 }
 #listTitleGroup li{
     float:left;    
-    border:0px solid rgb(40, 136, 209);
     border-radius:2px;
-    background-color:#4296D9;
-    color:#fff;    
     padding:5px;
     margin:1px;
     font-size:13px;
     font-weight:normal;
+    border:0px solid rgb(40, 136, 209);
     opacity:0.5;
+    background-color:#4296D9;
+    color:#fff;    
 }
 #listTitleGroup li:nth-of-type(1){
+    background-color:#4296D9;
+}
+#listTitleGroup li:nth-of-type(1) input[type=text]{
+    border:1px solid #999;
+    width:200px;
+    border-radius: 5px;
+}
+#listTitleGroup li:nth-of-type(1),
+#listTitleGroup li:nth-of-type(2){
     opacity:1;
     cursor:pointer;
 }
@@ -157,7 +201,18 @@ h3{
     border:0px solid red;
 }
 #listContents table{
+    border-top:3px solid rgb(196, 184, 184);
     width:100%;    
+}
+#listContents table th{
+    border:0px solid blue;
+    box-sizing: border-box;
+    text-align:center;
+    height:30px;
+    line-height:30px;
+    vertical-align: middle;
+    font-size:14px;
+    background-color:rgba(188, 175, 175, 0.411)
 }
 #listContents table tr{
     border:0px solid blue;
@@ -178,6 +233,34 @@ h3{
     background-color:rgba(237, 243, 247, 0.37);
 }
 
+#ul_user_search li:nth-of-type(1){
+    background-color:#fff;
+}
+#ul_user_search li:nth-of-type(1) input[type=text]{    
+    width:170px;
+    font-size:13px;
+    padding:5px;
+}
+#ul_user_search li:nth-of-type(1) input[type=button]{    
+    background-color: rgb(212, 202, 57);
+    border-color: rgb(201, 189, 22);
+    font-size:13px;
+    padding:2px;
+    color:#fff;
+    cursor:pointer;
+}
+
 #menuArea ul:nth-of-type(1) li{
     text-align: center;
+}
+
+
+
+#ulProjectList li{
+    font-size:14px;
+    font-weight:normal;
+    padding:5px !important;
+}
+#ulProjectList li:nth-of-type(1) a{
+    color:orange !important;
 }
