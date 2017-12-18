@@ -2,7 +2,7 @@ var pageScript = function(){
     var local = this;
     this.clickEvent = function(){
         $('#loginBtn').on('click', function(){
-            if(1 == 1) location.href='/project/projects.html';
+            if(1 == 1) location.href='/static/front/project/projects.html';
             else alert('로그인정보 불일치!');
         });
     };
