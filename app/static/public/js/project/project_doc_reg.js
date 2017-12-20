@@ -1,6 +1,9 @@
 var PageScript = function () {
-    var local = this;
+    var local = this,
+        project_id = getUrlParameter('project');
     this.preInits = function () {
+        SetMenuColor(getUrlParameter('project'), '프로젝트', '#ulProjectList li', '?project=', 'a', 'orange');
+
         setTimeout(function () {
             var menu = '';
 
@@ -39,12 +42,12 @@ var PageScript = function () {
                 async: true,
                 success: function (args) {
                     alert(args);
-                    location.href = 'project_view.html?project=새프로젝트번호';
+                    location.href = 'project_view.html?project=' + getUrlParameter('project');
                 },
                 error: function (e) {
                     alert('fail');
                     console.log(e.responseText);
-                    location.href = 'project_view.html?project=새프로젝트번호';
+                    location.href = 'project_view.html?project=' + getUrlParameter('project');
                 }
             });
         });
@@ -57,4 +60,6 @@ var PageScript = function () {
 $(function () {
     var script = new PageScript();
     script.bind();
+
+    $('#ulProjectList').show();
 });

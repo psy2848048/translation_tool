@@ -32,7 +32,7 @@ function SetMenuColor(param, paramName, eachObj, compare_sentence, color_attr, c
 
 $(function () {
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
-    $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html input, ul');
+    $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');
     $('#menuArea').load('/static/front/common_html/left_menu.html ul');
     $('#mainFooter').load('/static/front/common_html/main_footer.html ul, br');
 });

@@ -46,6 +46,7 @@ body {
     border: 0px solid rgb(207, 204, 204);
     box-sizing: border-box;
     width: 100%;
+    max-width: 1900px;
     margin: 0 auto;
     padding: 10px;
     height: 100%;

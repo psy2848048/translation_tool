@@ -4,30 +4,6 @@ body {
     overflow: hidden;
 }
 
-h1 {
-    font-weight: bold;
-    font-size: 26px;
-    margin-bottom: 10px;
-    color: #fff;
-    width: 100%;
-    box-sizing: border-box;
-    margin: 30px auto;
-    border: 0px solid red;
-    text-align: center;
-}
-
-h2 {
-    font-weight: bold;
-    font-size: 22px;
-    margin-bottom: 10px;
-}
-
-h3 {
-    font-weight: bold;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
 #mainWrap {
     border: 0px solid red;
     box-sizing: border-box;
@@ -65,13 +41,6 @@ h3 {
 
 #menuArea ul:nth-of-type(3) li:nth-of-type(1) a {
     color: orange !important;
-}
-
-#menuArea ul li {
-    border-bottom: 0px solid #999;
-    margin: 5px;
-    padding: 10px;
-    color: rgb(233, 232, 238);
 }
 
 #menuArea ul li:nth-of-type(4) {
@@ -113,18 +82,6 @@ h3 {
     border-radius: 5px;
 }
 
-#mainArea article #txtSearchWord {
-    border: 1px solid #D4DBDF;
-    width: 270px;
-    height: 45px;
-    border-radius: 5px;
-    font-size: 15px;
-    padding-left: 10px;
-    background: url(/static/public/img/search.png);
-    background-repeat: no-repeat;
-    background-position: right 10px bottom 10px;
-}
-
 #mainArea article #rightMenu {
     border: 0px solid red;
     height: 45px;
@@ -163,10 +120,6 @@ h3 {
     height: 40px;
 }
 
-#dvTitle h2 {
-    display: inline-block;
-}
-
 #dvTitle input[type=button] {
     border: 0;
     float: right;
@@ -198,19 +151,23 @@ h3 {
 
 
 /*********************************************/
-
-#listTitleGroup h3 {
-    display: inline-block;
+#listTitleGroup,
+#listTitleGroup2{
+    position:relative;
+    border:0px solid red;
+    height:36px;
 }
-
-#listTitleGroup ul {
+#listTitleGroup ul,
+#listTitleGroup2 ul {
     float: right;
+    margin:0;
 }
 
-#listTitleGroup li {
+#listTitleGroup li,
+#listTitleGroup2 li {
     float: left;
     border-radius: 5px;
-    padding: 5px;
+    padding: 0px;
     font-size: 13px;
     font-weight: normal;
     border: 0px solid rgb(40, 136, 209);
@@ -221,21 +178,39 @@ h3 {
     margin:1px;
 }
 
-#listTitleGroup li:nth-of-type(1) {
+#listTitleGroup li:nth-of-type(1),
+#listTitleGroup2 li:nth-of-type(1) {
     background-color: #4296D9;
 }
 
-#listTitleGroup li:nth-of-type(1) input[type=text] {
+#listTitleGroup li:nth-of-type(1) input[type=text],
+#listTitleGroup2 li:nth-of-type(1) input[type=text] {
     border: 1px solid rgb(230, 224, 200);
     width: 200px;
     border-radius: 5px;
 }
 
 #listTitleGroup li:nth-of-type(1),
-#listTitleGroup li:nth-of-type(2) {
+#listTitleGroup li:nth-of-type(2),
+#listTitleGroup2 li:nth-of-type(1),
+#listTitleGroup2 li:nth-of-type(2) {
     opacity: 1;
     cursor: pointer;
 }
+
+#listTitleGroup ul li,
+#listTitleGroup2 ul li{
+    padding:5px;
+    vertical-align:bottom;
+}
+
+#listTitleGroup2 h3{
+    position: absolute;
+    bottom:3px;
+}
+
+
+
 
 
 #ul_user_search li:nth-of-type(1) {
@@ -244,12 +219,15 @@ h3 {
 
 #ul_user_search li:nth-of-type(1) input[type=text] {
     width: 170px;   
-    height:calc(100%);
-    line-height:calc(100%);
     padding:3px;
+    padding-left:5px;
     font-size:13px;
 }
-
+#listTitleGroup {
+    margin-bottom:0;
+    padding-bottom:0;
+    vertical-align: bottom;
+}
 /*********************************************/
 
 #listContents {
@@ -257,7 +235,7 @@ h3 {
 }
 
 #listContents table {
-    border-top: 3px solid rgb(196, 184, 184);
+    border-top: 3px solid rgb(224, 192, 166);
     width: 100%;
 }
 
@@ -269,7 +247,7 @@ h3 {
     line-height: 30px;
     vertical-align: middle;
     font-size: 14px;
-    background-color: rgba(188, 175, 175, 0.411)
+    background-color: rgb(238, 234, 216);
 }
 
 #listContents table tr {
