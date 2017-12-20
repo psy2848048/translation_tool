@@ -1,15 +1,11 @@
 from sqlalchemy import Table, MetaData
 from app import db
 
-def basic():
+def select_word(text):
     conn = db.engine.connect()
-    meta = MetaData(bind=db.engine)
+    words = conn.execute("SELECT id as word_id, origin_lang, trans_lang, origin_text, trans_text FROM marocat.word_memory WHERE is_deleted = FALSE AND (origin_text = '{}' OR trans_text = '{}');".format(text, text))
 
-    projects = Table('projects', meta, autoload=True)
-    conn.execute(projects.insert(), name='test')
-
-    a = projects.select(projects.c.name == 'test').execute()
-    for aa in a: print(aa)
-
-    a = projects.select(projects.c.name == 'test').execute().first()
-    print(a)
+    # meta = MetaData(bind=db.engine)
+    # wm = Table('word_memory', meta, autoload=True)
+    # words = wm.select(wm.c.is_deleted==False).execute()
+    return words

@@ -58,12 +58,6 @@ app.register_blueprint(projects, url_prefix='/api/v1/users/<int:user_id>/project
 from app.docs.urls import docs
 app.register_blueprint(docs, url_prefix='/api/v1/users/<int:user_id>/docs')
 
-from app.translation.urls import translation
-app.register_blueprint(translation, url_prefix='/api/v1/users/<int:user_id>/translation')
-
-from app.comments.urls import comments
-app.register_blueprint(comments, url_prefix='/api/v1/users/<int:user_id>/comments')
-
 from app.words.urls import words
 app.register_blueprint(words, url_prefix='/api/v1/users/<int:user_id>/words')
 

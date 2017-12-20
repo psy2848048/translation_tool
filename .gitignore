@@ -6,7 +6,6 @@ request_pic/
 request_sounds/
 request_text/
 translate_result/
-app/docs
 .coverage
 .cache/
 .tox/
