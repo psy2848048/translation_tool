@@ -25,30 +25,6 @@ body {
     display: block;
 }
 
-h1 {
-    font-weight: bold;
-    font-size: 26px;
-    margin-bottom: 10px;
-    color: #fff;
-    width: 100%;
-    box-sizing: border-box;
-    margin: 30px auto;
-    border: 0px solid red;
-    text-align: center;
-}
-
-h2 {
-    font-weight: bold;
-    font-size: 22px;
-    margin-bottom: 10px;
-}
-
-h3 {
-    font-weight: bold;
-    font-size: 20px;
-    margin-bottom: 10px;
-}
-
 #mainWrap {
     border: 0px solid red;
     box-sizing: border-box;
@@ -86,13 +62,6 @@ h3 {
     text-align: center;
 }
 
-#menuArea ul li {
-    border-bottom: 0px solid #999;
-    margin: 5px;
-    padding: 10px;
-    color: rgb(233, 232, 238);
-}
-
 #menuArea ul:nth-of-type(2) li:nth-of-type(1) {
     background-color: #fff;
     font-weight: bolder;
@@ -124,18 +93,6 @@ h3 {
 #mainArea article {
     padding: 20px;
     border-radius: 5px;
-}
-
-#mainArea article #txtSearchWord {
-    border: 1px solid #D4DBDF;
-    width: 270px;
-    height: 45px;
-    border-radius: 5px;
-    font-size: 15px;
-    padding-left: 10px;
-    background: url(/static/public/img/search.png);
-    background-repeat: no-repeat;
-    background-position: right 10px bottom 10px;
 }
 
 #mainArea article #rightMenu {
@@ -176,12 +133,14 @@ h3 {
 
 #dvTitle input[type=button] {
     border: 0;
+    border-radius:5px;
     float: right;
     margin: 1px;
     background-color: #1797E4;
     color: #fff;
     font-size: 13px !important;
     padding: 6px !important;
+    cursor:pointer;
 }
 
 
@@ -206,12 +165,14 @@ h3 {
 
 /******************************************************/
 
-#listTitleGroup h3 {
-    display: inline-block;
+#listTitleGroup>h3{
+    position:relative;
+    bottom:-7px;
 }
 
 #listTitleGroup ul {
     float: right;
+    margin:0;
 }
 
 #listTitleGroup li {
@@ -268,6 +229,7 @@ h3 {
 
 #listContents table td a {
     color: rgb(51, 129, 219);
+    text-decoration:none;
 }
 
 #listContents table td a:hover {

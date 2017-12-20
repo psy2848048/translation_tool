@@ -5,7 +5,7 @@ var PageScript = function () {
         setTimeout(function () {
             var menu = '';
 
-            menu += '<ul id="ulProjectList">';
+            menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
             menu += '<li>';
             menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
             menu += '</li>';

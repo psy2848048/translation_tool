@@ -15,7 +15,7 @@
         <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
         <link href="/static/public/css/reset.css" rel="stylesheet" />
         <link href="/static/public/css/site.css" rel="stylesheet" />
-        <link href="/static/public/css/project/project_reg.css" rel="stylesheet" />
+        <link href="/static/public/css/project/project_doc_reg.css" rel="stylesheet" />
     </head>
 
     <body>
@@ -27,21 +27,32 @@
                 <article id="rightMenuArticle">
                 </article>
                 <article>
+                    &nbsp;
                 </article>
-                <article id="reg_area">
-                    <h2>새 프로젝트</h2>
-                    <hr class="style-six">
-                    <div><span>프로젝트 명</span><input type="text" placeholder="프로젝트 제목을 입력해주세요" id="txt_title"></div>
-                    <div><span>상태</span><select id="sel_status"><option value="신규">신규</option></select></div>
-                    <div><span>만기일시</span><input type="text" type="date" id="txt_limit_date"></div>
-                    <br><hr>
+                <article>
+                    <h2>새 작업</h2>
+                    <hr>
+                    <div>
+                        <input type="text" placeholder="문서제목을 입력해주세요">
+                    </div>
+                    <div>
+                        <h3>파일로 업로드</h3>
+                        <div>
+                            <input type="file">
+                        </div>
+                    </div>
+                    <div>
+                        <h3>기본 텍스트로 작성하기</h3>
+                        <textarea></textarea>
+                    </div>
+                    <hr>
                     <input type="button" value=" 저 장 ">
                 </article>
             </section>
         </div>
         <script src="/static/public/js/jquery-1.12.4.min.js"></script>
         <script src="/static/public/js/common.js"></script>
-        <script src="/static/public/js/project/project_reg.js"></script>
+        <script src="/static/public/js/project/project_doc_reg.js"></script>
     </body>
 
     </html>

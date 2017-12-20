@@ -3,27 +3,6 @@ html, body {
     height:100%; 
     overflow:hidden; 
 }
-h1{
-    font-weight:bold;
-    font-size:26px;
-    margin-bottom:10px;
-    color:#fff;
-    width:100%;
-    box-sizing: border-box;
-    margin:30px auto;
-    border:0px solid red;
-    text-align:center;
-}
-h2{
-    font-weight:bold;
-    font-size:22px;
-    margin-bottom:10px;    
-}
-h3{
-    font-weight:bold;
-    font-size:20px;
-    margin-bottom:10px;    
-}
 #mainWrap{
     border:0px solid red;
     box-sizing:border-box;
@@ -49,12 +28,6 @@ h3{
 #menuArea ul:nth-of-type(1){
     margin-bottom:0px;
 }
-#menuArea ul li{
-    border-bottom:0px solid #999;
-    margin:5px;
-    padding:10px;
-    color:rgb(233, 232, 238);
-}
 
 #menuArea ul li:nth-of-type(5){
     background-color:#fff;
@@ -70,7 +43,6 @@ h3{
 }
 #mainArea article{
     padding:20px;
-    padding-top:5px;
     border-radius:5px;
 
 }
@@ -88,7 +60,25 @@ h3{
     width:100%;
     padding-right:20px;
 }
-#mainArea article li li input[type=button]{
+#mainArea article ul ul li span,
+#mainArea article ul ul li input[type=text],
+#mainArea article ul ul li input[type=password]{
+    border:0px solid blue;
+    border-radius:5px;
+    display:inline-block;
+    width:15%;
+    line-height:20px;
+    font-size:13px;
+    margin:2px;
+    padding:2px;
+    padding-left:5px;
+}
+#mainArea article ul ul li input[type=text],
+#mainArea article ul ul li input[type=password]{
+    border:1px solid rgb(160, 155, 155);
+    width:30%;
+}
+#mainArea article ul ul li input[type=button]{
     border:1px solid #eee;
     border-radius:5px;
     background-color:#1797E4;
@@ -99,17 +89,6 @@ h3{
 #mainArea article li li input[type=button]:disabled{
     background-color:rgb(129, 144, 153);
     color:rgb(196, 196, 202);
-}
-#mainArea article #txtSearchWord{
-    border:1px solid #D4DBDF;
-    width:270px;
-    height:45px;
-    border-radius:5px;
-    font-size:15px;
-    padding-left:10px;
-    background: url(../../img/search.png);
-    background-repeat: no-repeat;
-    background-position:right 10px bottom 10px;      
 }
 #mainArea article #rightMenu{
     border:0px solid red;
@@ -141,9 +120,6 @@ h3{
 #dvTitle{
     height:40px;
 }
-#dvTitle h2{
-    display:inline-block;
-}
 #dvTitle input[type=button]{
     border:0;
     float:right;
@@ -165,9 +141,6 @@ h3{
 #tblProjectDetail td:nth-of-type(1),
 #tblProjectDetail td:nth-of-type(3){    
     font-weight:bold;
-}
-#listTitleGroup h3{
-    display:inline-block;
 }
 #listTitleGroup ul{
     float:right;
@@ -263,4 +236,9 @@ h3{
 }
 #ulProjectList li:nth-of-type(1) a{
     color:orange !important;
+}
+
+
+li p{
+    font-size:13px;
 }

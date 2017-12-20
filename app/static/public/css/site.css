@@ -75,8 +75,10 @@ ol ul {
 
 hr,
 .hr {
-  border: 1px solid rgb(214, 209, 209);
-  margin: -1px 0;
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 a,
@@ -88,17 +90,37 @@ small,
 code {
   line-height: 0;
 }
-
-hr.style-six {
-  border: 0;
-  height: 0;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
 /*************************************************/
 
 section>p {
   text-align: justify;
+}
+
+article h2,
+article h3,
+article h4,
+article h5{
+  display: inline;
+  padding-top:5px;
+  padding-bottom:0;
+  padding-left: 5px;
+  /* line-height:100%; */
+  /*vertical-align: bottom;*/
+}
+
+article h2 {
+  border-left: 10px solid rgb(233, 176, 122);
+}
+
+article h3 {
+  border-left: 8px solid rgb(202, 201, 120);
+}
+
+article h4 {
+  border-left: 6px solid rgb(98, 150, 106);
+}
+article h5 {
+  border-left: 4px solid rgb(122, 148, 233);
 }
 
 
@@ -175,8 +197,48 @@ section>p {
   border-radius: 5px;
   box-sizing: border-box;
   /* 고정 */
-  width: 1000px;
+  width: 980px;
+  height:100%;
+  max-width: 1300px;
   margin: 0 auto;
+}
+
+
+/* 전역 검색박스 */
+
+#topSearch {
+  border: 0px solid blue;
+  width: 350px;
+  margin:0;
+  display: inline-block;
+  box-sizing:border-box;
+  position:relative;
+}
+
+#topSearch li {
+  border: 0px solid red;
+  float: left;
+}
+
+#topSearch li input[type=text] {
+  border: 1px solid #D4DBDF;
+  border-radius: 5px;
+  width: 340px;
+  height: 45px;
+  font-size: 15px;
+  padding-left: 10px;
+  box-sizing:border-box;
+}
+#topSearch li img {
+  border: 0px solid #D4DBDF;
+  position:absolute;
+  right:20px;
+  top:9px;
+  cursor:pointer;
+  opacity:0.5;
+}
+#topSearch li img:hover {
+  opacity:1;
 }
 
 
@@ -247,17 +309,24 @@ section>p {
 
 /*************************************************/
 
+#menuArea ul li{
+  border-bottom:0px solid #999;
+  margin:5px;
+  padding:10px;
+  color:rgb(233, 232, 238);
+  border-radius:5px;
+}
+
 #menuArea ul li a {
   text-decoration: none;
   color: #fff;
   cursor: pointer;
 }
 
-
-
 #logoArea ul li {
   background-color: transparent !important;
 }
+
 /*************************************************/
 
 #mainFooter {
@@ -271,6 +340,7 @@ section>p {
   font-size: 12px;
   padding: 10px;
   box-sizing: border-box;
+  margin-top:20px;
 }
 
 #mainFooter ul {
@@ -298,6 +368,3 @@ section>p {
 #mainFooter a:hover {
   opacity: 0.8;
 }
-
-
-/*************************************************/

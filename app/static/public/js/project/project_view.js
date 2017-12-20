@@ -9,7 +9,7 @@ var PageScript = function () {
         setTimeout(function () {
             var menu = '';
 
-            menu += '<ul id="ulProjectList">';
+            menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
             menu += '<li>';
             menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
             menu += '</li>';
@@ -38,7 +38,7 @@ var PageScript = function () {
         }
 
         // 프로젝트 신규 버튼
-        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_reg.html?project=' + project_id);
+        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_doc_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
         // 체크박스 전체선택, 해제

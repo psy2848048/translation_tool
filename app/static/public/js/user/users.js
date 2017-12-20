@@ -6,7 +6,7 @@ var PageScript = function () {
         setTimeout(function () {
             var menu = '';
 
-            menu += '<ul id="ulProjectList2 ">';
+            menu += '<ul id="ulProjectList2" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
             menu += '<li>';
             menu += '<a href="/static/front/user/users.html?project=1">└ 내픽뉴스 영문번역</a>';
             menu += '</li>';
@@ -49,8 +49,4 @@ var PageScript = function () {
 $(function () {
     var script = new PageScript();
     script.bind();
-
-    $(document).tooltip({
-        track: true
-    });
 });
