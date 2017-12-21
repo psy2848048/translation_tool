@@ -42,26 +42,72 @@ def update_trans_status(sentence_id, status):
         return False
 
 import re
-from ckonlpy.tag import Twitter
-twit = Twitter()
+# from ckonlpy.tag import Twitter
+# twit = Twitter()
+# def ko_devide_by_morpheme(sentence):
+#     t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#     t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
+#     texts = [twit.pos(t)[0][0] for t in t2]
+#     texts.append(''); texts.insert(0, '')
+#     return texts
+#
+# def ko_devide_by_spacing(self, sentence):
+#     t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#     t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
+#     texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
+#     # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
+#     # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
+#     return texts
 
-def devide_by_morpheme(sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
-    texts = [twit.pos(t)[0][0] for t in t2]
-    texts.append(''); texts.insert(0, '')
-    return texts
+# import nltk
+# def get_nouns_of_en_sentence(sentence):
+#     nouns = []
+#     t = nltk.word_tokenize(sentence)
+#     tt = nltk.pos_tag(t)
+#
+#     for word, tag in tt:
+#         if tag in ['NN', 'NNS', 'NNP', 'NNPS']:
+#             nouns.append(word)
+#
+#     return nouns
 
-def devide_by_spacing(self, sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
-    texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
-    # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
-    # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
-    return texts
+def get_similarity_sentences(sentence):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+    sm = Table('sentence_memory', meta, autoload=True)
 
-def get_similarity_sentences():
-    pass
+    print(sentence)
+
+    #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
+    a = sentence.split()
+    # first = "'%" + ' '.join(a[:3]) + "%'"
+    first = "'%Jong Un%'"
+    second = "%" + ' '.join(a[-3:]) + "%"
+    print(a)
+    print(first)
+    print(second)
+
+    # search_sentence_memory = """SELECT longest_common_substring_percent('{}', sm.origin_text) as score, sm.origin_text, sm.trans_text
+    #                             FROM ( SELECT origin_text, trans_text FROM marocat.sentence_memory
+    #                                    WHERE origin_text LIKE '%{}%' OR origin_text LIKE '%{}%') sm
+    #                             ORDER BY score DESC
+    #                             LIMIT 3;""".format(sentence, first, second)
+    # similarity_sentences = conn.execute(search_sentence_memory)
+
+    from sqlalchemy import text
+    search_sentence_memory = """SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score, sm.origin_text, sm.trans_text
+                                FROM ( SELECT origin_text, trans_text FROM marocat.sentence_memory
+                                       WHERE origin_text LIKE :first OR origin_text LIKE :second ) sm
+                                ORDER BY score DESC
+                                LIMIT 3;"""
+    print(search_sentence_memory)
+
+    similarity_sentences = conn.execute(text(search_sentence_memory), sentence=sentence, first=first, second=second)
+
+    # from sqlalchemy import or_
+    # sm.query.filter(or_(sm.c.origin_text.like('%{}%'.format(first)), sm.c.origin_text.like()))
+
+    return similarity_sentences
 
 def search_words_in_sentence():
     pass

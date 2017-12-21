@@ -39,19 +39,25 @@ def delete_doc(user_id, doc_id):
 ##################################   sentences   ##################################
 
 def get_translate_and_words(user_id, doc_id, sentence_id):
-    origin_text = request.form.get('origin_text', None)
+    sentence = request.values.get('sentence', None)
 
-    if not origin_text:
+    if not sentence:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
-    similarity_res = model.get_similarity_sentences()
-    words = model.search_words_in_sentence()
+    similarity_res = []
+    res1 = model.get_similarity_sentences(sentence)
+    for r in res1:
+        # if r.score >= 50:
+        print(r)
+        similarity_res.append(dict(r))
 
-    return make_response(json.jsonify(tm=similarity_res, words=words), 200)
+    # words = model.search_words_in_sentence()
+
+    return make_response(json.jsonify(tm=similarity_res, words=''), 200)
 
 def save_translation(user_id, doc_id, sentence_id):
-    trans_type = request.values.get('trans_type', None)
-    trans_text = request.values.get('trans_text', None)
+    trans_type = request.values.get('trans_type')
+    trans_text = request.values.get('trans_text')
 
     is_done = model.update_trans_text_and_type(sentence_id, trans_text, trans_type)
 
