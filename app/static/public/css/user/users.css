@@ -54,21 +54,21 @@ body {
 
 #menuArea ul li:nth-of-type(4) ul li a {
     font-weight: normal;
-    font-size:14px;
+    font-size: 14px;
 }
 
 #menuArea ul li:nth-of-type(4) ul li:nth-of-type(1) a {
-    color:orange;
+    color: orange;
 }
 
 #menuArea ul:nth-of-type(1) li {
     text-align: center;
 }
 
-
 #left_menu_area>li:nth-of-type(4) ul li {
-    padding:5px !important;
+    padding: 5px !important;
 }
+
 
 /*********************************************/
 
@@ -151,16 +151,18 @@ body {
 
 
 /*********************************************/
+
 #listTitleGroup,
-#listTitleGroup2{
-    position:relative;
-    border:0px solid red;
-    height:36px;
+#listTitleGroup2 {
+    position: relative;
+    border: 0px solid red;
+    height: 36px;
 }
+
 #listTitleGroup ul,
 #listTitleGroup2 ul {
     float: right;
-    margin:0;
+    margin: 0;
 }
 
 #listTitleGroup li,
@@ -175,7 +177,7 @@ body {
     background-color: #4296D9;
     color: #fff;
     vertical-align: bottom;
-    margin:1px;
+    margin: 1px;
 }
 
 #listTitleGroup li:nth-of-type(1),
@@ -199,35 +201,34 @@ body {
 }
 
 #listTitleGroup ul li,
-#listTitleGroup2 ul li{
-    padding:5px;
-    vertical-align:bottom;
+#listTitleGroup2 ul li {
+    padding: 5px;
+    vertical-align: bottom;
 }
 
-#listTitleGroup2 h3{
+#listTitleGroup2 h3 {
     position: absolute;
-    bottom:3px;
+    bottom: 3px;
 }
-
-
-
-
 
 #ul_user_search li:nth-of-type(1) {
     background-color: #fff;
 }
 
 #ul_user_search li:nth-of-type(1) input[type=text] {
-    width: 170px;   
-    padding:3px;
-    padding-left:5px;
-    font-size:13px;
+    width: 170px;
+    padding: 3px;
+    padding-left: 5px;
+    font-size: 13px;
 }
+
 #listTitleGroup {
-    margin-bottom:0;
-    padding-bottom:0;
+    margin-bottom: 0;
+    padding-bottom: 0;
     vertical-align: bottom;
 }
+
+
 /*********************************************/
 
 #listContents {

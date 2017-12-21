@@ -1,4 +1,12 @@
-﻿html,
+﻿/*************************************************/
+
+
+/* 기본 전역 자간지정 */
+
+
+/*************************************************/
+
+html,
 .root {
   font-size: 16px;
   line-height: 21px;
@@ -70,9 +78,6 @@ ol ul {
   margin-bottom: 0em;
 }
 
-
-/* Let's make sure all's aligned */
-
 hr,
 .hr {
   border: 0;
@@ -90,22 +95,27 @@ small,
 code {
   line-height: 0;
 }
+
+
 /*************************************************/
 
-section>p {
-  text-align: justify;
-}
+
+/* 전역 자동 지정 */
+
+
+/*************************************************/
+
+
+/* h2 ~ h5 좌측 메뉴띠 */
 
 article h2,
 article h3,
 article h4,
-article h5{
+article h5 {
   display: inline;
-  padding-top:5px;
-  padding-bottom:0;
+  padding-top: 5px;
+  padding-bottom: 0;
   padding-left: 5px;
-  /* line-height:100%; */
-  /*vertical-align: bottom;*/
 }
 
 article h2 {
@@ -119,9 +129,26 @@ article h3 {
 article h4 {
   border-left: 6px solid rgb(98, 150, 106);
 }
+
 article h5 {
   border-left: 4px solid rgb(122, 148, 233);
 }
+
+
+/* 글자 이쁘게 정렬 */
+
+section>p {
+  text-align: justify;
+}
+
+
+/*************************************************/
+
+
+/* 전역 공통 클래스 */
+
+
+/*************************************************/
 
 
 /* 위첨자 */
@@ -142,7 +169,7 @@ article h5 {
 }
 
 
-/* 글자잘림 : width 지정 해줘야함 */
+/* 글자잘림 : width 지정 해줘야함! */
 
 .oneline_wrap {
   display: inline-block;
@@ -151,7 +178,7 @@ article h5 {
 }
 
 
-/* 글자잘림 + ... : width 지정 해줘야함 */
+/* 글자잘림 + ... : width 지정 해줘야함! */
 
 .oneline_wrap_comma {
   display: inline-block;
@@ -161,23 +188,7 @@ article h5 {
 }
 
 
-/* 우측 회원사진 */
-
-.circle {
-  border: 1px solid green;
-  border-radius: 50%;
-  display: inline-block;
-  width: 30px;
-  height: 30px;
-  vertical-align: middle;
-  text-align: center;
-  background: url(/static/public/img/kjh.jpg);
-  background-size: 100%;
-  border: 1px solid #9b9aa6;
-  background-repeat: no-repeat;
-  background-position-y: center;
-  background-color: #fff;
-}
+/* TM, TB, MT 색깔정의 */
 
 .tmColor {
   background-color: #ff7ae9;
@@ -191,55 +202,37 @@ article h5 {
   background-color: #7acaff
 }
 
+
+/*************************************************/
+
+
+/* 전역 공통 아이디 */
+
+
+/*************************************************/
+
+
+/* 공통 최상위 와꾸 */
+
 #mainWrap {
   position: relative;
   border: 0px solid #999;
   border-radius: 5px;
   box-sizing: border-box;
-  /* 고정 */
+  /* 넓이고정 : 아이패드 까지 최적화 */
   width: 980px;
-  height:100%;
+  /* 모든 페이지 높이 100% 고정 */
+  height: 100%;
+  /* 최대넓이 : 아이패드 프로 가로 넓이까지 */
   max-width: 1300px;
   margin: 0 auto;
 }
 
 
-/* 전역 검색박스 */
+/*************************************************/
 
-#topSearch {
-  border: 0px solid blue;
-  width: 350px;
-  margin:0;
-  display: inline-block;
-  box-sizing:border-box;
-  position:relative;
-}
 
-#topSearch li {
-  border: 0px solid red;
-  float: left;
-}
-
-#topSearch li input[type=text] {
-  border: 1px solid #D4DBDF;
-  border-radius: 5px;
-  width: 340px;
-  height: 45px;
-  font-size: 15px;
-  padding-left: 10px;
-  box-sizing:border-box;
-}
-#topSearch li img {
-  border: 0px solid #D4DBDF;
-  position:absolute;
-  right:20px;
-  top:9px;
-  cursor:pointer;
-  opacity:0.5;
-}
-#topSearch li img:hover {
-  opacity:1;
-}
+/* 방문자 헤더 */
 
 
 /*************************************************/
@@ -263,16 +256,19 @@ article h5 {
   box-sizing: border-box;
 }
 
-#mainHeader ul:nth-of-type(1) {
+#mainHeader ul li {
+  border: 0px solid orange;
   float: left;
 }
 
-#mainHeader ul:nth-of-type(2) {
-  float: right;
+#mainHeader ul li a {
+  color: #333;
 }
 
-#mainHeader ul li {
-  border: 0px solid orange;
+
+/* 좌측 로고영역 */
+
+#mainHeader ul:nth-of-type(1) {
   float: left;
 }
 
@@ -285,6 +281,13 @@ article h5 {
   height: 50px;
 }
 
+
+/* 우측 방문자 메뉴영역 */
+
+#mainHeader ul:nth-of-type(2) {
+  float: right;
+}
+
 #mainHeader ul:nth-of-type(2) li {
   padding-left: 15px;
   padding-right: 15px;
@@ -293,28 +296,30 @@ article h5 {
   vertical-align: bottom;
 }
 
+#mainHeader ul:nth-of-type(2) li:hover {
+  opacity: 0.8;
+}
+
 #mainHeader ul:nth-of-type(2) li a {
   text-decoration: none;
   font-weight: bolder;
 }
 
-#mainHeader li a {
-  color: #333;
-}
 
-#mainHeader ul:nth-of-type(2) li:hover {
-  opacity: 0.8;
-}
+/*************************************************/
+
+
+/* 회원 좌측메뉴 */
 
 
 /*************************************************/
 
-#menuArea ul li{
-  border-bottom:0px solid #999;
-  margin:5px;
-  padding:10px;
-  color:rgb(233, 232, 238);
-  border-radius:5px;
+#menuArea ul li {
+  border-bottom: 0px solid #999;
+  margin: 5px;
+  padding: 10px;
+  color: rgb(233, 232, 238);
+  border-radius: 5px;
 }
 
 #menuArea ul li a {
@@ -323,9 +328,87 @@ article h5 {
   cursor: pointer;
 }
 
+
+/* 회원 좌측로고 */
+
 #logoArea ul li {
   background-color: transparent !important;
 }
+
+
+/*************************************************/
+
+
+/* 회원단 공통 */
+
+
+/*************************************************/
+
+
+/* 회원단 우측상위 전역 검색박스 */
+
+#topSearch {
+  border: 0px solid blue;
+  width: 350px;
+  margin: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#topSearch li {
+  border: 0px solid red;
+  float: left;
+}
+
+#topSearch li input[type=text] {
+  border: 1px solid #D4DBDF;
+  border-radius: 5px;
+  width: 340px;
+  height: 45px;
+  font-size: 15px;
+  padding-left: 10px;
+  box-sizing: border-box;
+}
+
+#topSearch li img {
+  border: 0px solid #D4DBDF;
+  position: absolute;
+  right: 20px;
+  top: 9px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+#topSearch li img:hover {
+  opacity: 1;
+}
+
+
+/* 회원단 우측상위 전역 회원사진 */
+
+.circle {
+  border: 1px solid green;
+  border-radius: 50%;
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  vertical-align: middle;
+  text-align: center;
+  background: url(/static/public/img/kjh.jpg);
+  background-size: 100%;
+  border: 1px solid #9b9aa6;
+  background-repeat: no-repeat;
+  background-position-y: center;
+  background-color: #fff;
+}
+
+
+/*************************************************/
+
+
+/* 공통 하단푸터 */
+
 
 /*************************************************/
 
@@ -340,7 +423,7 @@ article h5 {
   font-size: 12px;
   padding: 10px;
   box-sizing: border-box;
-  margin-top:20px;
+  margin-top: 20px;
 }
 
 #mainFooter ul {

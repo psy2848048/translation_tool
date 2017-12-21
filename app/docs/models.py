@@ -42,15 +42,15 @@ def update_trans_status(sentence_id, status):
         return False
 
 import re
-from ckonlpy.tag import Twitter
-twit = Twitter()
-
-def devide_by_morpheme(sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
-    texts = [twit.pos(t)[0][0] for t in t2]
-    texts.append(''); texts.insert(0, '')
-    return texts
+#from ckonlpy.tag import Twitter
+#twit = Twitter()
+#
+#def devide_by_morpheme(sentence):
+#    t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
+#    texts = [twit.pos(t)[0][0] for t in t2]
+#    texts.append(''); texts.insert(0, '')
+#    return texts
 
 def devide_by_spacing(self, sentence):
     t1 = re.sub(r"[(]\w+[)]", '', sentence)
