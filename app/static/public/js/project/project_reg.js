@@ -1,5 +1,6 @@
 var PageScript = function () {
-    var local = this;
+    var local = this,
+        project_id = getUrlParameter('project');
     this.preInits = function () {
         setTimeout(function () {
             var menu = '';

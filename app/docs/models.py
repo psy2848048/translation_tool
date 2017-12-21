@@ -112,6 +112,30 @@ def update_trans_status(sentence_id, status):
         traceback.print_exc()
         return False
 
+import re
+#from ckonlpy.tag import Twitter
+#twit = Twitter()
+#
+#def devide_by_morpheme(sentence):
+#    t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
+#    texts = [twit.pos(t)[0][0] for t in t2]
+#    texts.append(''); texts.insert(0, '')
+#    return texts
+
+def devide_by_spacing(self, sentence):
+    t1 = re.sub(r"[(]\w+[)]", '', sentence)
+    t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
+    texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
+    # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
+    # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
+    return texts
+
+def get_similarity_sentences():
+    pass
+
+def search_words_in_sentence():
+    pass
 
 
 ##################################   comments   ##################################
