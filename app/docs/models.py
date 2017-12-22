@@ -71,7 +71,9 @@ def select_words_in_sentence(sentence):
     nouns = get_morphemes_of_en_sentence(sentence)
 
     for noun in nouns:
-        res = conn.execute(text("SELECT id as word_id, origin_lang, trans_lang, origin_text, trans_text FROM marocat.word_memory WHERE is_deleted = FALSE AND (origin_text = :noun OR trans_text = :noun);"), noun=noun)
+        noun1 = '%' + noun + '%'
+        res = conn.execute(text("""SELECT id as word_id, origin_lang, trans_lang, origin_text, trans_text FROM marocat.word_memory 
+                                   WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun);"""), noun=noun1)
 
         temp = {}
         for r in res:
@@ -79,13 +81,14 @@ def select_words_in_sentence(sentence):
 
             if r.trans_lang is not 'ko':
                 temp['word_id'] = r.word_id
-                temp['origin_lang'] = r.trans_lang
-                temp['trans_lang'] = r.origin_lang
                 temp['origin_text'] = r.trans_text
                 temp['trans_text'] = r.origin_text
                 words.append(temp)
             else:
-                words.append(dict(r))
+                temp['word_id'] = r.word_id
+                temp['origin_text'] = r.origin_text
+                temp['trans_text'] = r.trans_text
+                words.append(temp)
     return words
 
 def update_trans_text_and_type(sentence_id, trans_text, trans_type):
@@ -112,30 +115,6 @@ def update_trans_status(sentence_id, status):
         traceback.print_exc()
         return False
 
-import re
-#from ckonlpy.tag import Twitter
-#twit = Twitter()
-#
-#def devide_by_morpheme(sentence):
-#    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-#    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
-#    texts = [twit.pos(t)[0][0] for t in t2]
-#    texts.append(''); texts.insert(0, '')
-#    return texts
-
-def devide_by_spacing(self, sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
-    texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
-    # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
-    # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
-    return texts
-
-def get_similarity_sentences():
-    pass
-
-def search_words_in_sentence():
-    pass
 
 
 ##################################   comments   ##################################
