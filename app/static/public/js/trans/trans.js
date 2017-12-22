@@ -51,67 +51,111 @@ var PageScript = function () {
         // 단어장 검색버튼
         $('#btnPublicSearch').on('click', function (e) {
             e.preventDefault();
-
-            //alert('1. 디비에 저장된 현재 해석문 삭제\n2. 아이콘 체크에서 엑스로 변경');   
-            /* 샘플	
-            $.ajax({
-                url: '/groups/sortGroup',  
-                type:'post',
-                data:data,
-                success:function(args){   
-                    alert('ok');
-                },   
-                error:function(e){  
-                    alert('fail');  
-                    console.log(e.responseText);  
-                }  
-            });		
-            */
-
             var keyword = $('#txtPublicSearch').val();
+            var jqxhr = $.get("/api/v1/search/word?text=" + keyword, function (data) {
+                    console.log(data);
+                    var result = '';
+                    if (data.result.length > 0) {
+                        for (var i = 0; i < data.result.length; i++) {
+                            result = '<div>';
+                            result += '    <input data-id="' + data.result[i].word_id + '" type="button" value="수정"> ';
+                            result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
+                            result += '    <input type="text" class="miniWord" value="' + data.result[i].trans_text + '">';
+                            result += '</div>';
+                        }
+                        $('#tran2section table tr:nth-of-type(2) td').prepend(result);
 
-            var result = '';
-            if (confirm('검색단어가 있을경우')) {
-                result = '<div>';
-                result += '    <input type="button" value="수정"> ';
-                result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
-                result += '    <input type="text" class="miniWord" value="' + $('#txtPublicSearch').val() + ' 해석">';
-                result += '</div>';
+                        $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
+                            'border': '1px solid #999',
+                            'border-radius': '5px',
+                            'width': '98%',
+                            'margin': '2px auto',
+                            'padding-top': '5px',
+                            'padding-bottom': '5px',
+                            'padding-left': '5px'
+                        });
+                        // 단어수정
+                        $('#tran2section table div input[type=button]').on('click', function (e) {
+                            e.preventDefault();
+                            var trans_word = $(this).closest('div').find('input[type=text]').val();
+                            var word_id = $(this).attr('data-id');
+                            var url = '/api/v1/users/1/words/' + word_id;
+                            console.log('url : ', url);
+                            console.log('trans_word : ', trans_word);
+                            $.ajax({
+                                url: url,
+                                type: 'PUT',
+                                data: {
+                                    trans_text: trans_word
+                                },
+                                success: function (args) {
+                                    console.log(args);
+                                    if (args.result == 'OK') {
+                                        alert('수정되었습니다.');
+                                    } else {
+                                        alert('수정되지 않았습니다.');
+                                    }
+                                },
+                                error: function (e) {
+                                    alert('fail 386');
+                                    console.log(e.responseText);
+                                }
+                            });
+                        });
+                    } else {
+                        result = '<div>';
+                        result += '    <input type="button" value="등록"> ';
+                        result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
+                        result += '    <input type="text" class="miniWord" value="">';
+                        result += '</div>';
 
-                $('#tran2section table tr:nth-of-type(2) td').prepend(result);
-                //console.log(result);
-                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
-                    'border': '1px solid #999',
-                    'border-radius': '5px',
-                    'width': '150px',
-                    'padding-left': '5px'
-                });
-                $('#tran2section table div input[type=button]').on('click', function (e) {
-                    e.preventDefault();
-                    alert($(this).closest('div').find('.boldWord').text() + ' 수정');
-                });
-            } else {
-                result = '<div>';
-                result += '    <input type="button" value="등록"> ';
-                result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
-                result += '    <input type="text" class="miniWord" value="">';
-                result += '</div>';
+                        $('#tran2section table tr:nth-of-type(2) td').prepend(result);
 
-                $('#tran2section table tr:nth-of-type(2) td').prepend(result);
-                //console.log(result);
-                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
-                    'border': '1px solid #999',
-                    'border-radius': '5px',
-                    'width': '150px',
-                    'padding-left': '5px'
-                });
-                $('#tran2section table div input[type=button]').on('click', function (e) {
-                    e.preventDefault();
-                    alert($(this).closest('div').find('.boldWord').text() + ' 등록');
-                });
-            }
+                        $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
+                            'border': '1px solid #999',
+                            'border-radius': '5px',
+                            'width': '98%',
+                            'margin': '2px auto',
+                            'padding-top': '5px',
+                            'padding-bottom': '5px',
+                            'padding-left': '5px'
+                        });
+                        // 단어등록
+                        $('#tran2section table div input[type=button]').on('click', function (e) {
+                            e.preventDefault();
+                            var new_word = $(this).closest('div').find('.boldWord').text();
+                            var new_word_trans = $(this).closest('div').find('input[type=text]').val();
+                            //alert('new_word_trans : ', new_word_trans);
+                            var data = {
+                                origin_lang: 'en',
+                                trans_lang: 'ko',
+                                origin_text: new_word,
+                                trans_text: new_word_trans
+                            };
+                            console.log('data : ', data);
+                            $.ajax({
+                                url: '/api/v1/users/1/words',
+                                type: 'post',
+                                data: data,
+                                async: true,
+                                success: function (args) {
+                                    alert('등록되었습니다.');
+                                },
+                                error: function (e) {
+                                    console.log('fail 113 : ' + e.responseText);
+                                }
+                            });
+                        });
+                    }
+                })
+                .done(function () {})
+                .fail(function () {
+                    //alert("error"); // 시연에 방해될 수 있어서 일부러 주석처리함
+                })
+                .always(function () {});
+            jqxhr.always(function () {});
         });
-        // 원문 클릭
+        // 원문 클릭 : TB, TB, MT 검색
         $('#mainTbl tr td:nth-of-type(2)').on('click', function (e) {
             e.preventDefault();
 
@@ -133,14 +177,11 @@ var PageScript = function () {
 
             $('#resultTbl').html('');
 
-            // TM
+            // TM, TB
             local.getTmAjax(doc_id, sentence_id, thisText, this_idx);
 
             // MT
             local.getMtAjax(thisText, this_idx);
-
-            // TB
-            local.getTBAjax();
         });
         // 번역문 textarea
         $('#mainTbl textarea').on('focusout', function (e) {
@@ -217,28 +258,26 @@ var PageScript = function () {
     this.saveTranStatus = function (thisObj, xy) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
         var url = '/api/v1/users/1/docs/1/sentences/' + sentence_id + '/status/' + xy;
-        var y = thisObj.closest('td').find('.fa-check').hide();
-        var x = thisObj.closest('td').find('.fa-times').show();
+        var x = thisObj.closest('tr').find('.fa-times');
+        var y = thisObj.closest('tr').find('.fa-check');
         $.ajax({
             url: url,
             type: 'PUT',
             success: function (args) {
-                console.log(args);
                 if (args.result == 'OK') {
                     if (xy == '1') {
                         // 번역상태 미완료 -> 완료로 변경
-                        $(x).hide();
-                        $(y).show();
+                        x.hide();
+                        y.show();
                     } else {
                         // 번역상태 완료 -> 미완료로 변경
-                        $(y).hide();
-                        $(x).show();
+                        y.hide();
+                        x.show();
                     }
                 }
             },
             error: function (e) {
-                alert('fail 174');
-                console.log(e.responseText);
+                console.log('fail 4595 : ' + e.responseText);
             }
         });
     };
@@ -297,16 +336,21 @@ var PageScript = function () {
             'height': maskHeight
         });
     };
-    // TM 번역문 불러오기
+    // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var jqxhr = $.get("http://ciceron.xyz:5000/api/v2/mypick/" + doc_id + "/" + sentence_id, function (data) {
+        var jqxhr = $.get("/api/v1/users/1/docs/" + doc_id + "/sentences/" + sentence_id, {
+                sentence: thisText
+            }, function (data) {
+                console.log(data);
                 var tm_html = '';
 
-                tm_html += '<tr>';
-                tm_html += '    <td width="4%" style="text-align:center;">1</td>';
-                tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';
-                tm_html += '    <td width="91%">' + data.translated + '</td>';
-                tm_html += '</tr>';
+                for (var i = 0; i < data.tm.length; i++) {
+                    tm_html += '<tr>';
+                    tm_html += '    <td width="4%" style="text-align:center;">' + parseInt(i + 1) + '</td>';
+                    tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';
+                    tm_html += '    <td width="91%">' + data.tm[i].trans_text + '</td>';
+                    tm_html += '</tr>';
+                }
 
                 $('#resultArea').css({
                     'border-top': '0'
@@ -335,6 +379,51 @@ var PageScript = function () {
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).html(transType);
                     local.saveTrans($('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea'));
                 });
+                var tb_html = '';
+
+                for (var j = 0; j < data.words.length; j++) {
+                    tb_html += '<div>';
+                    tb_html += '    <input type="button" data-id="' + data.words[j].word_id + '" value="수정"> ';
+                    tb_html += '    <span class="boldWord">' + data.words[j].origin_text + '</span> ';
+                    tb_html += '    <input type="text" class="miniWord" value="' + data.words[j].trans_text + '">';
+                    tb_html += '</div>';
+                }
+
+                $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
+                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
+                    'border': '1px solid #999',
+                    'border-radius': '5px',
+                    'width': '98%',
+                    'margin': '2px auto',
+                    'padding-top': '5px',
+                    'padding-bottom': '5px',
+                    'padding-left': '5px'
+                });
+                $('#tran2section table div input[type=button]').on('click', function (e) {
+                    e.preventDefault();
+                    var org_word = $(this).closest('div').find('.boldWord').text();
+                    var trans_word = $(this).closest('div').find('input[type=text]').val();
+                    var word_id = $(this).attr('data-id');
+                    $.ajax({
+                        url: '/api/v1/users/1/words/' + word_id,
+                        type: 'PUT',
+                        data: {
+                            trans_text: trans_word
+                        },
+                        success: function (args) {
+                            console.log(args);
+                            if (args.result == 'OK') {
+                                alert('수정되었습니다.');
+                            } else {
+                                alert('수정되지 않았습니다.');
+                            }
+                        },
+                        error: function (e) {
+                            alert('fail 386');
+                            console.log(e.responseText);
+                        }
+                    });
+                });
             })
             .done(function () {})
             .fail(function () {
@@ -361,7 +450,7 @@ var PageScript = function () {
                 var mt_html = '';
 
                 mt_html += '<tr>';
-                mt_html += '    <td width="4%" style="text-align:center;">2</td>';
+                mt_html += '    <td width="4%" style="text-align:center;">1</td>';
                 mt_html += '    <td width="5%" class="mtColor" style="tsext-align:center;">MT</td>';
                 mt_html += '    <td width="91%">' + args.google + '</td>';
                 mt_html += '</tr>';
@@ -400,49 +489,6 @@ var PageScript = function () {
                 console.log('fail 410 : ' + e.responseText);
             }
         });
-        // TB 단어장 불러오기
-        this.getTBAjax = function () {
-            var result = '';
-            //alert('1. 디비에 저장된 현재 해석문 삭제\n2. 아이콘 체크에서 엑스로 변경');   
-            /* 샘플	
-            $.ajax({
-                url: '/groups/sortGroup',  
-                type:'post',
-                data:data,
-                success:function(args){   
-                    alert('ok');
-                },   
-                error:function(e){  
-                    alert('fail');  
-                    console.log(e.responseText);  
-                }  
-            });		
-            */
-            result = '<div>';
-            result += '    <input type="button" value="수정"> ';
-            result += '    <span class="boldWord">book</span> ';
-            result += '    <input type="text" class="miniWord" value="책">';
-            result += '</div>';
-
-            result += '<div>';
-            result += '    <input type="button" value="수정"> ';
-            result += '    <span class="boldWord">apple</span> ';
-            result += '    <input type="text" class="miniWord" value="사과">';
-            result += '</div>';
-
-            $('#tran2section table tr:nth-of-type(2) td').empty().append(result);
-            //console.log(result);
-            $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
-                'border': '1px solid #999',
-                'border-radius': '5px',
-                'width': '150px',
-                'padding-left': '5px'
-            });
-            $('#tran2section table div input[type=button]').on('click', function (e) {
-                e.preventDefault();
-                alert($(this).closest('div').find('.boldWord').text() + ' 수정');
-            });
-        };
     };
     this.bind = function () {
         local.preInits();
