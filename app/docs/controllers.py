@@ -45,19 +45,20 @@ def get_translate_and_words(user_id, doc_id, sentence_id):
         return make_response(json.jsonify('Something Not Entered'), 460)
 
     similarity_res = []
+
     res1 = model.get_similarity_sentences(sentence)
     for r in res1:
-        # if r.score >= 50:
         print(r)
-        similarity_res.append(dict(r))
+        if r.score >= 50:
+            similarity_res.append(dict(r))
 
-    # words = model.search_words_in_sentence()
+    words = model.select_words_in_sentence(sentence)
 
-    return make_response(json.jsonify(tm=similarity_res, words=''), 200)
+    return make_response(json.jsonify(tm=similarity_res, words=words), 200)
 
 def save_translation(user_id, doc_id, sentence_id):
-    trans_type = request.values.get('trans_type')
-    trans_text = request.values.get('trans_text')
+    trans_type = request.values.get('trans_type', 'Null')
+    trans_text = request.values.get('trans_text', 'Null')
 
     is_done = model.update_trans_text_and_type(sentence_id, trans_text, trans_type)
 
