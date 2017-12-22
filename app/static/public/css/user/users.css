@@ -159,6 +159,10 @@ body {
     height: 36px;
 }
 
+#listTitleGroup h2{
+    margin-bottom:2px;
+}
+
 #listTitleGroup ul,
 #listTitleGroup2 ul {
     float: right;
