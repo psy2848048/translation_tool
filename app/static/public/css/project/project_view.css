@@ -148,13 +148,14 @@ body {
 
 #tblProjectDetail {
     border: 0px solid red;
-    width: 500px;
+    width: 700px;
 }
 
 #tblProjectDetail td {
     border: 0px solid #999;
     padding: 5px;
     font-size: 14px;
+    overflow:hidden;
 }
 
 #tblProjectDetail td:nth-of-type(1),

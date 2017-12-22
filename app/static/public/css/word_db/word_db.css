@@ -88,6 +88,10 @@ body {
     height: calc(100% - 180px);
 }
 
+#mainArea article:nth-of-type(2) hr {
+    width: 100%;
+}
+
 
 /************************************************/
 
