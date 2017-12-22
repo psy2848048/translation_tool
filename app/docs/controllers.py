@@ -48,7 +48,6 @@ def get_translate_and_words(user_id, doc_id, sentence_id):
 
     res1 = model.get_similarity_sentences(sentence)
     for r in res1:
-        print(r)
         if r.score >= 50:
             similarity_res.append(dict(r))
 

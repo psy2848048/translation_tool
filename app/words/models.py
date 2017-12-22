@@ -12,7 +12,7 @@ def select_word_memory():
     # words = wm.select(wm.c.is_deleted==False).execute()
     return words
 
-def insert_word_memory(origin_lang, trans_lang, origin_text, trans_text):
+def insert_word(origin_lang, trans_lang, origin_text, trans_text):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     wm = Table('word_memory', meta, autoload=True)
@@ -24,13 +24,13 @@ def insert_word_memory(origin_lang, trans_lang, origin_text, trans_text):
         traceback.print_exc()
         return False
 
-def update_word(word_id, origin_lang, trans_lang, origin_text, trans_text):
+def update_word(word_id, trans_text):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     wm = Table('word_memory', meta, autoload=True)
 
     try:
-        conn.execute(wm.update(wm.c.id == word_id), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text)
+        conn.execute(wm.update(wm.c.id == word_id), trans_text=trans_text)
         return True
     except:
         traceback.print_exc()

@@ -29,7 +29,7 @@ def save_word(user_id):
     if not origin_lang or not trans_lang or not origin_text or not trans_text:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
-    is_done = model.insert_word_memory(origin_lang, trans_lang, origin_text, trans_text)
+    is_done = model.insert_word(origin_lang, trans_lang, origin_text, trans_text)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
@@ -37,12 +37,9 @@ def save_word(user_id):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 def modify_word(user_id, word_id):
-    origin_lang = request.form.get('origin_lang', None)
-    trans_lang = request.form.get('trans_lang', None)
-    origin_text = request.form.get('origin_text', None)
     trans_text = request.form.get('trans_text', None)
 
-    is_done = model.update_word(word_id, origin_lang, trans_lang, origin_text, trans_text)
+    is_done = model.update_word(word_id, trans_text)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

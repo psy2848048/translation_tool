@@ -12,7 +12,7 @@ def search_word():
 
     results = []
     words = model.select_word(text.lower())
-    for w in words:
-        results.append(dict(w))
+    # for w in words:
+    #     results.append(dict(w))
 
-    return make_response(json.jsonify(result=results), 200)
+    return make_response(json.jsonify(result=words), 200)
