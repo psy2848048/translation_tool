@@ -36,17 +36,17 @@ def select_doc_sentences(doc_id):
 #     # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
 #     # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
 #     return texts
-
-def get_morphemes_of_en_sentence(sentence):
-    nouns = []
-    t = nltk.word_tokenize(sentence)
-    tt = nltk.pos_tag(t)
-
-    for word, tag in tt:
-        if tag in ['FW', 'JJ', 'JJR', 'JJS', 'NN', 'NNS', 'NNP', 'NNPS', 'PDT', 'POS', 'RB', 'RBR', 'RBS', 'RP', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
-            nouns.append(word)
-
-    return nouns
+#
+# def get_morphemes_of_en_sentence(sentence):
+#     nouns = []
+#     t = nltk.word_tokenize(sentence)
+#     tt = nltk.pos_tag(t)
+#
+#     for word, tag in tt:
+#         if tag in ['FW', 'JJ', 'JJR', 'JJS', 'NN', 'NNS', 'NNP', 'NNPS', 'PDT', 'POS', 'RB', 'RBR', 'RBS', 'RP', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
+#             nouns.append(word)
+#
+#     return nouns
 
 def get_similarity_sentences(sentence):
     conn = db.engine.connect()
@@ -67,29 +67,30 @@ def get_similarity_sentences(sentence):
 
 def select_words_in_sentence(sentence):
     conn = db.engine.connect()
-    words = []
-    nouns = get_morphemes_of_en_sentence(sentence)
+    temp_words = []
+    nouns = sentence.split()
 
     for noun in nouns:
-        noun1 = '%' + noun + '%'
-        res = conn.execute(text("""SELECT id as word_id, origin_lang, trans_lang, origin_text, trans_text FROM marocat.word_memory 
-                                   WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun);"""), noun=noun1)
+        res = conn.execute(text("""SELECT id as word_id, trans_lang, origin_text, trans_text FROM marocat.word_memory 
+                                   WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun);"""), noun='%'+noun+'%')
 
         temp = {}
         for r in res:
-            # words.append(dict(r))
-
             if r.trans_lang is not 'ko':
-                temp['word_id'] = r.word_id
-                temp['origin_text'] = r.trans_text
-                temp['trans_text'] = r.origin_text
-                words.append(temp)
-            else:
                 temp['word_id'] = r.word_id
                 temp['origin_text'] = r.origin_text
                 temp['trans_text'] = r.trans_text
-                words.append(temp)
-    return words
+                temp_words.append(temp)
+            else:
+                temp['word_id'] = r.word_id
+                temp['origin_text'] = r.trans_text
+                temp['trans_text'] = r.origin_text
+                temp_words.append(temp)
+
+    #: 중복되는 단어 제거하기
+    words = {frozenset(item.items()): item for item in temp_words}.values()
+
+    return list(words)
 
 def update_trans_text_and_type(sentence_id, trans_text, trans_type):
     conn = db.engine.connect()
