@@ -56,9 +56,9 @@ def get_translate_and_words(user_id, doc_id, sentence_id):
     return make_response(json.jsonify(tm=similarity_res, words=words), 200)
 
 def save_translation(user_id, doc_id, sentence_id):
-    trans_type = request.values.get('trans_type', 'Null')
-    trans_text = request.values.get('trans_text', 'Null')
-
+    trans_type = request.values.get('trans_type', None)
+    trans_text = request.values.get('trans_text', None)
+    
     is_done = model.update_trans_text_and_type(sentence_id, trans_text, trans_type)
 
     if is_done is True:

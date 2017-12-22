@@ -7,7 +7,7 @@ var PageScript = function () {
         local.mask();
 
         // 원문 로딩
-        var jqxhr = $.get("/api/v1/users/1/docs/1", function (data) {
+       var jqxhr = $.get("/api/v1/users/1/docs/1", function (data) {
                 //console.log('data 11 : ', data);
                 var html = '';
                 $(data.result).each(function (idx, res) {
@@ -134,7 +134,7 @@ var PageScript = function () {
                             };
                             console.log('data : ', data);
                             $.ajax({
-                                url: '/api/v1/users/1/words',
+                                url: '/api/v1/users/1/words/new',
                                 type: 'post',
                                 data: data,
                                 async: true,
@@ -287,7 +287,7 @@ var PageScript = function () {
         var url = '/api/v1/users/1/docs/' + getUrlParameter('doc_id') + '/sentences/' + sentence_id;
         var trans_type = '';
 
-        if (thisObj.val().trim() == '') trans_type = '';
+        if (thisObj.val().trim() == '') trans_type = 'X';
         else {
             if (thisObj.closest('tr').find('td:nth-of-type(5)').text().trim() == '') {
                 trans_type = 'T';
@@ -309,6 +309,7 @@ var PageScript = function () {
                 else {
                     // 번역상태 미완료로 초기화
                     local.saveTranStatus(thisObj, '0');
+		    if(trans_type=='X') thisObj.closest('tr').find('td:eq(4)').css({'background-color':'transparent'}).text('');
                 }
             },
             error: function (e) {
@@ -346,9 +347,9 @@ var PageScript = function () {
 
                 for (var i = 0; i < data.tm.length; i++) {
                     tm_html += '<tr>';
-                    tm_html += '    <td width="4%" style="text-align:center;">' + parseInt(i + 1) + '</td>';
+                    tm_html += '    <td width="7%" style="text-align:center;">' + parseInt(i + 1) + '<br>('+ data.tm[i].score +'%)</td>';
                     tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';
-                    tm_html += '    <td width="91%">' + data.tm[i].trans_text + '</td>';
+                    tm_html += '    <td width="88%">' + data.tm[i].trans_text + '</td>';
                     tm_html += '</tr>';
                 }
 
@@ -450,9 +451,9 @@ var PageScript = function () {
                 var mt_html = '';
 
                 mt_html += '<tr>';
-                mt_html += '    <td width="4%" style="text-align:center;">1</td>';
+                mt_html += '    <td width="7%" style="text-align:center;">1</td>';
                 mt_html += '    <td width="5%" class="mtColor" style="tsext-align:center;">MT</td>';
-                mt_html += '    <td width="91%">' + args.google + '</td>';
+                mt_html += '    <td width="88%">' + args.google + '</td>';
                 mt_html += '</tr>';
 
                 $('#resultArea').css({

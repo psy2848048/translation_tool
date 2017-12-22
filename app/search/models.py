@@ -23,13 +23,12 @@ def select_word(search_text):
     for r in res:
         if r.trans_lang is not 'ko':
             temp['word_id'] = r.word_id
-            temp['origin_text'] = r.trans_text
-            temp['trans_text'] = r.origin_text
-            words.append(temp)
-        else:
-            temp['word_id'] = r.word_id
             temp['origin_text'] = r.origin_text
             temp['trans_text'] = r.trans_text
             words.append(temp)
-
+        else:
+            temp['word_id'] = r.word_id
+            temp['origin_text'] = r.trans_text
+            temp['trans_text'] = r.origin_text
+            words.append(temp)
     return words
