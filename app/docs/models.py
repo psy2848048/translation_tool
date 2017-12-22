@@ -1,7 +1,10 @@
-from sqlalchemy import Table, MetaData
 from app import db
+from sqlalchemy import Table, MetaData
+from sqlalchemy import text
 import traceback
 import datetime
+import re
+import nltk
 
 def select_doc_sentences(doc_id):
     conn = db.engine.connect()
@@ -16,6 +19,74 @@ def select_doc_sentences(doc_id):
 
 
 ##################################   sentences   ##################################
+
+# from ckonlpy.tag import Twitter
+# twit = Twitter()
+# def ko_devide_by_morpheme(sentence):
+#     t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#     t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
+#     texts = [twit.pos(t)[0][0] for t in t2]
+#     texts.append(''); texts.insert(0, '')
+#     return texts
+#
+# def ko_devide_by_spacing(self, sentence):
+#     t1 = re.sub(r"[(]\w+[)]", '', sentence)
+#     t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
+#     texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
+#     # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
+#     # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
+#     return texts
+
+def get_morphemes_of_en_sentence(sentence):
+    nouns = []
+    t = nltk.word_tokenize(sentence)
+    tt = nltk.pos_tag(t)
+
+    for word, tag in tt:
+        if tag in ['FW', 'JJ', 'JJR', 'JJS', 'NN', 'NNS', 'NNP', 'NNPS', 'PDT', 'POS', 'RB', 'RBR', 'RBS', 'RP', 'UH', 'VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ']:
+            nouns.append(word)
+
+    return nouns
+
+def get_similarity_sentences(sentence):
+    conn = db.engine.connect()
+
+    #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
+    split_sentence = sentence.split()
+    first = "%" + ' '.join(split_sentence[:3]) + "%"
+    second = "%" + ' '.join(split_sentence[-3:]) + "%"
+
+    search_sentence_memory = """SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score, sm.origin_text, sm.trans_text
+                                FROM ( SELECT origin_text, trans_text FROM marocat.sentence_memory
+                                       WHERE origin_text LIKE :first OR origin_text LIKE :second ) sm
+                                ORDER BY score DESC
+                                LIMIT 3;"""
+    similarity_sentences = conn.execute(text(search_sentence_memory), sentence=sentence, first=first, second=second)
+
+    return similarity_sentences
+
+def select_words_in_sentence(sentence):
+    conn = db.engine.connect()
+    words = []
+    nouns = get_morphemes_of_en_sentence(sentence)
+
+    for noun in nouns:
+        res = conn.execute(text("SELECT id as word_id, origin_lang, trans_lang, origin_text, trans_text FROM marocat.word_memory WHERE is_deleted = FALSE AND (origin_text = :noun OR trans_text = :noun);"), noun=noun)
+
+        temp = {}
+        for r in res:
+            # words.append(dict(r))
+
+            if r.trans_lang is not 'ko':
+                temp['word_id'] = r.word_id
+                temp['origin_lang'] = r.trans_lang
+                temp['trans_lang'] = r.origin_lang
+                temp['origin_text'] = r.trans_text
+                temp['trans_text'] = r.origin_text
+                words.append(temp)
+            else:
+                words.append(dict(r))
+    return words
 
 def update_trans_text_and_type(sentence_id, trans_text, trans_type):
     conn = db.engine.connect()
@@ -41,30 +112,6 @@ def update_trans_status(sentence_id, status):
         traceback.print_exc()
         return False
 
-import re
-from ckonlpy.tag import Twitter
-twit = Twitter()
-
-def devide_by_morpheme(sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
-    texts = [twit.pos(t)[0][0] for t in t2]
-    texts.append(''); texts.insert(0, '')
-    return texts
-
-def devide_by_spacing(self, sentence):
-    t1 = re.sub(r"[(]\w+[)]", '', sentence)
-    t2 = re.findall(r'\w+', t1)  # ['나는', '18일에', '철수와', '밥을', '먹었다']
-    texts = [t for t in t2 if re.match(r'\D+', t) is not None]  # ['나는', '철수와', '밥을', '먹었다']
-    # texts.append('')  # ['얼마나', '오래', '비가', '내렸습니까', '']
-    # texts.insert(0, '')  # ['', '얼마나', '오래', '비가', '내렸습니까', '']
-    return texts
-
-def get_similarity_sentences():
-    pass
-
-def search_words_in_sentence():
-    pass
 
 
 ##################################   comments   ##################################
