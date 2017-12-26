@@ -72,7 +72,12 @@ def select_words_in_sentence(sentence):
 
     for noun in nouns:
         res = conn.execute(text("""SELECT id as word_id, trans_lang, origin_text, trans_text FROM marocat.word_memory 
-                                   WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun);"""), noun='%'+noun+'%')
+                                   WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun)
+                                     AND (
+                                        CHAR_LENGTH(origin_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
+                                      -- OR
+                                        -- CHAR_LENGTH(trans_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
+                                   )"""), noun='%'+noun+'%', noun_pure=noun)
 
         temp = {}
         for r in res:
@@ -80,7 +85,7 @@ def select_words_in_sentence(sentence):
                 temp['word_id'] = r.word_id
                 temp['origin_text'] = r.origin_text
                 temp['trans_text'] = r.trans_text
-                temp_words.append(temp)
+                temp_words.append(temp
             else:
                 temp['word_id'] = r.word_id
                 temp['origin_text'] = r.trans_text
