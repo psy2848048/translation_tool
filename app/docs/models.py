@@ -92,8 +92,6 @@ def select_words_in_sentence(sentence):
                 temp['trans_text'] = r.origin_text
                 temp_words.append(temp)
 
-        print(noun, temp)
-
     #: 중복되는 단어 제거하기
     words = {frozenset(item.items()): item for item in temp_words}.values()
 
