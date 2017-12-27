@@ -77,7 +77,7 @@ def select_words_in_sentence(sentence):
                                         CHAR_LENGTH(origin_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
                                       -- OR
                                         -- CHAR_LENGTH(trans_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
-                                   )"""), noun='%'+noun+'%', noun_pure=noun)
+				   )"""), noun='%'+noun+'%', noun_pure=noun)
 
         temp = {}
         for r in res:
