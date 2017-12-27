@@ -1,0 +1,235 @@
+html,
+body {
+    height: 100%;
+    overflow: hidden;
+}
+
+#mainWrap {
+    border: 0px solid red;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 0px;
+}
+
+
+/*********************************************************/
+
+
+/* menuArea */
+
+
+/*********************************************************/
+
+#menuArea,
+#mainArea {
+    border: 0px solid rgb(37, 117, 170);
+    box-sizing: border-box;
+    height: 100%;
+    padding: 10px;
+    float: left;
+}
+
+#menuArea {
+    width: 220px;
+    background-color: rgb(62, 93, 131);
+}
+
+#menuArea ul {
+    border: 0px solid red;
+    margin-bottom: 0px;
+}
+
+#menuArea ul:nth-of-type(2) li:nth-of-type(1) {
+    background-color: #fff;
+    font-weight: bolder;
+}
+
+#menuArea ul li:nth-of-type(1) a {
+    color: #365378;
+}
+
+#menuArea ul li ul {
+    border: 0px solid red;
+    margin-bottom: 0;
+    font-size: 14px;
+}
+
+#menuArea ul li ul li a {
+    font-weight: normal;
+    color: rgb(219, 133, 20);
+}
+
+#menuArea ul:nth-of-type(1) li {
+    text-align: center;
+}
+
+#ulProjectList li {
+    padding: 5px !important;
+}
+
+
+/*********************************************************/
+
+
+/* mainArea */
+
+
+/*********************************************************/
+
+#mainArea {
+    width: calc(100% - 220px);
+    height: 100%;
+    background-color: rgb(234, 240, 247);
+}
+
+#mainArea article {
+    padding: 20px;
+    border-radius: 5px;
+}
+
+#mainArea article #rightMenu {
+    border: 0px solid red;
+    height: 45px;
+    line-height: 45px;
+    vertical-align: middle;
+    float: right;
+    font-size: 13px;
+}
+
+#mainArea article #rightMenu li {
+    float: left;
+    padding: 0;
+    margin: 0;
+    height: 45px;
+    line-height: 45px;
+    vertical-align: middle;
+}
+
+#mainArea article:nth-of-type(1),
+#mainArea article:nth-of-type(2) {
+    background-color: #FFF;
+}
+#mainArea article:nth-of-type(2) {
+    height:calc(100% - 170px);
+    overflow-x:hidden;
+    overflow-y:auto;
+}
+
+#dvTitle {
+    height: 40px;
+}
+
+#dvTitle input[type=button] {
+    border: 0;
+    float: right;
+    margin: 1px;
+    background-color: #1797E4;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 6px !important;
+}
+
+#tblProjectDetail {
+    border: 0px solid red;
+    width: 500px;
+}
+
+#tblProjectDetail td {
+    border: 0px solid #999;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#tblProjectDetail td:nth-of-type(1),
+#tblProjectDetail td:nth-of-type(3) {
+    font-weight: bold;
+}
+
+#listTitleGroup {
+    position: relative;
+    border: 0px solid green;
+    height: 0;
+}
+
+#listTitleGroup h2 {
+    position: relative;
+    bottom: 4px;
+}
+
+#listTitleGroup ul {
+    float: right;
+    margin: 0;
+}
+
+#listTitleGroup li {
+    float: left;
+    border: 0px solid rgb(40, 136, 209);
+    border-radius: 2px;
+    background-color: #4296D9;
+    color: #fff;
+    margin: 1px;
+    font-size: 13px;
+    font-weight: normal;
+    cursor: pointer;
+    padding: 5px;
+}
+
+#listTitleGroup li:nth-of-type(1) a {
+    text-decoration: none;
+    color: #fff;
+}
+
+
+/*********************************************************/
+
+
+/* listContents */
+
+
+/*********************************************************/
+
+#listContents {
+    border: 0px solid red;
+}
+#listContents #dummy{
+    /* height:30px; */
+}
+
+#listContents h3{
+    display:block;
+    margin-top:50px;
+}
+#listContents table {
+    width: 100%;
+}
+
+#listContents table tr {
+    border: 0px solid blue;
+    box-sizing: border-box;
+    text-align: center;
+    /* height: 30px; */
+    line-height: 30px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+#listContents table td a {
+    color: rgb(51, 129, 219);
+    text-decoration: none;
+}
+
+#listContents table td a:hover {
+    opacity: 0.8;
+}
+
+#listContents table tr:nth-of-type(odd) {
+    background-color: #EDF3F7;
+}
+
+#listContents table tr:nth-of-type(1) {
+    background-color: rgba(237, 243, 247, 0.37);
+    border-top: 3px solid #999;
+    background-color: rgb(155, 167, 175);
+    color: #fff;
+}

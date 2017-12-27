@@ -56,7 +56,7 @@ var PageScript = function () {
         });
     };
     this.getProjects = function () {
-        var url = project_id == '1' ? 'http://ciceron.xyz:5000/api/v2/mypick/en' : 'http://ciceron.xyz:5000/api/v2/mypick/cn';
+        var url = project_id == '1' ? '/api/v2/mypick/en' : '/api/v2/mypick/cn';
 
         $(document).ajaxStart(function () {
             $('#dvLoading').show();
