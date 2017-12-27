@@ -1,6 +1,5 @@
 from app import db
-from sqlalchemy import Table, MetaData
-from sqlalchemy import text
+from sqlalchemy import Table, MetaData, text
 import traceback
 import datetime
 import re
@@ -85,7 +84,7 @@ def select_words_in_sentence(sentence):
                 temp['word_id'] = r.word_id
                 temp['origin_text'] = r.origin_text
                 temp['trans_text'] = r.trans_text
-                temp_words.append(temp
+                temp_words.append(temp)
             else:
                 temp['word_id'] = r.word_id
                 temp['origin_text'] = r.trans_text

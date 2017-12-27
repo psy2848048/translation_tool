@@ -5,7 +5,13 @@ def index(user_id):
     return make_response(json.jsonify(msg='Projects API', user_id=user_id), 200)
 
 def get_projects_list(user_id):
-    return make_response(json.jsonify(result=''), 200)
+    projects = []
+    results = model.select_projects(user_id)
+    for project in results:
+        print(project)
+        projects.append(dict(project))
+
+    return make_response(json.jsonify(result=projects), 200)
 
 def make_project(user_id):
     project_name = request.form.get('project_name', None)
