@@ -28,7 +28,7 @@ var PageScript = function () {
             $('#dvLoading2').hide();
         });
 
-        var jqxhr = $.get("http://ciceron.xyz:5000/api/v2/mypick/" + lang, function (data) {
+        var jqxhr = $.get("/api/v2/mypick/" + lang, function (data) {
                 console.log(data);
             })
             .done(function () {})

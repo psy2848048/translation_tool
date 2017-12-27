@@ -35,4 +35,7 @@ $(function () {
     $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');
     $('#menuArea').load('/static/front/common_html/left_menu.html ul');
     $('#mainFooter').load('/static/front/common_html/main_footer.html ul, br');
+    $(document).on('click', '#topSearch li img', function(){
+        location.href='/static/front/project/total_search.html?text=' + $(this).closest('li').find('input[type=text]').val();
+    });
 });
