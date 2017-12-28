@@ -65,7 +65,7 @@
 
             <section id="tran1section">
                 <h2>문장번역</h2>
-                <div id="originSentence">좌측 원문을 선택해주세요</div>                        
+                <div id="originSentence">좌측 원문을 선택해주세요</div>
                 <table id="resultTbl">
                     <colgroup>
                         <col width="4%" style="text-align:center;">
@@ -112,11 +112,26 @@
             </table>
 
 
-            </div>
         </div>
-        <script src="/static/public/js/jquery-1.12.4.min.js"></script>
-        <script src="/static/public/js/common.js"></script>
-        <script src="/static/public/js/trans/trans.js"></script>
+    </div>
+    <div id="commentDiv" style="display:none;">
+        <span id="close_button"><i class="fa fa-close" aria-hidden="true"></i></span>
+        <h4>00번 번역문장에 대한 의견 입니다.</h4>
+        <div id="comments">
+            <p>등록된 의견이 없습니다.</p>
+            <p>번역자 : Aenean dui augue, congue eget orci ac, commodo ornare justo. Sed aliquet posuere enim, a euismod arcu. Cras vestibulum ligula ut nisl porttitor aliquam <img src="/static/public/img/comment_del2.png"></p>
+            <p>의뢰자 : Sed commodo eget arcu eget hendrerit. Mauris interdum lorem et ullamcorper lobortis. Donec viverra hendrerit est, ut vestibulum augue rutrum vel. <img src="/static/public/img/comment_del2.png"></p>
+            <p>번역자 : Sed sapien felis, mollis ac lorem sed, placerat commodo lorem. Duis consectetur metus nec placerat imperdiet. In pulvinar elit id vulputate mollis <img src="/static/public/img/comment_del2.png"></p>
+            <p>의뢰자 : Duis vel nibh pretium, elementum ligula eget, cursus elit. <img src="/static/public/img/comment_del2.png"></p>
+        </div>
+        <div id="new_comment_div">
+            <input type="text" placeholder="해당 번역문장에 대한 의견을 입력해주세요">
+            <input type="button" value=" 입 력 ">
+        </div>
+    </div>
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/trans/trans.js"></script>
 </body>
 
 </html>

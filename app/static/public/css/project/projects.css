@@ -12,7 +12,16 @@ body {
     padding: 0px;
 }
 
-
+#dvLoading2 {
+    background: transparent url(/static/public/img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: relative;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    margin: -25px 0 0 -25px;
+}
 /*********************************************************/
 
 

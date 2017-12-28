@@ -30,6 +30,13 @@ function SetMenuColor(param, paramName, eachObj, compare_sentence, color_attr, c
     }
 }
 
+// date 타입을 string 타입으로 전환
+function GetStringDate(date) {
+    var strMonth = parseInt(date.getMonth()) + parseInt(1);
+    var strToday = date.getFullYear() + '-' + strMonth + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
+    return strToday;
+}
+
 $(function () {
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
     $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');

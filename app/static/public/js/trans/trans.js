@@ -33,7 +33,7 @@ var PageScript = function () {
                     } else {
                         html += '<td></td>';
                     }
-                    html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:gray;"></i></td>';
+                    html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:gray; cursor:pointer;"></i></td>';
                     html += '</tr>';
                 });
                 $('#mainTbl tbody').append(html);
@@ -48,6 +48,22 @@ var PageScript = function () {
         });
     };
     this.regEvents = function () {
+        // 댓글 보기 아이콘 클릭 : 미리 가져오지 않고 실시간으로 댓글리스트 가져옴
+        $(document).on('click', '.fa-comment', function(){
+            $('#commentDiv').show();
+        });
+        // 댓글창 닫기 아이콘 클릭
+        $(document).on('click', '.fa-close', function(){
+            $('#commentDiv').hide();
+        });
+        // 댓글 입력버튼 클릭
+        $(document).on('click', '#new_comment_div input[type=button]', function(){
+            alert('댓글 입력버튼 클릭');
+        });
+        // 댓글 삭제아이콘 클릭
+        $(document).on('click', '#comments img', function(){
+            alert('댓글 삭제아이콘 클릭');
+        });
         // 단어장 검색버튼
         $('#btnPublicSearch').on('click', function (e) {
             e.preventDefault();
