@@ -1,6 +1,5 @@
 from app import db
-from sqlalchemy import Table, MetaData
-from sqlalchemy import text
+from sqlalchemy import Table, MetaData, text
 import traceback
 import datetime
 import re
