@@ -8,7 +8,6 @@ def get_projects_list(user_id):
     projects = []
     results = model.select_projects(user_id)
     for project in results:
-        print(project)
         projects.append(dict(project))
 
     return make_response(json.jsonify(result=projects), 200)
@@ -33,7 +32,21 @@ def delete_project(user_id):
 
 
 def get_project_info(user_id, project_id):
-    return make_response(json.jsonify(result=''), 200)
+    result = []
+    res = model.select_project_info(project_id)
+    for project_info in res:
+        result = dict(project_info)
+
+    return make_response(json.jsonify(result), 200)
+
+def get_proejct_docs_list(user_id, project_id):
+    result = []
+    res = model.select_project_docs_list(project_id)
+    for project_docs in res:
+        result.append(dict(project_docs))
+
+    return make_response(json.jsonify(result=result), 200)
+
 
 
 def get_project_members(user_id, project_id):
