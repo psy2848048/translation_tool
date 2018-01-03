@@ -37,7 +37,7 @@ def select_project_info(project_id):
 
 def select_project_docs_list(project_id):
     conn = db.engine.connect()
-    results = conn.execute(text(""" SELECT pd.id as project_docs_id, title, pd.status, link, trans_lang, duration_date,
+    results = conn.execute(text(""" SELECT pd.id as project_docs_id, title, pd.status, link, origin_lang, trans_lang, duration_date,
                                            progress_percent,
                                            c.name as trans_company, group_concat(u.username) as translators
                                     FROM marocat.project_docs pd JOIN ( SELECT project_docs_id as pdid, CAST(FLOOR(SUM(status) / COUNT(*) * 100) AS CHAR) as progress_percent
