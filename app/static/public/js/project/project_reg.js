@@ -2,57 +2,75 @@ var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project');
     this.preInits = function () {
-        setTimeout(function () {
-            var menu = '';
-
-            menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-            menu += '<li>';
-            menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
-            menu += '</li>';
-            menu += '<li>';
-            menu += '<a href="/static/front/project/project_view.html?project=2">└ 내픽뉴스 중문번역</a>';
-            menu += '</li>';
-            menu += '</ul>';
-
-            $('#left_menu_area>li:nth-of-type(1)').append(menu);
-
-            if (project_id == undefined || project_id == '1') {
-                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': 'orange'});
-                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': '#333'});
-            } else {
-                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': '#333'});
-                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': 'orange'});
-            }
-        }, 100);
+        $('#limited_date_area').append(SetDateSelect(2028, 10));
     };
     this.btnEvents = function () {
+        // 프로젝트 등록버튼 클릭
         $('#mainArea input[type=button]').on('click', function () {
+            if ($('#txt_title').val().trim() == '') {
+                alert('프로젝트명을 입력해주세요');
+                $('#txt_title').focus();
+                return false;
+            }
+            var date = '',
+                year = $('#limited_date_area select:nth-of-type(1)').val(),
+                month = $('#limited_date_area select:nth-of-type(2)').val(),
+                day = $('#limited_date_area select:nth-of-type(3)').val(),
+                hour = $('#limited_date_area select:nth-of-type(4)').val(),
+                minute = $('#limited_date_area select:nth-of-type(5)').val();
+            if (year == '') {
+                alert('년도를 선택해주세요');
+                return false;
+            }
+            if (month == '') {
+                alert('월을 선택해주세요');
+                return false;
+            }
+            if (day == '') {
+                alert('일을 선택해주세요');
+                return false;
+            }
+            if (hour == '') {
+                alert('시를 선택해주세요');
+                return false;
+            }
+            if (minute == '') {
+                alert('분을 선택해주세요');
+                return false;
+            }
+            date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             var data = {
-                // example!
-                "project_id": 1,
-                "doc_title": $('#txt_title').val(),
-                "doc_content": $('#mainArea textarea').val()
+                project_name: $('#txt_title').val(),
+                duration_date: date
             };
+            console.log('data 4251 : ', data);
             $.ajax({
-                url: 'http://52.196.164.64/translate',
-                type: 'post',
+                url: '/api/v1/users/1/projects',
+                type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
-                    alert(args);
-                    location.href = 'project_view.html?project=새프로젝트번호';
+                    if (args == 'OK') {
+                        alert(args);
+                        location.href = 'project_view.html?project=프로젝트아이디';
+                    } else {
+                        alert('등록실패 8893');
+                    }
                 },
                 error: function (e) {
-                    alert('fail');
+                    alert('fail 9976');
                     console.log(e.responseText);
-                    location.href = 'project_view.html?project=새프로젝트번호';
                 }
             });
         });
     };
+    this.changeEvents = function () {
+
+    };
     this.bind = function () {
         local.preInits();
         local.btnEvents();
+        local.changeEvents();
     };
 };
 $(function () {

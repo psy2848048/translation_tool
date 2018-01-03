@@ -167,7 +167,3 @@ body {
 #listContents table tr:nth-of-type(1) {
     background-color: rgba(237, 243, 247, 0.37);
 }
-
-#menuArea ul:nth-of-type(1) li {
-    text-align: center;
-}

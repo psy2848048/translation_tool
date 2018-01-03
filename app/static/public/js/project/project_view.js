@@ -2,42 +2,7 @@ var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project');
     this.preInits = function () {
-        // body 흐리게
-        local.mask();
-
-        // 좌측 프로젝트 리스트
-        setTimeout(function () {
-            var menu = '';
-
-            menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-            menu += '<li>';
-            menu += '<a href="/static/front/project/project_view.html?project=1">└ 내픽뉴스 영문번역</a>';
-            menu += '</li>';
-            menu += '<li>';
-            menu += '<a href="/static/front/project/project_view.html?project=2">└ 내픽뉴스 중문번역</a>';
-            menu += '</li>';
-            menu += '</ul>';
-
-            $('#left_menu_area>li:nth-of-type(1)').append(menu);
-
-            if (project_id == undefined || project_id == '1') {
-                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': 'orange'});
-                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': '#333'});
-            } else {
-                $('#menuArea ul li ul li:nth-of-type(1) a').css({'color': '#333'});
-                $('#menuArea ul li ul li:nth-of-type(2) a').css({'color': 'orange'});
-            }
-        }, 100);
-
-        // 임시 하드코딩(삭제예정)
-        if (project_id == 2) { // 중문번역
-            $('#dvTitle h2').text('내픽뉴스 중문번역');
-            $('#tblProjectDetail tr:nth-of-type(1) td:nth-of-type(2)').text('2');
-            $('#tblProjectDetail tr:nth-of-type(2) td:nth-of-type(2)').html('ZH<span class="super">CN</span>');
-            $('#tblProjectDetail tr:nth-of-type(3) td:nth-of-type(2)').text('(주)민국번역 홍길동, 김미니');
-        }
-
-        // 프로젝트 신규 버튼
+        // 프로젝트의 작업리스트 신규 버튼
         $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_doc_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
@@ -56,7 +21,7 @@ var PageScript = function () {
         });
     };
     this.getProjects = function () {
-        var url = project_id == '1' ? '/api/v2/mypick/en' : '/api/v2/mypick/cn';
+        local.mask();
 
         $(document).ajaxStart(function () {
             $('#dvLoading').show();
@@ -65,22 +30,88 @@ var PageScript = function () {
             $('#dvLoading').hide();
         });
 
-        var jqxhr = $.get(url, function (data) {
-                console.log(data);
+        // 본문중앙 프로젝트 상세설명            
+        $.ajax({
+            url: '/api/v1/users/1/projects/' + project_id,
+            type: 'GET',
+            //data: data,
+            async: true,
+            success: function (res) {
+                console.log('res 5546 : ', res);
+                //location.href = 'project_view.html?project=새프로젝트번호';
+                if (res != undefined && res != '') {
+                    $('#sp_project_id').val(res.id);
+                    $('#sp_status').val(res.status);
+                    $('#sp_org_lang').val(res.origin_langs);
+                    $('#sp_trans_lang').val(res.trans_langs);
+                    $('#requester').val(res.client_company + ' ' + res.clients);
+                    $('#transer').val(res.trans_company + ' ' + res.translators);
+    
+                    var str_ddate = '';
+                    if (res.duration_time != '') str_ddate = GetStringDate(new Date(res.duration_time));
+                    $('#duration_date').val(str_ddate);
+
+                    var str_cdate = '';
+                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.duration_time));
+                    $('#reg_date').val(str_cdate);
+                }
+            },
+            error: function (e) {
+                alert('fail 4516');
+                console.log(e.responseText);
+                //location.href = 'project_view.html?project=새프로젝트번호';
+            }
+        });
+
+        // 좌측 프로젝트 메뉴리스트
+        var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
+                console.log('/api/v1/users/1/projects/ : ', data);
+                // 좌측메뉴
+                var menu = '',
+                    list = '';
+                if (data != undefined && data.result != '') {
+                    menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
+                    $(data.result).each(function (idx, res) {
+                        menu += '<li>';
+                        if (project_id == res.project_id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
+                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
+                        menu += '</li>';
+                    });
+                    menu += '</ul>';
+
+                    $('#left_menu_area>li:nth-of-type(1)').append(menu);
+                }
+            })
+            .done(function () {})
+            .fail(function () {
+                alert("error 4268");
+            })
+            .always(function () {});
+        jqxhr.always(function () {});
+
+        // 본문 프로젝트 문서 목록
+        var doc_list = $.get('/api/v1/users/1/projects/' + project_id, function (data) {
+                console.log('/api/v1/users/1/projects/1 : ', data);
                 var row = '';
-                $(data.news).each(function (idx, res) {
-                    row += '<tr>';
-                    row += '    <td><input type="checkbox"></td>';
-                    row += '    <td>' + parseInt(idx + 1) + '</td>';
-                    row += '    <td>60%</td>';
-                    //row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.name + '" href="../trans/trans.html?news_id=' + res.id + '">' + res.name + '</a></td>';
-                    row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.name + '" href="../trans/trans.html?project_id=1&doc_id=1">' + res.name + '</a></td>';
-                    row += '    <td>신규</td>';
-                    row += '    <td><a target="_blank" href="http://ciceron.me/translated/38/45">링크</a></td>';
-                    row += '    <td>KO<span class="super">KR</span></td>';
-                    row += '    <td>(주)민국번</td>';
-                    row += '    <td>2018-02-21 10:11</td>';
-                    row += '</tr>';
+                $(data.project_docs).each(function (idx, res) {
+                    if (data != undefined) {
+                        row += '<tr>';
+                        row += '    <td><input type="checkbox"></td>';
+                        row += '    <td>' + parseInt(idx + 1) + '</td>';
+                        row += '    <td>' + res.progress_percent + '</td>';
+                        row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.name + '" href="/static/trans/trans.html?project_id=' + project_id + '&doc_id="' + res.doc_id + '>' + res.name + '</a></td>';
+                        row += '    <td>' + res.status + '</td>';
+                        row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
+                        //row += '    <td>KO<span class="super">KR</span></td>';
+                        row += '    <td>' + res.trans_lang + '</td>';
+                        row += '    <td>' + res.trans_company + ' ' + res.translator + '</td>';
+
+                        var str_date = '';
+                        if (res.duration_time != '') str_date = GetStringDate(new Date(res.duration_time));
+                        row += '    <td>' + str_date + '</td>';
+
+                        row += '</tr>';
+                    }
                 });
                 $('#listContents table tbody').append(row);
             })
@@ -89,7 +120,7 @@ var PageScript = function () {
                 alert("error");
             })
             .always(function () {});
-        jqxhr.always(function () {});
+        doc_list.always(function () {});
 
         $('#mask').fadeIn(1000);
         $('#mask').fadeTo("slow", 1000).hide();

@@ -141,9 +141,10 @@ section>p {
   text-align: justify;
 }
 
-input[type=button]{
-  cursor:pointer;
+input[type=button] {
+  cursor: pointer;
 }
+
 
 /*************************************************/
 
@@ -205,19 +206,21 @@ input[type=button]{
   background-color: #7acaff
 }
 
-.RightButtonDiv{
-  width:100%;
-  text-align:right;
+.RightButtonDiv {
+  width: 100%;
+  text-align: right;
 }
-.RightButtonDiv input[type=button]{
-  border:1px solid rgb(52, 138, 218);
-  border-radius:5px;
-  background-color:rgb(57, 152, 230);
-  color:#fff;
-  font-size:13px;
-  padding:5px;
-  cursor:pointer;
+
+.RightButtonDiv input[type=button] {
+  border: 1px solid rgb(52, 138, 218);
+  border-radius: 5px;
+  background-color: rgb(57, 152, 230);
+  color: #fff;
+  font-size: 13px;
+  padding: 5px;
+  cursor: pointer;
 }
+
 
 /*************************************************/
 
@@ -342,6 +345,10 @@ input[type=button]{
   text-decoration: none;
   color: #fff;
   cursor: pointer;
+}
+
+#menuArea ul:nth-of-type(1) li {
+  text-align: center;
 }
 
 

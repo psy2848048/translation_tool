@@ -42,12 +42,13 @@ var PageScript = function () {
                         }
                         list += '   </td>';
 
-                        var ko_res_time = '', ko_duration_date = '';
-                        if(res.create_time != ''){
+                        var ko_res_time = '',
+                            ko_duration_date = '';
+                        if (res.create_time != '') {
                             var dt1 = new Date(res.create_time);
                             ko_res_time = GetStringDate(dt1);
                         }
-                        if(res.create_time != ''){
+                        if (res.create_time != '') {
                             var dt2 = new Date(res.duration_date);
                             ko_duration_date = GetStringDate(dt2);
                         }
@@ -65,7 +66,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                alert("error");
+                alert("error 1245");
             })
             .always(function () {});
         jqxhr.always(function () {});
