@@ -123,6 +123,12 @@ $(document).on('change', '#sel_year, #sel_month', function () {
     $('#sel_day').html(result);
 });
 
+// null 을 공백으로 치환
+function NullToEmpty(s){
+    if(s == null) return '';
+    else return s;
+}
+
 $(function () {
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
     $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');

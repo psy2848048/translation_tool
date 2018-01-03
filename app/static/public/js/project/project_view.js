@@ -37,23 +37,24 @@ var PageScript = function () {
             //data: data,
             async: true,
             success: function (res) {
-                console.log('res 5546 : ', res);
+                console.log('(프로젝트 상세설명) res : ', res);
                 //location.href = 'project_view.html?project=새프로젝트번호';
                 if (res != undefined && res != '') {
-                    $('#sp_project_id').val(res.id);
-                    $('#sp_status').val(res.status);
-                    $('#sp_org_lang').val(res.origin_langs);
-                    $('#sp_trans_lang').val(res.trans_langs);
-                    $('#requester').val(res.client_company + ' ' + res.clients);
-                    $('#transer').val(res.trans_company + ' ' + res.translators);
+                    $('#h2_title').text(res.name);
+                    $('#sp_project_id').text(res.id);
+                    $('#sp_status').text(res.status);
+                    $('#sp_org_lang').text(res.origin_langs);
+                    $('#sp_trans_lang').text(res.trans_langs);
+                    $('#requester').text(res.client_company + ' ' + res.clients);
+                    $('#transer').text(res.trans_company + ' ' + res.translators);
     
                     var str_ddate = '';
-                    if (res.duration_time != '') str_ddate = GetStringDate(new Date(res.duration_time));
-                    $('#duration_date').val(str_ddate);
+                    if (res.duration_date != '') str_ddate = GetStringDate(new Date(res.duration_date));
+                    $('#duration_date').text(str_ddate);
 
                     var str_cdate = '';
-                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.duration_time));
-                    $('#reg_date').val(str_cdate);
+                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.create_time));
+                    $('#reg_date').text(str_cdate);
                 }
             },
             error: function (e) {
@@ -65,7 +66,7 @@ var PageScript = function () {
 
         // 좌측 프로젝트 메뉴리스트
         var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
-                console.log('/api/v1/users/1/projects/ : ', data);
+                console.log('(좌측메뉴) /api/v1/users/1/projects/ : ', data);
                 // 좌측메뉴
                 var menu = '',
                     list = '';
@@ -90,29 +91,32 @@ var PageScript = function () {
         jqxhr.always(function () {});
 
         // 본문 프로젝트 문서 목록
-        var doc_list = $.get('/api/v1/users/1/projects/' + project_id, function (data) {
-                console.log('/api/v1/users/1/projects/1 : ', data);
+        var doc_list = $.get('/api/v1/users/1/projects/1/docs', function (data) {
+                console.log('(문서목록) /api/v1/users/1/projects/1/docs : ', data);
                 var row = '';
-                $(data.project_docs).each(function (idx, res) {
+                $(data.result).each(function (idx, res) {
                     if (data != undefined) {
                         row += '<tr>';
                         row += '    <td><input type="checkbox"></td>';
                         row += '    <td>' + parseInt(idx + 1) + '</td>';
                         row += '    <td>' + res.progress_percent + '</td>';
-                        row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.name + '" href="/static/trans/trans.html?project_id=' + project_id + '&doc_id="' + res.doc_id + '>' + res.name + '</a></td>';
+                        row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.project_docs_id + '">' + res.title + '</a></td>';
                         row += '    <td>' + res.status + '</td>';
                         row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
                         //row += '    <td>KO<span class="super">KR</span></td>';
+                        row += '    <td>' + res.origin_lang + '</td>';
                         row += '    <td>' + res.trans_lang + '</td>';
-                        row += '    <td>' + res.trans_company + ' ' + res.translator + '</td>';
+                        if(res.trans_company == null) row += '<td class="oneline_wrap">' + NullToEmpty(res.translators) + '</td>';
+                        else row += '    <td class="oneline_wrap">' + res.trans_company + ' ' + NullToEmpty(res.translators) + '</td>';
 
                         var str_date = '';
-                        if (res.duration_time != '') str_date = GetStringDate(new Date(res.duration_time));
+                        if (res.duration_date != '' && res.duration_date != null) str_date = GetStringDate(new Date(res.duration_date));
                         row += '    <td>' + str_date + '</td>';
 
                         row += '</tr>';
                     }
                 });
+                //console.log('문서목록 : ', row);
                 $('#listContents table tbody').append(row);
             })
             .done(function () {})

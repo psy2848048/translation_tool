@@ -179,6 +179,10 @@ input[type=button] {
   display: inline-block;
   white-space: nowrap;
   overflow: hidden;
+
+  width: calc(100%);
+  text-align: left;
+  vertical-align: middle;  
 }
 
 

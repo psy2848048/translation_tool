@@ -7,8 +7,8 @@ var PageScript = function () {
         local.mask();
 
         // 원문 로딩
-        var jqxhr = $.get("/api/v1/users/1/docs/1", function (data) {
-                //console.log('data 11 : ', data);
+        var jqxhr = $.get("/api/v1/users/1/docs/" + doc_id, function (data) {
+                console.log('내용 data : ', data);
                 var html = '';
                 $(data.result).each(function (idx, res) {
                     html += '<tr>';
