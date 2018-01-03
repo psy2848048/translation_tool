@@ -1,13 +1,13 @@
 var PageScript = function () {
     var local = this,
-        project_id = getUrlParameter('project_id'),
+        project_id = getUrlParameter('project'),
         doc_id = getUrlParameter('doc_id');
     this.preInits = function () {
         // body 흐리게
         local.mask();
 
         // 원문 로딩
-       var jqxhr = $.get("/api/v1/users/1/docs/1", function (data) {
+        var jqxhr = $.get("/api/v1/users/1/docs/1", function (data) {
                 //console.log('data 11 : ', data);
                 var html = '';
                 $(data.result).each(function (idx, res) {
@@ -49,20 +49,80 @@ var PageScript = function () {
     };
     this.regEvents = function () {
         // 댓글 보기 아이콘 클릭 : 미리 가져오지 않고 실시간으로 댓글리스트 가져옴
-        $(document).on('click', '.fa-comment', function(){
+        $(document).on('click', '.fa-comment', function () {
+            var sentence_id = $(this).closest('tr').find('td:nth-of-type(1)').text();
+            $('#sp_sentence').text(sentence_id);
+            $('#comments').empty();
+            $('#commentDiv').attr('data-sentence-id', sentence_id);
+            local.getComments('1', doc_id, sentence_id);
             $('#commentDiv').show();
+            $('#transArea').css({
+                'opacity': '0.2'
+            });
+            $('#resultArea').css({
+                'opacity': '0.2'
+            });
         });
         // 댓글창 닫기 아이콘 클릭
-        $(document).on('click', '.fa-close', function(){
+        $(document).on('click', '.fa-close', function () {
             $('#commentDiv').hide();
+            $('#transArea').css({
+                'opacity': '1'
+            });
+            $('#resultArea').css({
+                'opacity': '1'
+            });
         });
         // 댓글 입력버튼 클릭
-        $(document).on('click', '#new_comment_div input[type=button]', function(){
-            alert('댓글 입력버튼 클릭');
+        $(document).on('click', '#new_comment_div input[type=button]', function () {
+            $(this).blur();
+            var sentence_id = $('#commentDiv').attr('data-sentence-id');
+            var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id + '/comments';
+            console.log('url 4458 : ', url);
+            var data = {
+                'comment': $('#new_comment_div input[type=text]').val()
+            };
+            console.log('data 1145 : ', data);
+            $.ajax({
+                url: url,
+                type: 'post',
+                data: data,
+                async: true,
+                success: function (args) {
+                    console.log('args 1254 : ', args);
+                    if (args.result == 'OK') {
+                        local.getComments('1', doc_id, sentence_id);
+                        $('#new_comment_div').find('input[type=text]').val('');
+                    }
+                },
+                error: function (e) {
+                    console.log('fail 4592 : ' + e.responseText);
+                }
+            });
         });
         // 댓글 삭제아이콘 클릭
-        $(document).on('click', '#comments img', function(){
-            alert('댓글 삭제아이콘 클릭');
+        $(document).on('click', '#comments img', function () {
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                var sentence_id = $('#commentDiv').attr('data-sentence-id');
+                var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id + '/comments/' + $(this).attr('data-id');
+                console.log('url 2893 : ', url);
+                var org = '/api/v1/users/1/docs/26/sentences/347/comments/1';
+                console.log('org 3329 : ', org);
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    async: true,
+                    success: function (args) {
+                        console.log('args 9876 : ', args);
+                        if (args.result == 'OK') {
+                            local.getComments('1', doc_id, sentence_id);
+                        }
+                    },
+                    error: function (e) {
+                        console.log('fail 4573 : ' + e.responseText);
+                    }
+                });
+            }
         });
         // 단어장 검색버튼
         $('#btnPublicSearch').on('click', function (e) {
@@ -107,13 +167,13 @@ var PageScript = function () {
                                 success: function (args) {
                                     console.log(args);
                                     if (args.result == 'OK') {
-                                        alert('수정되었습니다.');
+                                        local.showMessage('수정되었습니다.');
                                     } else {
-                                        alert('수정되지 않았습니다.');
+                                        local.showMessage('수정되지 않았습니다.');
                                     }
                                 },
                                 error: function (e) {
-                                    alert('fail 386');
+                                    local.showMessage('fail 386');
                                     console.log(e.responseText);
                                 }
                             });
@@ -155,7 +215,7 @@ var PageScript = function () {
                                 data: data,
                                 async: true,
                                 success: function (args) {
-                                    alert('등록되었습니다.');
+                                    local.showMessage('등록되었습니다.');
                                 },
                                 error: function (e) {
                                     console.log('fail 113 : ' + e.responseText);
@@ -270,6 +330,36 @@ var PageScript = function () {
         $('#mask').fadeIn(1000);
         $('#mask').fadeTo("slow", 1000).hide();
     };
+    // 코멘트 리스트 가져오기
+    this.getComments = function (user, doc, sentence) {
+        var url = '/api/v1/users/' + user + '/docs/' + doc + '/sentences/' + sentence + '/comments';
+        var data = {};
+        $.ajax({
+            url: url,
+            type: 'GET',
+            //data: data,
+            async: true,
+            success: function (args) {
+                console.log('args 9756 : ', args);
+                var result = '';
+                if (args.result != undefined) {
+                    if (args.result.length > 0) {
+                        $(args.result).each(function (idx, res) {
+                            console.log('res 4586 : ', res);
+                            result += '<p>' + res.username + ' : ' + res.comment + ' <img data-id="' + res.id + '" data-userid="' + res.user_id + '" data-docid="' + res.project_docs_id + '" src="/static/public/img/comment_del2.png"></p>';
+                        });
+                    } else {
+                        result = '<p>등록된 의견이 없습니다.</p>';
+                    }
+                }
+                console.log('result : ', result);
+                $('#comments').html(result);
+            },
+            error: function (e) {
+                console.log('fail 8431 : ' + e.responseText);
+            }
+        });
+    };
     // 번역상태 저장
     this.saveTranStatus = function (thisObj, xy) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
@@ -300,7 +390,8 @@ var PageScript = function () {
     // 번역문 저장
     this.saveTrans = function (thisObj) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
-        var url = '/api/v1/users/1/docs/' + getUrlParameter('doc_id') + '/sentences/' + sentence_id;
+        var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id;
+        console.log('url 4975 : ', url);
         var trans_type = '';
 
         if (thisObj.val().trim() == '') trans_type = 'X';
@@ -315,21 +406,25 @@ var PageScript = function () {
             trans_type: trans_type,
             trans_text: thisObj.val()
         };
-        console.log(data);
+        console.log('data 391 : ', data);
         $.ajax({
             url: url,
             type: 'PUT',
             data: data,
             success: function (args) {
-                if (args.result != 'OK') alert('번역문이 저장되지 않았습니다.');
-                else {
+                console.log('args 397 : ', args);
+                if (args.result != 'OK') {
+                    local.showMessage('번역문이 저장되지 않았습니다.');
+                } else {
                     // 번역상태 미완료로 초기화
                     local.saveTranStatus(thisObj, '0');
-		    if(trans_type=='X') thisObj.closest('tr').find('td:eq(4)').css({'background-color':'transparent'}).text('');
+                    if (trans_type == 'X') thisObj.closest('tr').find('td:eq(4)').css({
+                        'background-color': 'transparent'
+                    }).text('');
                 }
             },
             error: function (e) {
-                alert('fail 281');
+                local.showMessage('fail 281');
                 console.log(e.responseText);
             }
         });
@@ -355,18 +450,21 @@ var PageScript = function () {
     };
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var jqxhr = $.get("/api/v1/users/1/docs/" + doc_id + "/sentences/" + sentence_id, {
+        var url = "/api/v1/users/1/docs/" + doc_id + "/sentences/" + sentence_id;
+        console.log('url 424 : ', url);
+        var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
-                console.log(data);
+                console.log('data 426 : ', data);
                 var tm_html = '';
-
-                for (var i = 0; i < data.tm.length; i++) {
-                    tm_html += '<tr>';
-                    tm_html += '    <td width="7%" style="text-align:center;">' + parseInt(i + 1) + '<br>('+ data.tm[i].score +'%)</td>';
-                    tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';
-                    tm_html += '    <td width="88%">' + data.tm[i].trans_text + '</td>';
-                    tm_html += '</tr>';
+                if (data.tm != undefined) {
+                    for (var i = 0; i < data.tm.length; i++) {
+                        tm_html += '<tr>';
+                        tm_html += '    <td width="7%" style="text-align:center;">' + parseInt(i + 1) + '<br>(' + data.tm[i].score + '%)</td>';
+                        tm_html += '    <td width="5%" class="tmColor" style="text-align:center;">TM</td>';
+                        tm_html += '    <td width="88%">' + data.tm[i].trans_text + '</td>';
+                        tm_html += '</tr>';
+                    }
                 }
 
                 $('#resultArea').css({
@@ -398,12 +496,15 @@ var PageScript = function () {
                 });
                 var tb_html = '';
 
-                for (var j = 0; j < data.words.length; j++) {
-                    tb_html += '<div>';
-                    tb_html += '    <input type="button" data-id="' + data.words[j].word_id + '" value="수정"> ';
-                    tb_html += '    <span class="boldWord">' + data.words[j].origin_text + '</span> ';
-                    tb_html += '    <input type="text" class="miniWord" value="' + data.words[j].trans_text + '">';
-                    tb_html += '</div>';
+                console.log('data 467 : ', data);
+                if (data.words != undefined) {
+                    for (var j = 0; j < data.words.length; j++) {
+                        tb_html += '<div>';
+                        tb_html += '    <input type="button" data-id="' + data.words[j].word_id + '" value="수정"> ';
+                        tb_html += '    <span class="boldWord">' + data.words[j].origin_text + '</span> ';
+                        tb_html += '    <input type="text" class="miniWord" value="' + data.words[j].trans_text + '">';
+                        tb_html += '</div>';
+                    }
                 }
 
                 $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
@@ -430,13 +531,13 @@ var PageScript = function () {
                         success: function (args) {
                             console.log(args);
                             if (args.result == 'OK') {
-                                alert('수정되었습니다.');
+                                local.showMessage('수정되었습니다.');
                             } else {
-                                alert('수정되지 않았습니다.');
+                                local.showMessage('수정되지 않았습니다.');
                             }
                         },
                         error: function (e) {
-                            alert('fail 386');
+                            local.showMessage('fail 386');
                             console.log(e.responseText);
                         }
                     });
@@ -444,7 +545,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                alert("error 348");
+                local.showMessage("error 348");
             })
             .always(function () {});
         jqxhr.always(function () {});
@@ -464,6 +565,7 @@ var PageScript = function () {
             data: data,
             async: true,
             success: function (args) {
+                console.log('args 536 : ', args);
                 var mt_html = '';
 
                 mt_html += '<tr>';
@@ -506,6 +608,27 @@ var PageScript = function () {
                 console.log('fail 410 : ' + e.responseText);
             }
         });
+    };
+    // 인스턴트 메시지
+    this.showMessage = function (msg) {
+        $('#instant_div').text(msg);
+        $('#instant_div').fadeIn();
+        $('#transArea').css({
+            'opacity': '0.2'
+        });
+        $('#resultArea').css({
+            'opacity': '0.2'
+        });
+        $('#instant_div').fadeOut('slow');
+        setTimeout(function () {
+            $('#transArea').css({
+                'opacity': '1'
+            });
+            $('#resultArea').css({
+                'opacity': '1'
+            });
+            $('#instant_div').text('');
+        }, 1000);
     };
     this.bind = function () {
         local.preInits();
