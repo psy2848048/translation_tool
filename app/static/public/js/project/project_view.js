@@ -3,18 +3,46 @@ var PageScript = function () {
         project_id = getUrlParameter('project');
     this.preInits = function () {
         // 프로젝트의 작업리스트 신규 버튼
-        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_doc_reg.html?project=' + project_id);
+        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
+        // 프로젝트 수정 버튼
+        $('#edit_btn').on('click', function () {
+            location.href = 'project_edit.html?project=' + project_id;
+        });
+        // 프로젝트 삭제 버튼                
+        $('#del_btn').on('click', function () {
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                alert('프로젝트 삭제 프로세스');
+            }
+        });
+        // 프로젝트 문서 삭제 버튼
+        $('#listTitleGroup li:nth-of-type(2) a').on('click', function(){
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                if ($('#listContents td input[type=checkbox]:checked').length > 0) {
+                    alert('프로젝트 삭제 프로세스 : 체크된 문서 갯수만큼 루핑 하면서 삭제한다.');
+
+                    $('#listContents td input[type=checkbox]:checked').each(function () {
+                        console.log('체크된 문서 : ', $(this).attr('data-id'));
+                    });
+                } else {
+                    alert('체크된 문서가 없습니다.');
+                }
+            }
+        });
+        // 프로젝트 참가자 초대 버튼
+        $('#invite_btn, #invite_btn_min').on('click', function () {
+            location.href = '/static/front/user/users.html?project=' + project_id;
+        });
         // 체크박스 전체선택, 해제
         $('#listContents th input[type=checkbox]').on('click', function (e) {
             //e.preventDefault(); 활성화 하면 체크 안됨!
             CheckAll($(this), '#listContents td input[type=checkbox]');
         });
         // 문서 편집버튼 클릭
-        $(document).on('click', '#listContents input[type=button]', function(){
+        $(document).on('click', '#listContents input[type=button]', function () {
             var doc_id = $(this).attr('data-id');
-            location.href='project_doc_edit.html?project=' + project_id + '&doc_id=' + doc_id;
+            location.href = 'project_doc_edit.html?project=' + project_id + '&doc_id=' + doc_id;
         });
     };
     this.getProjects = function () {
@@ -99,7 +127,7 @@ var PageScript = function () {
                 $(data.result).each(function (idx, res) {
                     if (data != undefined) {
                         row += '<tr>';
-                        row += '    <td><input type="checkbox"></td>';
+                        row += '    <td><input type="checkbox" data-id="' + res.project_docs_id + '"></td>';
                         row += '    <td>' + parseInt(idx + 1) + '</td>';
                         row += '    <td>' + res.progress_percent + '</td>';
                         row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.project_docs_id + '">' + res.title + '</a></td>';

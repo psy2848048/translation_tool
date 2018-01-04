@@ -173,7 +173,6 @@ body {
     font-size: 13px;
     font-weight: normal;
     border: 0px solid rgb(40, 136, 209);
-    opacity: 0.5;
     background-color: #4296D9;
     color: #fff;
     vertical-align: bottom;
@@ -195,7 +194,8 @@ body {
 #listTitleGroup li:nth-of-type(1),
 #listTitleGroup li:nth-of-type(2),
 #listTitleGroup2 li:nth-of-type(1),
-#listTitleGroup2 li:nth-of-type(2) {
+#listTitleGroup2 li:nth-of-type(2),
+#listTitleGroup2 li:nth-of-type(3) {
     opacity: 1;
     cursor: pointer;
 }
@@ -216,8 +216,9 @@ body {
 }
 
 #ul_user_search li:nth-of-type(1) input[type=text] {
-    width: 170px;
+    width: 250px;
     padding: 3px;
+    vertical-align: middle;
     padding-left: 5px;
     font-size: 13px;
 }

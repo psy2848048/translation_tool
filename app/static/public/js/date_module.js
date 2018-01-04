@@ -104,11 +104,3 @@ function SetToday() {
     $('#sel_hour').val(hour);
     $('#sel_minute').val(minute);
 }
-
-
-// date 타입을 string 타입으로 전환
-function GetStringDate(date) {
-    var strMonth = parseInt(date.getMonth()) + parseInt(1);
-    var strToday = date.getFullYear() + '-' + strMonth + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
-    return strToday;
-}

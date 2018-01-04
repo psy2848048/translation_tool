@@ -29,17 +29,22 @@
                 <article>
                     <div id="dvTitle">
                         <h2 id="h2_title"></h2>
-                        <input type="button" value=" 편집 ">
-                        <input type="button" value=" 삭제 ">
+                        <input type="button" value=" 초대 " id="invite_btn">
+                        <input type="button" value=" 편집 " id="edit_btn">
+                        <input type="button" value=" 삭제 " id="del_btn">
                     </div>
                     <div id="dvContent">
                         <hr>
                         <table id="tblProjectDetail">
                             <tr>
                                 <td>일련번호</td>
-                                <td><span id="sp_project_id"></span></td>
+                                <td>
+                                    <span id="sp_project_id"></span>
+                                </td>
                                 <td>상태</td>
-                                <td><span id="sp_status"></span></td>
+                                <td>
+                                    <span id="sp_status"></span>
+                                </td>
                             </tr>
                             <tr>
                                 <td>원문언어</td>
@@ -53,9 +58,19 @@
                             </tr>
                             <tr>
                                 <td>생성일시</td>
-                                <td><span id="reg_date"></span></td>
+                                <td>
+                                    <span id="reg_date"></span>
+                                </td>
                                 <td>만기일시</td>
-                                <td><span id="duration_date"></span></td>
+                                <td>
+                                    <span id="duration_date"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>프로젝트 참가자</td>
+                                <td colspan=3>김철수, 홍길동, 김두니, 이나영, 고소영, 이민정, 박수진, 배지현
+                                    <input type="button" value="참가자 초대" id="invite_btn_min">
+                                </td>
                             </tr>
                         </table>
                     </div>
@@ -67,7 +82,9 @@
                             <li>
                                 <a href="#">신규</a>
                             </li>
-                            <li>삭제</li>
+                            <li>
+                                <a href="#">삭제</a>
+                            </li>
                         </ul>
                     </div>
                     <div id="listContents">
