@@ -152,6 +152,10 @@ body {
     padding:5px;
 }
 /*******************************************/
+#reg_area div span:nth-of-type(2){
+    width:70%;
+    text-align:left;
+}
 
 #limited_date_area select{
     border:1px solid #999;
@@ -161,4 +165,30 @@ body {
 }
 #limited_date_area select:nth-of-type(1){
     width:80px;
+}
+/*******************************************/
+table{
+    width:100%;
+    margin-top:20px;
+}
+table,
+table td{
+    border:0px solid red;
+    padding:8px;
+}
+table td input[type=text]{
+    border:1px solid rgb(190, 179, 179);
+    padding:5px;
+    border-radius:5px;
+    width:calc(98%);
+    font-size:14px;
+}
+
+table td:nth-of-type(1){
+    width:100px;
+    text-align: right;
+}
+table td:nth-of-type(2){
+    text-align: right;
+    text-align:left;
 }

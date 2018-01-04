@@ -2,7 +2,11 @@ var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project');
     this.preInits = function () {
-        $('#limited_date_area').append(SetDateSelect(2028, 10));
+        var minutePadding = 10;
+        $('#limited_date_area').append(SetDateSelect(2028, minutePadding));   
+        SetToday();
+        ResetDay();   
+        if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();         
     };
     this.btnEvents = function () {
         // 프로젝트 등록버튼 클릭

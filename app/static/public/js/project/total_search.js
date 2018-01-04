@@ -69,4 +69,9 @@ var PageScript = function () {
 $(function () {
     var script = new PageScript();
     script.bind();
+
+    setTimeout(SearchInIt, 200);
 });
+function SearchInIt(){
+    $('#total_search').val(getUrlParameter('text'));
+}
