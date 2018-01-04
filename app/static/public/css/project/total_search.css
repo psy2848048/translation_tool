@@ -40,15 +40,6 @@ body {
     margin-bottom: 0px;
 }
 
-#menuArea ul:nth-of-type(2) li:nth-of-type(1) {
-    background-color: #fff;
-    font-weight: bolder;
-}
-
-#menuArea ul li:nth-of-type(1) a {
-    color: #365378;
-}
-
 #menuArea ul li ul {
     border: 0px solid red;
     margin-bottom: 0;
@@ -106,10 +97,11 @@ body {
 #mainArea article:nth-of-type(2) {
     background-color: #FFF;
 }
+
 #mainArea article:nth-of-type(2) {
-    height:calc(100% - 170px);
-    overflow-x:hidden;
-    overflow-y:auto;
+    height: calc(100% - 170px);
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 #dvTitle {
@@ -188,14 +180,12 @@ body {
 #listContents {
     border: 0px solid red;
 }
-#listContents #dummy{
-    /* height:30px; */
+
+#listContents h3 {
+    display: block;
+    margin-top: 50px;
 }
 
-#listContents h3{
-    display:block;
-    margin-top:50px;
-}
 #listContents table {
     width: 100%;
 }

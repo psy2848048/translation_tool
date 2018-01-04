@@ -31,13 +31,18 @@
                 <article id="reg_area">
                     <h2>새 프로젝트</h2>
                     <hr class="style-six">
-                    <div>
-                        <span>프로젝트 명</span>
-                        <input type="text" placeholder="프로젝트 제목을 입력해주세요" id="txt_title">
-                    </div>
-                    <div id="limited_date_area">
-                        <span>만기일시</span>
-                    </div>
+                    <table>
+                        <tr>
+                            <td>프로젝트 명</td>
+                            <td>
+                                <input type="text" placeholder="프로젝트 제목을 입력해주세요" id="txt_title">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>만기일시</td>
+                            <td id="limited_date_area"></td>
+                        </tr>
+                    </table>
                     <br>
                     <hr>
                     <input type="button" value=" 저 장 ">
@@ -45,6 +50,7 @@
             </section>
         </div>
         <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+        <script src="/static/public/js/date_module.js"></script>
         <script src="/static/public/js/common.js"></script>
         <script src="/static/public/js/project/project_reg.js"></script>
     </body>

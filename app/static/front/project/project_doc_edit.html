@@ -15,7 +15,7 @@
         <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
         <link href="/static/public/css/reset.css" rel="stylesheet" />
         <link href="/static/public/css/site.css" rel="stylesheet" />
-        <link href="/static/public/css/project/project_doc_reg.css" rel="stylesheet" />
+        <link href="/static/public/css/project/project_doc_edit.css" rel="stylesheet" />
     </head>
 
     <body>
@@ -30,13 +30,30 @@
                     &nbsp;
                 </article>
                 <article>
-                    <h2>새 문서</h2>
+                    <h2>문서 수정</h2>
                     <hr>
                     <table id="form_tbl">
                         <tr>
                             <td>제목</td>
                             <td>
-                                <input type="text" placeholder="문서제목을 입력해주세요">
+                                <input type="text" placeholder="문서제목을 입력해주세요(필수)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>상태</td>
+                            <td>
+                                <select name="" id="">
+                                    <option value="신규">신규</option>
+                                    <option value="진행중">진행중</option>
+                                    <option value="완료">완료</option>
+                                    <option value="취소">취소</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>링크</td>
+                            <td>
+                                <input type="text" placeholder="번역문이 사용된 곳의 http 링크를 입력해주세요(선택)">
                             </td>
                         </tr>
                         <tr>
@@ -70,7 +87,7 @@
                             <td>
                                 <input type="radio" name="rdo_upload_method" id="rdo_file">
                                 <label for="rdo_file">파일</label>
-                                <input type="radio" name="rdo_upload_method" id="rdo_text" checked="checked">
+                                <input type="radio" name="rdo_upload_method" id="rdo_text">
                                 <label for="rdo_text">텍스트</label>
                             </td>
                         </tr>
@@ -83,19 +100,62 @@
                             <input type="file">
                         </div>
                     </div>
-                    <div id="dv_text" style="display:block;">
+                    <div id="dv_text" style="display:none;">
                         <h3>기본 텍스트로 작성하기</h3>
                         <textarea></textarea>
                     </div>
                     <hr>
                     <input type="button" value=" 저 장 ">
                 </article>
+                <article>&nbsp;</article>
+                <article>
+                    <h3>
+                        참가자
+                    </h3>
+                    <div id="listContents">
+                            <table>
+                                <tbody><tr>
+                                    <th>
+                                        <input type="checkbox">
+                                    </th>
+                                    <th>번호</th>
+                                    <th>이름</th>
+                                    <th>이메일</th>
+                                    <th>읽기</th>
+                                    <th>수정</th>
+                                    <th>삭제</th>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox">
+                                    </td>
+                                    <td>1</td>
+                                    <td>홍길동</td>
+                                    <td>ciceron_staff2@gmail.com</td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <input type="checkbox">
+                                    </td>
+                                    <td>2</td>
+                                    <td>김철수</td>
+                                    <td>ciceron_staff3@gmail.com</td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                </tr>
+                            </tbody></table>
+                        </div>
+                </article>
             </section>
         </div>
         <script src="/static/public/js/jquery-1.12.4.min.js"></script>
         <script src="/static/public/js/date_module.js"></script>
         <script src="/static/public/js/common.js"></script>
-        <script src="/static/public/js/project/project_doc_reg.js"></script>
+        <script src="/static/public/js/project/project_doc_edit.js"></script>
     </body>
 
     </html>

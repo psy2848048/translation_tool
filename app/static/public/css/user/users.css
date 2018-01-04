@@ -223,7 +223,7 @@ body {
 }
 
 #listTitleGroup {
-    margin-bottom: 0;
+    margin-bottom: 2px;
     padding-bottom: 0;
     vertical-align: bottom;
 }
@@ -270,6 +270,51 @@ body {
 }
 
 #listContents table tr:nth-of-type(1) {
+    background-color: rgba(237, 243, 247, 0.37);
+}
+
+
+/*********************************************/
+
+#listContents2 {
+    border: 0px solid red;
+}
+
+#listContents2 table {
+    border-top: 3px solid rgb(192, 190, 76);
+    width: 100%;
+}
+
+#listContents2 table th {
+    border: 0px solid blue;
+    box-sizing: border-box;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-size: 14px;
+    background-color: rgba(231, 231, 202, 0.493);;
+}
+
+#listContents2 table tr {
+    border: 0px solid blue;
+    box-sizing: border-box;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+#listContents2 table td a {
+    color: rgb(51, 129, 219);
+}
+
+#listContents2 table tr:nth-of-type(odd) {
+    background-color: #EDF3F7;
+}
+
+#listContents2 table tr:nth-of-type(1) {
     background-color: rgba(237, 243, 247, 0.37);
 }
 

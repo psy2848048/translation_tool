@@ -8,16 +8,13 @@ var PageScript = function () {
     this.btnEvents = function () {
         // 체크박스 전체선택, 해제
         $('#listContents th input[type=checkbox]').on('click', function (e) {
-            e.preventDefault();
-            if ($(this).prop('checked')) {
-                $('#listContents td input[type=checkbox]').each(function () {
-                    $(this).prop('checked', true);
-                });
-            } else {
-                $('#listContents td input[type=checkbox]').each(function () {
-                    $(this).prop('checked', false);
-                });
-            }
+            //e.preventDefault(); 활성화 하면 체크 안됨!
+            CheckAll($(this), '#listContents td input[type=checkbox]');
+        });
+        // 문서 편집버튼 클릭
+        $(document).on('click', '#listContents input[type=button]', function(){
+            var doc_id = $(this).attr('data-id');
+            location.href='project_doc_edit.html?project=' + project_id + '&doc_id=' + doc_id;
         });
     };
     this.getProjects = function () {
@@ -43,11 +40,16 @@ var PageScript = function () {
                     $('#h2_title').text(res.name);
                     $('#sp_project_id').text(res.id);
                     $('#sp_status').text(res.status);
-                    $('#sp_org_lang').text(res.origin_langs);
-                    $('#sp_trans_lang').text(res.trans_langs);
+
+                    if (res.origin_langs != null && res.origin_langs != '') $('#sp_org_lang').text(res.origin_langs.toUpperCase());
+                    else $('#sp_org_lang').text(res.origin_langs);
+
+                    if (res.trans_langs != null && res.trans_langs != '') $('#sp_trans_lang').text(res.trans_langs.toUpperCase());
+                    else $('#sp_trans_lang').text(res.trans_langs);
+
                     $('#requester').text(res.client_company + ' ' + res.clients);
                     $('#transer').text(res.trans_company + ' ' + res.translators);
-    
+
                     var str_ddate = '';
                     if (res.duration_date != '') str_ddate = GetStringDate(new Date(res.duration_date));
                     $('#duration_date').text(str_ddate);
@@ -102,16 +104,23 @@ var PageScript = function () {
                         row += '    <td>' + res.progress_percent + '</td>';
                         row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.project_docs_id + '">' + res.title + '</a></td>';
                         row += '    <td>' + res.status + '</td>';
+                        //if(res.progress_percent == 100) row += '    <td>완료</td>';
+                        //else row += '    <td>' + res.status + '</td>';
                         row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
                         //row += '    <td>KO<span class="super">KR</span></td>';
-                        row += '    <td>' + res.origin_lang + '</td>';
-                        row += '    <td>' + res.trans_lang + '</td>';
-                        if(res.trans_company == null) row += '<td class="oneline_wrap">' + NullToEmpty(res.translators) + '</td>';
-                        else row += '    <td class="oneline_wrap">' + res.trans_company + ' ' + NullToEmpty(res.translators) + '</td>';
+
+                        if (res.origin_lang != null && res.origin_lang != '') row += '    <td>' + res.origin_lang.toUpperCase() + '</td>';
+                        else row += '    <td>' + res.origin_lang + '</td>';
+
+                        if (res.trans_lang != null && res.trans_lang != '') row += '    <td>' + res.trans_lang.toUpperCase() + '</td>';
+                        else row += '    <td>' + res.trans_lang + '</td>';
+
+                        //row += '<td class="oneline_wrap" title="' + NullToEmpty(res.translators) + '">' + NullToEmpty(res.translators) + '</td>';
 
                         var str_date = '';
                         if (res.duration_date != '' && res.duration_date != null) str_date = GetStringDate(new Date(res.duration_date));
                         row += '    <td>' + str_date + '</td>';
+                        row += '    <td><input data-id="' + res.project_docs_id + '" type="button" value="편집"></td>';
 
                         row += '</tr>';
                     }
