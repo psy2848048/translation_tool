@@ -229,3 +229,7 @@ body {
 }
 
 /*********************************************/
+
+#ulProjectList li {
+    padding: 5px !important;
+}
