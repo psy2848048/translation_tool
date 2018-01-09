@@ -2,7 +2,7 @@ var pageScript = function(){
     var local = this;
     this.clickEvent = function(){
         $('#loginBtn').on('click', function(){
-            if(1 == 1) location.href='/static/front/project/projects.html';
+            if($('#txt_id').val() == 'ciceron' && $('#txt_pass').val() == 'ciceron8888') location.href='/static/front/project/projects.html';
             else alert('로그인정보 불일치!');
         });
     };

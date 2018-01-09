@@ -85,8 +85,7 @@ function ResetDay(){
         if (k < 10) result += '    <option value="0' + k + '">0' + k + '</option>';
         else result += '    <option value="' + k + '">' + k + '</option>';
     }
-    $('#sel_day').empty();
-    $('#sel_day').html(result);
+    $('#sel_day').empty().html(result);
 }
 // 1개월 후로 자동선택   
 function SetToday() {
