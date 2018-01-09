@@ -27,9 +27,9 @@
                 <img src="/static/public/img/marocat_logo.png" onclick="javascript:location.href='../../index.html';">
             </h1>
             <ul>
-                <li class="tmColor" title="문장번역">TM</li>
-                <li class="tbColor" title="단어검색">TB</li>
-                <li class="mtColor" title="실시간번역">MT</li>
+                <li class="tmColor" title="TM">문장저장소</li>
+                <li class="tbColor" title="TB">단어저장소</li>
+                <li class="mtColor" title="MT">실시간번역</li>
                 <li>ciceron_staff2@gmail.com</li>
             </ul>
         </div>
@@ -117,15 +117,12 @@
     <div id="instant_div" style="display: none;">
     </div>
     <div id="commentDiv" data-sentence-id="" style="display:none;">
-        <span id="close_button"><i class="fa fa-close" aria-hidden="true"></i></span>
-        <h4><span id="sp_sentence"></span>번 번역문장에 대한 의견 입니다.</h4>
-        <div id="comments">
-            <p>등록된 의견이 없습니다.</p>
-            <p>번역자 : Aenean dui augue, congue eget orci ac, commodo ornare justo. Sed aliquet posuere enim, a euismod arcu. Cras vestibulum ligula ut nisl porttitor aliquam <img src="/static/public/img/comment_del2.png"></p>
-            <p>의뢰자 : Sed commodo eget arcu eget hendrerit. Mauris interdum lorem et ullamcorper lobortis. Donec viverra hendrerit est, ut vestibulum augue rutrum vel. <img src="/static/public/img/comment_del2.png"></p>
-            <p>번역자 : Sed sapien felis, mollis ac lorem sed, placerat commodo lorem. Duis consectetur metus nec placerat imperdiet. In pulvinar elit id vulputate mollis <img src="/static/public/img/comment_del2.png"></p>
-            <p>의뢰자 : Duis vel nibh pretium, elementum ligula eget, cursus elit. <img src="/static/public/img/comment_del2.png"></p>
-        </div>
+        <span id="close_button">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </span>
+        <h4>
+            <span id="sp_sentence"></span>번 번역문장에 대한 의견 입니다.</h4>
+        <div id="comments"></div>
         <div id="new_comment_div">
             <input type="text" placeholder="해당 번역문장에 대한 의견을 입력해주세요">
             <input type="button" value=" 입 력 ">

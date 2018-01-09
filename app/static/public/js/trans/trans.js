@@ -27,9 +27,9 @@ var PageScript = function () {
                     if (res.trans_type == 'T') {
                         html += '<td>T</td>';
                     } else if (res.trans_type == 'TM') {
-                        html += '<td class="tmColor">TM</td>';
+                        html += '<td class="tmColor" title="문장저장소">문</td>';
                     } else if (res.trans_type == 'MT') {
-                        html += '<td class="mtColor">MT</td>';
+                        html += '<td class="mtColor" title="실시간번역">실</td>';
                     } else {
                         html += '<td></td>';
                     }

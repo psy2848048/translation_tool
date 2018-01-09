@@ -13,9 +13,6 @@ body {
     padding: 0px;
 }
 
-
-/************************************************/
-
 #menuArea,
 #mainArea {
     border: 0px solid rgb(37, 117, 170);
@@ -47,9 +44,6 @@ body {
 #menuArea ul li:nth-of-type(3) a {
     color: #365378;
 }
-
-
-/************************************************/
 
 #mainArea {
     width: calc(100% - 220px);
@@ -85,26 +79,48 @@ body {
 }
 
 #mainArea article:nth-of-type(2) {
-    height: calc(100% - 180px);
+    height: calc(100% - 200px);
 }
 
 #mainArea article:nth-of-type(2) hr {
     width: 100%;
 }
 
-
-/************************************************/
-
-#mainArea article:nth-of-type(2) div {
-    border: 0px solid rgb(148, 93, 116);
+#dvTitle {
+    height: 40px;
 }
 
-#mainArea article:nth-of-type(2) ul {
-    border: 0px solid rgb(93, 124, 148);
+#dvTitle input[type=button] {
+    border: 0;
+    float: right;
+    margin: 1px;
+    background-color: #1797E4;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 6px !important;
+}
+
+#tblProjectDetail {
+    border: 0px solid red;
+    width: 500px;
+}
+
+#tblProjectDetail td {
+    border: 0px solid #999;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#tblProjectDetail td:nth-of-type(1),
+#tblProjectDetail td:nth-of-type(3) {
+    font-weight: bold;
+}
+
+#listTitleGroup ul {
     float: right;
 }
 
-#mainArea article:nth-of-type(2) li {
+#listTitleGroup li {
     float: left;
     border: 0px solid rgb(40, 136, 209);
     border-radius: 2px;
@@ -114,9 +130,40 @@ body {
     margin: 1px;
     font-size: 13px;
     font-weight: normal;
+    opacity: 0.5;
+}
+
+#listTitleGroup li:nth-of-type(1) {
     opacity: 1;
     cursor: pointer;
 }
 
+#listContents {
+    border: 0px solid red;
+}
 
-/************************************************/
+#listContents table {
+    width: 100%;
+}
+
+#listContents table tr {
+    border: 0px solid blue;
+    box-sizing: border-box;
+    text-align: center;
+    height: 30px;
+    line-height: 30px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+#listContents table td a {
+    color: rgb(51, 129, 219);
+}
+
+#listContents table tr:nth-of-type(odd) {
+    background-color: #EDF3F7;
+}
+
+#listContents table tr:nth-of-type(1) {
+    background-color: rgba(237, 243, 247, 0.37);
+}
