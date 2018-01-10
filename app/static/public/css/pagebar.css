@@ -2,6 +2,7 @@
     border: 0px solid red;
     width: 100%;
     text-align: center;
+    margin:0 auto;
 }
 
 #page_bar ul {
@@ -12,11 +13,9 @@
 
 #page_bar ul li {
     border: 0px solid orange;
-    border-radius: 5px;
+    border-radius: 10px;
     float: left;
-    padding: 3px;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding: 0px 5px;
     margin: 2px;
     cursor: pointer;
     background-color: rgb(228, 173, 23);

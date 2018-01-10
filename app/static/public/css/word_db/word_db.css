@@ -116,6 +116,11 @@ body {
     font-weight: bold;
 }
 
+#mainArticle {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 #listTitleGroup ul {
     float: right;
 }
@@ -166,4 +171,100 @@ body {
 
 #listContents table tr:nth-of-type(1) {
     background-color: rgba(237, 243, 247, 0.37);
+}
+
+#listTitleGroup table {
+    border: 1px solid #999;
+    width: 100%;
+}
+
+#listTitleGroup table th {
+    background-color: rgb(243, 243, 225);
+}
+
+#listTitleGroup table th,
+#listTitleGroup table td {
+    border: 1px solid #999;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#listTitleGroup table td:nth-of-type(1),
+#listTitleGroup table td:nth-of-type(2),
+#listTitleGroup table td:nth-of-type(4),
+#listTitleGroup table td:nth-of-type(6) {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#listTitleGroup table td:nth-of-type(1) {
+    background-color: rgb(228, 243, 225);
+}
+
+#listTitleGroup table td {
+    border: 1px solid #999;
+    padding: 5px;
+    font-size: 14px;
+}
+
+#listTitleGroup table td input[type=text],
+#listTitleGroup table td textarea {
+    border: 0;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-size: 13px;
+    text-align: center;
+}
+
+#listTitleGroup table td:nth-of-type(3) input[type=text],
+#listTitleGroup table td:nth-of-type(5) input[type=text] {
+    text-align: left;
+}
+#listTitleGroup table td .fa-times{
+    cursor:pointer;
+    color:#365378
+}
+
+/****************************************************/
+
+#upload_div {
+    border: 1px solid #999;
+    border-radius: 5px;
+    width: 250px;
+    height: 80px;
+    padding: 20px;
+    background-color:rgb(240, 234, 220);
+}
+
+#upload_div .fa-times{
+    position: absolute;
+    right:10px;
+    top:10px;
+    cursor:pointer;
+    color:#365378;
+}
+
+#upload_div input[type=file]{
+    background-color: rgb(214, 210, 188);
+    margin-bottom:10px;
+}
+
+#upload_div h3 {
+    margin-top: 0;
+}
+
+#upload_div p {
+    font-style:italic;
+    font-size:13px;
+    color:#666;
+}
+
+p,
+ul,
+ol,
+pre,
+table,
+blockquote {
+    margin-bottom: 0;
 }
