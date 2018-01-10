@@ -38,10 +38,20 @@ var pageScript = function(){
             $('#mainWrap').css('opacity', '1');
         });
     };
+    this.selectEvent = function(){
+        $('#file_upload_frm').on('change', function(e){
+            e.preventDefault();
+            //var reg_ext = ['JPG','JPEG','GIF','PNG'];
+            var reg_ext = ['CVS'];
+            var msg = 'cvs 파일 확장자만 허용합니다.';
+            onFileSelect($('#file_upload_frm'), '파일을받을서버URL', 15, reg_ext, msg);
+        });        
+    };
     this.bind = function(){
         local.preInits();
         local.keyupEvents();
         local.clickEvents();
+        local.selectEvent();
     };
 };
 $(function(){

@@ -231,8 +231,8 @@ body {
 #upload_div {
     border: 1px solid #999;
     border-radius: 5px;
-    width: 250px;
-    height: 80px;
+    width: 300px;
+    height: 100px;
     padding: 20px;
     background-color:rgb(240, 234, 220);
 }
@@ -246,8 +246,16 @@ body {
 }
 
 #upload_div input[type=file]{
-    background-color: rgb(214, 210, 188);
     margin-bottom:10px;
+    border: 1px solid rgb(116, 154, 180);
+    border-radius: 5px;
+    background-color: rgb(133, 146, 155);
+    display: block;
+    margin-top: 10px;
+    color: #fff;
+    font-size: 12px;
+    padding: 5px;
+    cursor:pointer;
 }
 
 #upload_div h3 {

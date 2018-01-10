@@ -1,19 +1,6 @@
 var pageScript = function(){
     var local = this;
     this.preInits = function(){
-        jQuery.fn.center = function () {
-            this.css("position", "absolute");
-            this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2 - 100) + $(window).scrollTop()) +
-                "px");
-            this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft()) +
-                "px");
-            return this;
-        };
-    };
-    this.showPopup = function () {
-        $('#mainWrap').css('opacity', '0.2');
-        $("#upload_div").show();
-        $("#upload_div").center();
     };
     this.keyupEvents = function(){
         $(document).on('keyup', '#listTitleGroup textarea', function (e){
@@ -38,13 +25,32 @@ var pageScript = function(){
             $('#mainWrap').css('opacity', '1');
         });
     };
+    this.selectEvent = function(){
+        $('#file_upload_frm').on('change', function(e){
+            e.preventDefault();
+            //var reg_ext = ['JPG','JPEG','GIF','PNG'];
+            var reg_ext = ['CVS'];
+            var msg = 'cvs 파일 확장자만 허용합니다.';
+            onFileSelect($('#file_upload_frm'), '파일을받을서버URL', 15, reg_ext, msg);
+        });        
+    };
+    this.showPopup = function () {
+        $('#mainWrap').css('opacity', '0.2');
+        $("#upload_div").show();
+        $("#upload_div").center();
+    };
     this.bind = function(){
         local.preInits();
         local.keyupEvents();
         local.clickEvents();
+        local.selectEvent();
     };
 };
 $(function(){
     var script = new pageScript();
     script.bind();
 });
+
+
+
+

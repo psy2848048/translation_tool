@@ -3,7 +3,7 @@ var PageScript = function () {
         project_id = getUrlParameter('project');
     this.preInits = function () {
         // 프로젝트의 작업리스트 신규 버튼
-        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_reg.html?project=' + project_id);
+        $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_doc_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
         // 프로젝트 수정 버튼

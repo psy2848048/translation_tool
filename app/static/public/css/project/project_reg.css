@@ -192,3 +192,9 @@ table td:nth-of-type(2){
     text-align: right;
     text-align:left;
 }
+
+/********************************/
+
+#chk_no_limit{
+    margin-top:15px;
+}
