@@ -46,20 +46,23 @@ db.create_all()
 # API Version
 versions = ['/api/v1']
 
-from app.auth.urls import auth
-app.register_blueprint(auth, url_prefix='/api/v1/auth')
-
 from app.users.urls import users
-app.register_blueprint(users, url_prefix='/api/v1/users')
+app.register_blueprint(users, url_prefix='/api/v1/<int:uid>')
 
 from app.projects.urls import projects
-app.register_blueprint(projects, url_prefix='/api/v1/users/<int:user_id>/projects')
+app.register_blueprint(projects, url_prefix='/api/v1/<int:uid>/projects')
 
 from app.docs.urls import docs
-app.register_blueprint(docs, url_prefix='/api/v1/users/<int:user_id>/docs')
+app.register_blueprint(docs, url_prefix='/api/v1/<int:uid>/projects/docs')
 
-from app.words.urls import words
-app.register_blueprint(words, url_prefix='/api/v1/users/<int:user_id>/words')
+from app.workbench.urls import workbench
+app.register_blueprint(workbench, url_prefix='/api/v1/toolkit/workbench')
+
+from app.trans_memory.urls import trans_memory
+app.register_blueprint(trans_memory, url_prefix='/api/v1/toolkit/transMemory')
+
+from app.termbase.urls import termbase
+app.register_blueprint(termbase, url_prefix='/api/v1/toolkit/termbase')
 
 from app.search.urls import search
 app.register_blueprint(search, url_prefix='/api/v1/search')

@@ -1,18 +1,42 @@
 from flask import request, make_response, json
 import app.search.models as model
 
-def index():
-    return make_response(json.jsonify(msg='Search API'), 200)
+def search():
+    query = request.values.get('q', None)
+    target_lang = request.values.get('tl', None)
+    target = request.values.get('target', None)
 
-def search(search_type):
-    return make_response(json.jsonify(result=''), 200)
+    targets = target.split(',')
+    results = {}
 
-def search_word():
-    text = request.values.get('text', None)
+    for t in targets:
+        #: 문장저장소 검색
+        if t == 'tm':
+            temp = []
+            res = model.select_similarity_trans_memory(query, target_lang)
+            for r in res:
+                if r.score >= 50:
+                    temp.append(dict(r))
+            results['tm'] = temp
 
-    results = []
-    words = model.select_word(text.lower())
-    # for w in words:
-    #     results.append(dict(w))
+        #: 단어저장소 검색
+        elif t == 'tb':
+            res = model.select_termbase(query)
+            results['tb'] = res
 
-    return make_response(json.jsonify(result=words), 200)
+        #: 프로젝트 검색
+        elif t == 'p':
+            res = model.select_projects(query)
+            results['p'] = res
+
+        #: 문서 검색
+        elif t == 'd':
+            res = model.select_docs(query)
+            results['d'] = res
+
+        #: 사용자 검색
+        elif t == 'u':
+            res = model.select_users(query)
+            results['u'] = res
+
+    return make_response(json.jsonify(results), 200)
