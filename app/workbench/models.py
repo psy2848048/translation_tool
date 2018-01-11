@@ -61,15 +61,11 @@ def update_trans_status(tid, status):
 
 def select_trans_comments(tid):
     conn = db.engine.connect()
-    comments = []
-
     results = conn.execute(text("""SELECT c.id as comment_id, trans_id, user_id, text as comment, c.create_time
-                                   FROM `marocat v1.1`.comments c JOIN users u ON u.id = c.user_id
+                                   FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
                                    WHERE trans_id = :tid AND c.is_deleted = FALSE AND u.is_deleted = FALSE
                                    ORDER BY c.create_time;"""), tid=tid)
-    for res in results:
-        comments.append(dict(res))
-
+    comments = [dict(res) for res in results]
     return comments
 
 def insert_trans_comment(uid, tid, comment):
