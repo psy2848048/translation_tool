@@ -5,7 +5,7 @@ var PageScript = function () {
         SetMenuColor(getUrlParameter('project'), '프로젝트', '#ulProjectList li', '?project=', 'a', 'orange');
 
         var minutePadding = 10;
-        $('#limited_date').append(SetDateSelect(2028, minutePadding));  
+        $('#limited_date').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
 
         // 좌측 프로젝트 메뉴리스트
         var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
@@ -34,6 +34,22 @@ var PageScript = function () {
         jqxhr.always(function () {});
     };
     this.btnEvents = function () {
+        // 기간 제한없음 체크박스
+        $(document).on('click', '#chk_no_limit', function (e) {
+            if ($(this).prop('checked') == true) {
+                $('#sel_year').attr('disabled', true);
+                $('#sel_month').attr('disabled', true);
+                $('#sel_day').attr('disabled', true);
+                $('#sel_hour').attr('disabled', true);
+                $('#sel_minute').attr('disabled', true);
+            } else {
+                $('#sel_year').attr('disabled', false);
+                $('#sel_month').attr('disabled', false);
+                $('#sel_day').attr('disabled', false);
+                $('#sel_hour').attr('disabled', false);
+                $('#sel_minute').attr('disabled', false);
+            }
+        });
         // 파일로 업로드 버튼
         $('#rdo_file').on('click', function () {
             $('#dv_file').fadeIn();

@@ -127,10 +127,11 @@ body {
     border: 1px solid #999;
     border-radius: 5px;
     width: 100%;
-    height: 250px;
+    height: 280px;
     box-sizing: border-box;
     font-size: 14px;
     margin-top: 10px;
+    resize:none;
 }
 
 #mainArea article input[type=file] {
@@ -143,6 +144,7 @@ body {
     color: #fff;
     font-size: 12px;
     padding: 5px;
+    cursor:pointer;
 }
 
 #mainArea article input[type=button] {
@@ -232,4 +234,10 @@ body {
 
 #ulProjectList li {
     padding: 5px !important;
+}
+
+/**********************************************/
+
+#chk_no_limit{
+    margin-top:15px;
 }

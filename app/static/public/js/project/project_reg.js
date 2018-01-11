@@ -3,12 +3,28 @@ var PageScript = function () {
         project_id = getUrlParameter('project');
     this.preInits = function () {
         var minutePadding = 10;
-        $('#limited_date_area').append(SetDateSelect(2028, minutePadding));   
+        $('#limited_date_area').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
         SetToday();
-        ResetDay();   
-        if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();         
+        ResetDay();
+        if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
     };
     this.btnEvents = function () {
+        // 기간 제한없음 체크박스
+        $(document).on('click', '#chk_no_limit', function (e) {
+            if ($(this).prop('checked') == true) {
+                $('#sel_year').attr('disabled', true);
+                $('#sel_month').attr('disabled', true);
+                $('#sel_day').attr('disabled', true);
+                $('#sel_hour').attr('disabled', true);
+                $('#sel_minute').attr('disabled', true);
+            } else {
+                $('#sel_year').attr('disabled', false);
+                $('#sel_month').attr('disabled', false);
+                $('#sel_day').attr('disabled', false);
+                $('#sel_hour').attr('disabled', false);
+                $('#sel_minute').attr('disabled', false);
+            }
+        });
         // 프로젝트 등록버튼 클릭
         $('#mainArea input[type=button]').on('click', function () {
             if ($('#txt_title').val().trim() == '') {

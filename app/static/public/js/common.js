@@ -52,6 +52,84 @@ function GetStringDate(date) {
     return strToday;
 }
 
+
+jQuery.fn.center = function () {
+    this.css("position", "absolute");
+    this.css("top", Math.max(0, (($(window).height() - $(this).outerHeight()) / 2 - 100) + $(window).scrollTop()) +
+        "px");
+    this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft()) +
+        "px");
+    return this;
+};
+
+function getFileExtension(file_name) {
+    var result;
+    //console.log('[6652] file_name : ', file_name);
+    //console.log('[1145] file_name.length : ', file_name.length);
+    //console.log('[2415] file_name.lastIndexOf(".") : ', file_name.lastIndexOf('.'));
+    if (file_name != undefined && file_name.length > 0 && file_name.lastIndexOf('.') != -1) {
+        result = file_name.substring(file_name.lastIndexOf('.') + 1, file_name.length).toUpperCase();
+        //console.log('[5487] result : ', result);
+        return result;
+    } else {
+        //console.log('[8526] result : ', result);
+        return '';
+    }
+}
+
+function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
+    var fileUpload = id.get(0);
+    var files = fileUpload.files;
+    var f_data = new FormData();
+    var is_allowed_ext = false;
+    for (var i = 0; i < files.length; i++) {
+        /* 사이즈 체크 */
+        var fileSize = files[i].size;
+        var mega = max_mb_size; // 메가
+        var maxFilesize = parseInt(mega) * 1025 * 1000;
+        if (fileSize > maxFilesize) {
+            alert('파일당 최대용량은 ' + mega + '메가 입니다.');
+            break;
+        }
+        /* 확장자 체크 */
+        var ext = getFileExtension(files[i].name);
+        //console.log('[1254] ext : ', ext);
+        if (ext == '') alert('파일 확장자에 문제가 있습니다!');
+        else {
+            for (var j = 0; j < reg_ext.length; j++) {
+                //alert(reg_ext[j].toUpperCase());
+                if (reg_ext[j].toUpperCase() == ext) {
+                    //alert(0);
+                    is_allowed_ext = true;
+                    continue;
+                }
+            }
+        }
+    }
+    if (is_allowed_ext) {
+        $.ajax({
+            url: server_url,
+            type: "POST",
+            contentType: false,
+            processData: false,
+            data: f_data,
+            // dataType: "json",
+            success: function (result) {
+                console.log('[4576] result : ', result);
+            },
+            error: function (xhr, ajaxOptions, thrownError) {
+                console.log('[9786] xhr.status : ', xhr.status);
+                console.log('[6458] thrownError : ', thrownError);
+                console.log('[3197] xhr.responseText : ', xhr.responseText);
+            }
+        });
+    } else {
+        alert(ext_msg);
+        id.val('');
+        return false;
+    }
+}
+
 $(function () {
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
     $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');
