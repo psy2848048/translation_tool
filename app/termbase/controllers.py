@@ -44,10 +44,8 @@ def modify_term(tid):
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
-def modify_term_trans(tid):
-    trans_text = request.form.get('trans_text', None)
-
-    is_done = model.update_term_trans(tid, trans_text)
+def delete_term(tid):
+    is_done = model.delete_term(tid)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

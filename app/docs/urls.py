@@ -8,3 +8,5 @@ docs.add_url_rule('/<int:did>/members', view_func=ctrl.get_doc_members, methods=
 
 docs.add_url_rule('/<int:did>', view_func=ctrl.modify_doc_info, methods=['PUT'])
 docs.add_url_rule('/<int:did>/members/<int:mid>/permission', view_func=ctrl.modify_doc_member, methods=['PUT'])
+
+docs.add_url_rule('/<int:did>', view_func=ctrl.delete_doc, methods=['DELETE'])

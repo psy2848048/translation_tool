@@ -12,6 +12,7 @@ def get_doc_members(uid, did):
     doc_members, total_cnt = model.select_doc_members(did, page, rows)
     return make_response(json.jsonify(total_cnt=total_cnt, results=doc_members), 200)
 
+
 def modify_doc_info(uid, did):
     title = request.form.get('title', None)
     status = request.form.get('status', None)
@@ -48,3 +49,13 @@ def modify_doc_member(uid, did, mid):
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
+def delete_doc(uid, did):
+    is_done = model.delete_doc(did)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+

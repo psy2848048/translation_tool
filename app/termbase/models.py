@@ -2,6 +2,7 @@ from sqlalchemy import Table, MetaData, func, text
 from app import db
 import traceback
 import csv
+from datetime import datetime
 
 def select_termbase(page, rows):
     conn = db.engine.connect()
@@ -53,19 +54,19 @@ def update_term(tid, origin_lang, trans_lang, origin_text, trans_text):
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text)
+        conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text, update_time=datetime.now())
         return True
     except:
         traceback.print_exc()
         return False
 
-def update_term_trans(tid, trans_text):
+def delete_term(tid):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        conn.execute(tb.update(tb.c.id == tid), trans_text=trans_text)
+        conn.execute(tb.update(tb.c.id == tid), is_deleted=True, update_time=datetime.now())
         return True
     except:
         traceback.print_exc()

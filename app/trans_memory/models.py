@@ -2,6 +2,7 @@ from sqlalchemy import Table, MetaData, func, text
 from app import db
 import traceback
 import csv
+from datetime import datetime
 
 def select_trans_memory(page, rows):
     conn = db.engine.connect()
@@ -55,7 +56,19 @@ def update_trans_memory(tid, origin_lang, trans_lang, origin_text, trans_text):
     tm = Table('translation_memory', meta, autoload=True)
 
     try:
-        conn.execute(tm.update(tm.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text)
+        conn.execute(tm.update(tm.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text, update_time=datetime.now())
+        return True
+    except:
+        traceback.print_exc()
+        return False
+
+def delete_trans_memory(tid):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+    tm = Table('translation_memory', meta, autoload=True)
+
+    try:
+        conn.execute(tm.update(tm.c.id == tid), is_deleted=True, update_time=datetime.now())
         return True
     except:
         traceback.print_exc()

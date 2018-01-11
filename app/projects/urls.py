@@ -16,3 +16,4 @@ projects.add_url_rule('/<int:pid>', view_func=ctrl.modify_project_info, methods=
 projects.add_url_rule('/<int:pid>/members/<int:mid>/permission', view_func=ctrl.modify_project_member, methods=['PUT'])
 
 projects.add_url_rule('/<int:pid>', view_func=ctrl.delete_project, methods=['DELETE'])
+projects.add_url_rule('/<int:pid>/members/<int:mid>', view_func=ctrl.delete_project_member, methods=['DELETE'])
