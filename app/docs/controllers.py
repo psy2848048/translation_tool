@@ -1,120 +1,48 @@
 from flask import request, make_response, json
 import app.docs.models as model
 
-def index(user_id):
-    return make_response(json.jsonify(msg='Docs API', user_id=user_id), 200)
+def get_doc_info(uid, did):
+    doc_info = model.select_doc_info(did)
+    return make_response(json.jsonify(doc_info), 200)
 
-def make_project_doc(user_id):
+def get_doc_members(uid, did):
+    page = int(request.values.get('page', 1))
+    rows = int(request.values.get('rows', 10))
+
+    doc_members, total_cnt = model.select_doc_members(did, page, rows)
+    return make_response(json.jsonify(total_cnt=total_cnt, results=doc_members), 200)
+
+def modify_doc_info(uid, did):
     title = request.form.get('title', None)
-    doc = request.form.get('doc', None)
+    status = request.form.get('status', None)
     link = request.form.get('link', None)
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
-    trans_company = request.form.get('trans_company', None)
-    translators = request.form.get('translators', None)
-    translator = request.form.get('translator', None)
-    duration_time = request.form.get('duration_time', None)
-    # file = request.files.get('file', None)
+    due_date = request.form.get('due_date', None)
 
-    return make_response(json.jsonify(result=''), 200)
+    if None in [title, status, origin_lang, trans_lang, due_date]:
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-def get_doc_for_translate(user_id, doc_id):
-    result = []
-    doc_sentences = model.select_doc_sentences(doc_id)
+    is_done = model.update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
 
-    for ds in doc_sentences:
-        # print(ds.id, ds.origin_text, ds.trans_text)
-        result.append(dict(ds))
-
-    return make_response(json.jsonify(result=result), 200)
-
-def modify_doc(user_id, doc_id):
-    return make_response(json.jsonify(result=''), 200)
-
-def delete_doc(user_id, doc_id):
-    return make_response(json.jsonify(result=''), 200)
-
-
-
-##################################   sentences   ##################################
-
-def get_translate_and_words(user_id, doc_id, sentence_id):
-    sentence = request.values.get('sentence', None)
-
-    if not sentence:
-        return make_response(json.jsonify('Something Not Entered'), 460)
-
-    similarity_res = []
-
-    res1 = model.get_similarity_sentences(sentence)
-    for r in res1:
-        if r.score >= 50:
-            similarity_res.append(dict(r))
-
-    words = model.select_words_in_sentence(sentence)
-
-    return make_response(json.jsonify(tm=similarity_res, words=words), 200)
-
-def save_translation(user_id, doc_id, sentence_id):
-    trans_type = request.values.get('trans_type', None)
-    trans_text = request.values.get('trans_text', None)
-    
-    is_done = model.update_trans_text_and_type(sentence_id, trans_text, trans_type)
+    #: 문서 상태가 완료된 경우 원문과 번역문을 문장저장소에 저장한다
+    if status == '완료' or status == 3:
+        pass
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
-def update_trans_status(user_id, doc_id, sentence_id, status):
-    is_done = model.update_trans_status(sentence_id, status)
+def modify_doc_member(uid, did, mid):
+    can_read = request.form.get('can_read', None)
+    can_modify = request.form.get('can_modify', None)
+    can_delete = request.form.get('can_delete', None)
 
-    if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
+    if None in [can_read, can_modify, can_delete]:
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-
-
-##################################   comments   ##################################
-
-def get_comments(user_id, doc_id, sentence_id):
-    results = []
-
-    comments = model.select_sentence_comments(doc_id, sentence_id)
-    for c in comments:
-        results.append(dict(c))
-
-    return make_response(json.jsonify(result=results), 200)
-
-def make_comment(user_id, doc_id, sentence_id):
-    comment = request.form.get('comment', None)
-
-    if not doc_id or not sentence_id or not comment:
-        return make_response(json.jsonify('Something Not Entered'), 460)
-
-    is_done = model.insert_sentence_comment(user_id, doc_id, sentence_id, comment)
-
-    if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-def modify_comment(user_id, doc_id, sentence_id, comment_id):
-    comment = request.form.get('comment', None)
-
-    if not comment:
-        return make_response(json.jsonify('Something Not Entered'), 460)
-
-    is_done = model.update_sentence_comment(comment_id, comment)
-
-    if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-def delete_comment(user_id, doc_id, sentence_id, comment_id):
-    is_done = model.delete_sentence_comment(comment_id)
+    is_done = model.update_doc_member(did, mid, can_read, can_modify, can_delete)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

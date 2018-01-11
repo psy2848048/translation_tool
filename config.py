@@ -40,7 +40,7 @@ SWAGGER = {
 
 #: SQLAlchemy, DB
 #SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ciceron01!@ciceron.xyz/marocat'
-SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ciceron01!@ciceronservice2.cng6yzqtxqhh.ap-northeast-1.rds.amazonaws.com/marocat'
+SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ciceron01!@ciceronservice2.cng6yzqtxqhh.ap-northeast-1.rds.amazonaws.com/marocat v1.1'
 SQLALCHEMY_TRACK_MODIFICATIONS=True
 
 
