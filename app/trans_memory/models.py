@@ -10,11 +10,12 @@ def select_trans_memory(page, rows):
     tm = Table('translation_memory', meta, autoload=True)
 
     #: 사용자의 총 프로젝트 개수
-    res = conn.execute(func.count(tm.c.id)).fetchone()
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.translation_memory WHERE is_deleted = FALSE;""")).fetchone()
     total_cnt = res[0]
 
     results = conn.execute(text("""SELECT id as tmid, origin_lang, trans_lang, origin_text, trans_text FROM `marocat v1.1`.translation_memory
-                                 LIMIT :row_count OFFSET :offset;"""), row_count=rows, offset=rows * (page - 1))
+                                  WHERE is_deleted = FALSE
+                                  LIMIT :row_count OFFSET :offset;"""), row_count=rows, offset=rows * (page - 1))
     tm = [dict(res) for res in results]
 
     return tm, total_cnt

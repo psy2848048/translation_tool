@@ -1,16 +1,57 @@
-from sqlalchemy import Table, MetaData
-from app import db
+from sqlalchemy import Table, MetaData, exc, text
+from app import db, common
 import traceback
 import hashlib
+
 
 def insert_user(name, email, password):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     u = Table('users', meta, autoload=True)
 
+    hashpwd = common.encrypt_pwd(password)
+
     try:
-        conn.execute(u.insert(), name=name, email=email, password=password)
-        return True
+        res = conn.execute(u.insert(), name=name, email=email, password=hashpwd)
+
+        if res.rowcount != 1:
+            return False, 461
+
+        return True, 200
+    except exc.IntegrityError:
+        return False, 462
     except:
         traceback.print_exc()
-        return False
+        return False, 461
+    finally:
+        conn.close()
+
+
+def update_password(uid, old_pwd, new_pwd):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
+
+    # 1. 현재 로그인한 사용자의 id로 검색한 패스워드 + 사용자가 입력한 현재 비밀번호가 일치하는지 확인
+    res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as res FROM users WHERE id = :uid"""), pwd=old_pwd, uid=uid).fetchone()
+
+    # 2. 일치한다면 새로운 비밀번호로 수정
+    if dict(res)['res'] == 1:
+        try:
+            hash_new_pwd = common.encrypt_pwd(new_pwd)
+            res = conn.execute(u.update().where(u.c.id == uid), password=hash_new_pwd)
+
+            if res.rowcount != 1:
+                db.rollback()
+                return False, 461
+
+            return True, 200
+        except exc.IntegrityError:
+            return False, 462
+        except:
+            traceback.print_exc()
+            return False, 461
+        finally:
+            conn.close()
+    else:
+        return False, 401
