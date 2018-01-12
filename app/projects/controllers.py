@@ -35,6 +35,9 @@ def make_project(uid):
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
 
+    if None in [name, due_date]:
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
+
     is_done = model.insert_project(uid, name, due_date)
 
     if is_done is True:
@@ -53,11 +56,15 @@ def add_doc(uid, pid):
 
     if None in [title, origin_lang, trans_lang, due_date, type]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
+    elif not content and type == 'text':
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
 
     if type == 'text':
         # 내용을 문장 단위로 나누기 - 내용을 통으로 넣으면 배열로 문장이 하나씩 갈라져 나온다
         sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
         is_done = model.insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences)
+    else:
+        is_done = False
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

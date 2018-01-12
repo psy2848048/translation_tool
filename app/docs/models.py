@@ -1,11 +1,11 @@
-from app import db
+from app import db, common
 from sqlalchemy import Table, MetaData, text, func, and_
 import traceback
 from datetime import datetime
 
 def select_doc_info(did):
     conn = db.engine.connect()
-    result = conn.execute(text("""SELECT id as doc_id, title, status, link, origin_lang, trans_lang, due_date
+    result = conn.execute(text("""SELECT id as id, title, status, link, origin_lang, trans_lang, due_date
                                   FROM `marocat v1.1`.docs WHERE id = :did;"""), did=did).fetchone()
 
     doc_info = dict(result)
@@ -31,6 +31,8 @@ def update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
+
+    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         conn.execute(d.update(d.c.id == did),

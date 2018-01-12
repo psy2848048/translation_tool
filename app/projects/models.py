@@ -1,4 +1,4 @@
-from app import db
+from app import db, common
 from sqlalchemy import Table, MetaData, text, func, and_
 import traceback
 from datetime import datetime
@@ -83,6 +83,8 @@ def insert_project(uid, name, due_date):
     p = Table('projects', meta, autoload=True)
     pm = Table('project_members', meta, autoload=True)
 
+    due_date = common.convert_datetime_4mysql(due_date)
+
     try:
         #: 프로젝트 추가
         res = conn.execute(p.insert(), name=name, due_date=due_date)
@@ -102,6 +104,8 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
     os = Table('doc_origin_sentences', meta, autoload=True)
+
+    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         #: 문서 추가
@@ -157,6 +161,8 @@ def update_project_info(pid, name, status, due_date):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     p = Table('projects', meta, autoload=True)
+
+    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date)

@@ -19,12 +19,13 @@ def sign_in():
 
     #: 입력된 email의 사용자 찾기
     user = model.select_user_by_email(email)
+    uid = user.get_id()
 
     if not user:
         return make_response(json.jsonify(result='User does not exist'), 401)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
-        is_ok = model.verify_password(password, user)
+        is_ok = model.verify_password(password, uid)
 
         if is_ok is False:
             return make_response(json.jsonify(result="Password is wrong"), 401)

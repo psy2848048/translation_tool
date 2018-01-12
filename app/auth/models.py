@@ -35,14 +35,14 @@ def select_user_by_email(email):
 
         return user
 
-def verify_password(password, user):
+def verify_password(password, uid):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     u = Table('users', meta, autoload=True)
 
     #: user의 비밀번호와 입력된 hash_pwd가 일치하는지 확인
-    user
-    res = True
+    res = u.select()
+
     if res is True:
         return True
     else:
