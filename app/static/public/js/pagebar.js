@@ -1,5 +1,5 @@
 function SetPagebar(total_count, row_size, cur_page, org_url, pagebar_size) {
-    if (parseInt(total_count) > 0) {
+    if (parseInt(total_count) > parseInt(row_size)) {
         var total_page_count = parseInt(((total_count - 1) / row_size) + 1);
 
         var start_page = parseInt((cur_page - 1) / pagebar_size) * pagebar_size + 1; // 정수로 계산되어야 하기에 반드시 parseInt() 해줘야 한다!!
@@ -34,4 +34,4 @@ function SetPagebar(total_count, row_size, cur_page, org_url, pagebar_size) {
     }
 }
 // 임시호출 : 각 페이지마다 커스텀하게 별도로 호출해줘야 함!!
-SetPagebar(2500, 15, getUrlParameter('page') == undefined || getUrlParameter('page') == '' ? 1 : getUrlParameter('page'), $(location).attr('pathname') + '?', 10);
+// SetPagebar(2500, 15, getUrlParameter('page') == undefined || getUrlParameter('page') == '' ? 1 : getUrlParameter('page'), $(location).attr('pathname') + '?', 10);

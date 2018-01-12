@@ -74,6 +74,11 @@ body {
     border-radius: 5px;
 }
 
+#mainArea article:nth-of-type(2) {
+    padding: 5px;
+    border-radius: 5px;
+}
+
 #mainArea article #rightMenu {
     border: 0px solid red;
     height: 45px;

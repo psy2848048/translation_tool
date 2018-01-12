@@ -32,23 +32,23 @@
                     <h2>프로젝트 편집</h2>
                     <hr class="style-six">
                     <table>
-                            <tr>
-                                <td>프로젝트 명</td>
-                                <td>
-                                    <input type="text" placeholder="프로젝트 제목을 입력해주세요" id="txt_title">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>상태</td>
-                                <td>
-                                    <select name="" id="">
-                                        <option value="신규">신규</option>
-                                        <option value="진행중">진행중</option>
-                                        <option value="완료">완료</option>
-                                        <option value="취소">취소</option>
-                                    </select>
-                                </td>
-                            </tr>
+                        <tr>
+                            <td>프로젝트 명</td>
+                            <td>
+                                <input type="text" placeholder="프로젝트 제목을 입력해주세요" id="txt_title">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>상태</td>
+                            <td>
+                                <select name="" id="status_sel">
+                                    <option value="신규">신규</option>
+                                    <option value="진행중">진행중</option>
+                                    <option value="완료">완료</option>
+                                    <option value="취소">취소</option>
+                                </select>
+                            </td>
+                        </tr>
                         <tr>
                             <td>만기일시</td>
                             <td id="limited_date_area"></td>
@@ -59,6 +59,7 @@
                     <input type="button" value=" 저 장 ">
                 </article>
             </section>
+            <div id="dvLoading"></div>
         </div>
         <script src="/static/public/js/jquery-1.12.4.min.js"></script>
         <script src="/static/public/js/date_module.js"></script>

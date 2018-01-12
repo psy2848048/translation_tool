@@ -10,18 +10,18 @@ var PageScript = function () {
         ResetDay();
         if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
 
-        // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
-                console.log('(좌측메뉴) /api/v1/users/1/projects/ : ', data);
-                // 좌측메뉴
+        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+                //console.log('[/api/v1/7/projects/] : ', data);
+                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+                // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
-                if (data != undefined && data.result != '') {
+                if (data != undefined && data.results != '') {
                     menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-                    $(data.result).each(function (idx, res) {
+                    $(data.results).each(function (idx, res) {
                         menu += '<li>';
-                        if (project_id == res.project_id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
-                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
+                        if (project_id == res.id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
                         menu += '</li>';
                     });
                     menu += '</ul>';
@@ -31,7 +31,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                alert("error 8521");
+                console.log("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
@@ -63,38 +63,52 @@ var PageScript = function () {
             $('#dv_file').fadeOut();
             $('#dv_text').fadeIn();
         });
-        $('#mainArea input[type=button]').on('click', function () {
+        // 문서 추가
+        $('#mainArea input[type=button]').on('click', function (e) {
+            e.preventDefault();
+            var current_date = $('#sel_year').val() + '-' + $('#sel_month').val() + '-' + $('#sel_day').val() + ' ' + $('#sel_hour').val() + ':' + $('#sel_minute').val();
+            var gmtBasic = new Date(current_date);
+            //console.log('[gmtBasic] : ', gmtBasic.toGMTString());
+            //gmtBasic.setMinutes(gmtBasic.getMinutes() + _OFFSET);
+            //console.log('[gmtBasic] : ', gmtBasic);
             var data = {
-                // example!
-                "project_id": 1,
-                "doc_title": $('#txt_title').val(),
-                "doc_content": $('#mainArea textarea').val()
+                'title': $('#txt_title').val(),
+                'origin_lang': $('#org_sel').val(),
+                'trans_lang': $('#tran_sel').val(),
+                'due_date': gmtBasic.toGMTString(),
+                'type': 'text',
+                'content': $('#mainArea textarea').val()
             };
+            console.log('[data] : ', data);
             $.ajax({
-                url: 'http://52.196.164.64/translate',
-                type: 'post',
+                url: '/api/v1/7/projects/' + project_id + '/docs',
+                type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
-                    alert(args);
-                    location.href = 'project_view.html?project=' + getUrlParameter('project');
+                    if(args.result == 'OK'){
+                        alert('정상적으로 저장되었습니다.');
+                        location.href='/project_view.html?project=' + project_id;
+                    }else{
+                        alert('저장에 실패했습니다.\n\n오류코드 : 7784');
+                    }
                 },
-                error: function (e) {
-                    alert('fail');
-                    console.log(e.responseText);
-                    location.href = 'project_view.html?project=' + getUrlParameter('project');
+                error: function (err) {
+                    alert('fail : error code 4157');
+                    console.log('fail : error code 4157');
+                    console.log(err.responseText);
                 }
             });
         });
     };
-    this.selectEvent = function(){
-        $('#mainArea article input[type=file]').on('change', function(e){
+    this.selectEvent = function () {
+        $('#mainArea article input[type=file]').on('change', function (e) {
             e.preventDefault();
             //var reg_ext = ['JPG','JPEG','GIF','PNG'];
             var reg_ext = ['TXT'];
             var msg = 'txt 파일 확장자만 허용합니다.';
             onFileSelect($('#mainArea article input[type=file]'), '파일을받을서버URL', 5, reg_ext, msg);
-        });        
+        });
     };
     this.bind = function () {
         local.preInits();
