@@ -1,3 +1,5 @@
+var _OFFSET = new Date().getTimezoneOffset(); 
+
 // 특정 파라미터값 추출
 function getUrlParameter(sParam) {
     var sPageURL = decodeURIComponent(window.location.search.substring(1)),
@@ -46,10 +48,25 @@ function CheckAll(checkerObj, checkboxes) {
 
 
 // date 타입을 string 타입으로 전환
-function GetStringDate(date) {
+function GetStringDate(date, format) {
+    if(date == undefined || date == null) return '';
+
+    format = format == undefined || format == null || format.trim() == '' ? '0' : format; // 콤마주의!
     var strMonth = parseInt(date.getMonth()) + parseInt(1);
-    var strToday = date.getFullYear() + '-' + strMonth + '-' + date.getDate() + ' ' + date.getHours() + ':' + date.getMinutes();
-    return strToday;
+    strMonth = strMonth < 10 ? '0' + strMonth.toString() : strMonth;
+    var strDay = parseInt(date.getDate()) < 10 ? '0' + date.getDate().toString() : date.getDate().toString();
+    var strHour = parseInt(date.getHours()) < 10 ? '0' + date.getHours().toString() : date.getHours().toString();
+    var strMinute = parseInt(date.getMinutes()) < 10 ? '0' + date.getMinutes().toString() : date.getMinutes().toString();
+    var result = '';
+    switch(format){
+        case '0': // 2018-01-11 9:7
+            result = date.getFullYear() + '-' + strMonth + '-' + strDay + ' ' + parseInt(strHour) + ':' + parseInt(strMinute);
+        break;
+        case '1': // 2018-01-11 09:07
+            result = date.getFullYear() + '-' + strMonth + '-' + strDay + ' ' + strHour + ':' + strMinute;
+        break;
+    }
+    return result;
 }
 
 
@@ -128,6 +145,15 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
         id.val('');
         return false;
     }
+}
+
+function IsValidObj(o){
+    if(o == undefined || o == null) return false;
+    else return true;
+}
+function IsValidStr(s){
+    if(s == undefined || s == null || s == '') return false;
+    else return true;
 }
 
 $(function () {

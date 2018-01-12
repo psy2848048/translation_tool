@@ -91,6 +91,10 @@ body {
     border-radius: 5px;
 }
 
+#mainArea article:nth-of-type(2) {
+    padding-bottom:0;
+}
+
 #mainArea article #rightMenu {
     border: 0px solid red;
     height: 45px;
@@ -115,7 +119,7 @@ body {
 }
 
 #mainArea article:nth-of-type(3) {
-    height: calc(100% - 400px);
+    height: calc(100% - 390px);
     overflow-x: hidden;
     overflow-y: auto;
     margin-top:0;
@@ -157,7 +161,7 @@ body {
 
 #tblProjectDetail td:nth-of-type(1),
 #tblProjectDetail td:nth-of-type(3) {
-    width:100px;
+    width:120px;
     font-weight: bold;
 }
 
