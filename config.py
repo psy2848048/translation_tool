@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta
+import os
 
 VERSION='0.1'
 DEBUG=True
 
 # Define the application directory
-import os
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 #: Define the database
@@ -30,7 +30,7 @@ else:
 SESSION_TYPE='redis'
 SESSION_COOKIE_NAME="CiceronCookie"
 PERMANENT_SESSION_LIFETIME=timedelta(days=15)
-SECRET_KEY=''
+SECRET_KEY=os.urandom(24)
 
 #: Swagger
 SWAGGER = {

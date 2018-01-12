@@ -1,15 +1,16 @@
 from sqlalchemy import Table, MetaData
 from app import db
+import traceback
+import hashlib
 
-def basic():
+def insert_user(name, email, password):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
 
-    projects = Table('projects', meta, autoload=True)
-    conn.execute(projects.insert(), name='test')
-
-    a = projects.select(projects.c.name == 'test').execute()
-    for aa in a: print(aa)
-
-    a = projects.select(projects.c.name == 'test').execute().first()
-    print(a)
+    try:
+        conn.execute(u.insert(), name=name, email=email, password=password)
+        return True
+    except:
+        traceback.print_exc()
+        return False

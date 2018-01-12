@@ -43,3 +43,11 @@ def modify_trans_memory(tid):
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+def delete_trans_memory(tid):
+    is_done = model.delete_trans_memory(tid)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)

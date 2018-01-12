@@ -1,6 +1,7 @@
-from app import db
+from app import db, common
 from sqlalchemy import Table, MetaData, text, func, and_
 import traceback
+from datetime import datetime
 
 def select_projects(uid, page, rows):
     conn = db.engine.connect()
@@ -9,15 +10,18 @@ def select_projects(uid, page, rows):
     res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.project_members WHERE user_id = :uid;"""), uid=uid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT p.name, p.status, p.create_time, p.due_date,
-                                           CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress,
-                                           founder
-                                    FROM `marocat v1.1`.projects p JOIN ( SELECT project_id as pid, user_id as uid, name as founder
-                                                                          FROM `marocat v1.1`.project_members pm JOIN ( users u ) ON ( u.id = pm.user_id )
-                                                                          WHERE is_founder = True AND u.is_deleted = FALSE ) t2 ON ( t2.pid = p.id )
-                                                                   JOIN ( doc_members dm, doc_origin_sentences os, doc_trans_sentences ts ) ON ( dm.project_id = p.id AND os.doc_id = dm.doc_id AND ts.origin_id = os.id )
-                                    WHERE dm.user_id = :uid AND dm.can_read = True AND p.is_deleted = FALSE AND dm.is_deleted = FALSE AND os.is_deleted = FALSE AND ts.is_deleted = FALSE
-                                    GROUP BY p.id
+    results = conn.execute(text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date
+                                          , founder
+                                          , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
+                                    FROM `marocat v1.1`.projects p JOIN project_members pm ON pm.project_id = p.id
+                                                                  JOIN ( SELECT project_id as pid, user_id as uid, name as founder
+                                                                        FROM `marocat v1.1`.project_members pm JOIN ( users u ) ON ( u.id = pm.user_id )
+                                                                        WHERE is_founder = True AND u.is_deleted = FALSE ) t2 ON ( t2.pid = p.id )
+                                                                  LEFT JOIN ( SELECT d.project_id as pid, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                                                                              FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
+                                                                              WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE
+                                                                              GROUP BY d.project_id ) t1 ON ( t1.pid = p.id ) 
+                                    WHERE pm.user_id = :uid
                                     LIMIT :row_count OFFSET :offset;"""), uid=uid, row_count=rows, offset=rows * (page - 1))
     projects = [dict(res) for res in results]
 
@@ -50,7 +54,7 @@ def select_project_docs(pid, page, rows):
                                                                           FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
                                                                           WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE
                                                                           GROUP BY d.id ) t1 ON ( t1.did = d.id )
-                                   WHERE d.project_id = 9 AND d.is_deleted = FALSE
+                                   WHERE d.project_id = :pid AND d.is_deleted = FALSE
                                    GROUP BY d.id
                                    LIMIT :row_count OFFSET :offset"""), pid=pid, row_count=rows, offset=rows * (page - 1))
     project_docs = [dict(res) for res in results]
@@ -79,6 +83,8 @@ def insert_project(uid, name, due_date):
     p = Table('projects', meta, autoload=True)
     pm = Table('project_members', meta, autoload=True)
 
+    due_date = common.convert_datetime_4mysql(due_date)
+
     try:
         #: 프로젝트 추가
         res = conn.execute(p.insert(), name=name, due_date=due_date)
@@ -98,6 +104,8 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
     os = Table('doc_origin_sentences', meta, autoload=True)
+
+    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         #: 문서 추가
@@ -143,7 +151,7 @@ def update_project_member(pid, mid, can_read, can_modify, can_delete, can_create
 
     try:
         conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid)),
-                     can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
+                     can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc, update_time=datetime.now())
         return True
     except:
         traceback.print_exc()
@@ -153,6 +161,8 @@ def update_project_info(pid, name, status, due_date):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
     p = Table('projects', meta, autoload=True)
+
+    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date)
@@ -178,24 +188,43 @@ def delete_project(pid):
     d = Table('docs', meta, autoload=True)
 
     try:
-        with conn.begin() as trans:
-            conn.execute(p.update(p.c.id == pid), is_deleted=True)
-            conn.execute(pm.update(pm.c.project_id == pid), is_deleted=True)
-            conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True)
-            conn.execute(d.update(d.c.project_id == pid), is_deleted=True)
-            conn.execute(text("""UPDATE `marocat v1.1`.docs
-                                 SET is_deleted=TRUE
-                                 WHERE project_id = :pid;
-                                 UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
-                                 SET tc.is_deleted=TRUE
-                                 WHERE project_id = :pid;
-                                 UPDATE `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
-                                 SET ts.is_deleted=TRUE
-                                 WHERE project_id = :pid;
-                                 UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
-                                 SET os.is_deleted=TRUE
-                                 WHERE project_id = :pid;"""), pid=pid)
-            return True
+        conn.execute(p.update(p.c.id == pid), is_deleted=True, update_time=datetime.now())
+        conn.execute(pm.update(pm.c.project_id == pid), is_deleted=True, update_time=datetime.now())
+        conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True, update_time=datetime.now())
+        conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.now())
+        conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
+                             SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
+                             WHERE project_id = :pid;
+                             UPDATE `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
+                             SET ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP 
+                             WHERE project_id = :pid;
+                             UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
+                             SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
+                             WHERE project_id = :pid;"""), pid=pid)
+        return True
+    except:
+        traceback.print_exc()
+        return False
+
+def delete_project_member(pid, mid):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+
+    pm = Table('project_members', meta, autoload=True)
+    dm = Table('doc_members', meta, autoload=True)
+
+    try:
+        #: 프로젝트 참가자 목록에서 삭제
+        conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid)), is_deleted=True, update_time=datetime.now())
+
+        #: 프로젝트 참가자의 문서 권한 목록에서 삭제
+        conn.execute(dm.update(and_(dm.c.project_id == pid, dm.c.user_id == mid)), is_deleted=True, update_time=datetime.now())
+
+        #: 프로젝트 참가자가 작성한 댓글 삭제
+        conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
+                             SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
+                             WHERE project_id = :pid AND tc.user_id = :mid;"""), pid=pid, mid=mid)
+        return True
     except:
         traceback.print_exc()
         return False

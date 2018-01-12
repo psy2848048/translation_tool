@@ -46,8 +46,11 @@ db.create_all()
 # API Version
 versions = ['/api/v1']
 
+from app.auth.urls import auth
+app.register_blueprint(auth, url_prefix='/api/v1/auth')
+
 from app.users.urls import users
-app.register_blueprint(users, url_prefix='/api/v1/<int:uid>')
+app.register_blueprint(users, url_prefix='/api/v1/users')
 
 from app.projects.urls import projects
 app.register_blueprint(projects, url_prefix='/api/v1/<int:uid>/projects')

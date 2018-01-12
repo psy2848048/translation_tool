@@ -96,7 +96,7 @@ def select_users(query):
     conn = db.engine.connect()
 
     res = conn.execute(text("""SELECT id as user_id, name, email FROM `marocat v1.1`.users
-                               WHERE name LIKE :query"""),
-                       query='%' + query + '%')
+                               WHERE email = :query"""),
+                       query=query)
     results = [dict(r) for r in res]
     return results
