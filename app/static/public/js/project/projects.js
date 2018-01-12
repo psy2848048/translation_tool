@@ -1,5 +1,9 @@
 var PageScript = function () {
-    var local = this;
+    var local = this,
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '10',
+        page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
+        project_id = getUrlParameter('project'),
+        cur_path = $(location).attr('pathname');
     this.getProjects = function () {
         console.log('[current pc] : ', new Date());
         console.log('[current pc gmt basic] : ', new Date().toGMTString());
@@ -11,9 +15,9 @@ var PageScript = function () {
         $(document).ajaxComplete(function (event, request, settings) {
             $('#dvLoading2').hide();
         });
-        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
-                console.log('[/api/v1/7/projects/] : ', data);
-                console.log('[/api/v1/7/projects/ data.results[0]] : ', data.results[0]);
+        var jqxhr_l = $.get('/api/v1/7/projects?rows=200&page=1', function (data) {
+                console.log('[/api/v1/7/projects?rows=200&page=1] : ', data);
+                console.log('[/api/v1/7/projects?rows=200&page=1 data.results[0]] : ', data.results[0]);
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {
@@ -26,14 +30,29 @@ var PageScript = function () {
                     menu += '</ul>';
                     $('#left_menu_area>li:nth-of-type(1)').append(menu);
                 }
+            })
+            .done(function () {
+
+            })
+            .fail(function () {
+                console.log("error 9958");
+            })
+            .always(function () {});
+        jqxhr_l.always(function () {});
+        var jqxhr = $.get('/api/v1/7/projects?rows=' + rows + '&page=' + page, function (data) {
+                console.log('[/api/v1/7/projects?rows=rows&page=page] : ', data);
+                console.log('[/api/v1/7/projects?rows=rows&page=page data.results[0]] : ', data.results[0]);
+                var menu = '',
+                    list = '';
                 if (data != undefined && data.result != '') {
                     $(data.results).each(function (idx, res) {
                         list += '<tr>';
                         list += '   <td>' + parseInt(idx + 1) + '</td>';
-                        list += '   <td style="max-width:150px;display: inline-block;white-space: nowrap;overflow:hidden;vertical-align:middle;">';
+                        list += '   <td style="min-width:220px;display: inline-block;white-space: nowrap;overflow:hidden;vertical-align:middle;text-align:left;">';
                         list += '       <a href="project_view.html?project=' + res.id + '">' + res.name + '</a>';
                         list += '   </td>';
-                        list += '   <td>' + res.progress + '</td>';
+                        var prog = res.progress == undefined ? '0' : res.progress;
+                        list += '   <td>' + prog + '%</td>';
                         list += '   <td>' + res.status + '</td>';
                         list += '   <td>' + res.founder + '</td>';
 
@@ -53,7 +72,8 @@ var PageScript = function () {
                         list += '</tr>';
                     });
                     $('#listContents table tbody tr').after(list);
-                    SetPagebar(parseInt(data.total_count), 15, getUrlParameter('page') == undefined || getUrlParameter('page') == '' ? 1 : getUrlParameter('page'), $(location).attr('pathname') + '?', 10);
+                    var param_path = cur_path + '?rows=' + rows + '&';
+                    SetPagebar(parseInt(data.total_cnt), rows, page, param_path, 10);
                 }
             })
             .done(function () {

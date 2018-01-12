@@ -343,6 +343,7 @@ input[type=button] {
   padding: 10px;
   color: rgb(233, 232, 238);
   border-radius: 5px;
+  margin:0 auto;
 }
 
 #menuArea ul li a {
@@ -350,9 +351,18 @@ input[type=button] {
   color: #fff;
   cursor: pointer;
 }
+#menuArea ul li a:hover {
+  opacity:0.8;
+}
 
 #menuArea ul:nth-of-type(1) li {
-  text-align: center;
+  width:100%;
+  text-align: left;
+}
+
+#logoArea>li:nth-of-type(1){
+  width:100%;
+  text-align: center !important;
 }
 
 

@@ -51,7 +51,7 @@ function CheckAll(checkerObj, checkboxes) {
 function GetStringDate(date, format) {
     if(date == undefined || date == null) return '';
 
-    format = format == undefined || format == null || format.trim() == '' ? '0' : format; // 콤마주의!
+    format = format == undefined || format == null || format == '' ? '0' : format; // 콤마주의!
     var strMonth = parseInt(date.getMonth()) + parseInt(1);
     strMonth = strMonth < 10 ? '0' + strMonth.toString() : strMonth;
     var strDay = parseInt(date.getDate()) < 10 ? '0' + date.getDate().toString() : date.getDate().toString();

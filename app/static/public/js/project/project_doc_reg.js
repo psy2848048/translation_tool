@@ -54,9 +54,11 @@ var PageScript = function () {
             }
         });
         // 파일로 업로드 버튼
-        $('#rdo_file').on('click', function () {
-            $('#dv_file').fadeIn();
-            $('#dv_text').fadeOut();
+        $('#rdo_file').on('click', function (e) {
+            e.preventDefault();
+            //$('#dv_file').fadeIn();
+            //$('#dv_text').fadeOut();
+            alert('파일업로드 방식은 개발중에 있습니다.');
         });
         // 텍스트로 등록
         $('#rdo_text').on('click', function () {
@@ -65,17 +67,47 @@ var PageScript = function () {
         });
         // 문서 추가
         $('#mainArea input[type=button]').on('click', function (e) {
-            e.preventDefault();
-            var current_date = $('#sel_year').val() + '-' + $('#sel_month').val() + '-' + $('#sel_day').val() + ' ' + $('#sel_hour').val() + ':' + $('#sel_minute').val();
-            var gmtBasic = new Date(current_date);
-            //console.log('[gmtBasic] : ', gmtBasic.toGMTString());
-            //gmtBasic.setMinutes(gmtBasic.getMinutes() + _OFFSET);
-            //console.log('[gmtBasic] : ', gmtBasic);
+            e.preventDefault();  
+            if($('#txt_title').val().trim() == ''){
+                alert('문서제목을 입력해주세요.');
+                  $('#txt_title').focus();
+              return false;
+            }          
+            var date = '';
+            if ($('#chk_no_limit').prop('checked') == false) {
+                var year = $('#limited_date select:nth-of-type(1)').val(),
+                    month = $('#limited_date select:nth-of-type(2)').val(),
+                    day = $('#limited_date select:nth-of-type(3)').val(),
+                    hour = $('#limited_date select:nth-of-type(4)').val(),
+                    minute = $('#limited_date select:nth-of-type(5)').val();
+                if (year == '') {
+                    alert('년도를 선택해주세요');
+                    return false;
+                }
+                if (month == '') {
+                    alert('월을 선택해주세요');
+                    return false;
+                }
+                if (day == '') {
+                    alert('일을 선택해주세요');
+                    return false;
+                }
+                if (hour == '') {
+                    alert('시를 선택해주세요');
+                    return false;
+                }
+                if (minute == '') {
+                    alert('분을 선택해주세요');
+                    return false;
+                }
+                date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+            }
+            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
             var data = {
                 'title': $('#txt_title').val(),
                 'origin_lang': $('#org_sel').val(),
                 'trans_lang': $('#tran_sel').val(),
-                'due_date': gmtBasic.toGMTString(),
+                'due_date': date,
                 'type': 'text',
                 'content': $('#mainArea textarea').val()
             };
@@ -88,7 +120,7 @@ var PageScript = function () {
                 success: function (args) {
                     if(args.result == 'OK'){
                         alert('정상적으로 저장되었습니다.');
-                        location.href='/project_view.html?project=' + project_id;
+                        location.href='project_view.html?project=' + project_id;
                     }else{
                         alert('저장에 실패했습니다.\n\n오류코드 : 7784');
                     }

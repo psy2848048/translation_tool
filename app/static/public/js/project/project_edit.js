@@ -26,44 +26,48 @@ var PageScript = function () {
                 $('#sel_minute').attr('disabled', false);
             }
         });
-        // 프로젝트 등록버튼 클릭
+        // 프로젝트 저장버튼 클릭
         $('#mainArea input[type=button]').on('click', function () {
             if ($('#txt_title').val().trim() == '') {
                 alert('프로젝트명을 입력해주세요');
                 $('#txt_title').focus();
                 return false;
             }
-            var date = '',
-                year = $('#limited_date_area select:nth-of-type(1)').val(),
-                month = $('#limited_date_area select:nth-of-type(2)').val(),
-                day = $('#limited_date_area select:nth-of-type(3)').val(),
-                hour = $('#limited_date_area select:nth-of-type(4)').val(),
-                minute = $('#limited_date_area select:nth-of-type(5)').val();
-            if (year == '') {
-                alert('년도를 선택해주세요');
-                return false;
+
+            var date = '';
+            if (date = $('#chk_no_limit').prop('checked') == false) {
+                var year = $('#limited_date_area select:nth-of-type(1)').val(),
+                    month = $('#limited_date_area select:nth-of-type(2)').val(),
+                    day = $('#limited_date_area select:nth-of-type(3)').val(),
+                    hour = $('#limited_date_area select:nth-of-type(4)').val(),
+                    minute = $('#limited_date_area select:nth-of-type(5)').val();
+                if (year == '') {
+                    alert('년도를 선택해주세요');
+                    return false;
+                }
+                if (month == '') {
+                    alert('월을 선택해주세요');
+                    return false;
+                }
+                if (day == '') {
+                    alert('일을 선택해주세요');
+                    return false;
+                }
+                if (hour == '') {
+                    alert('시를 선택해주세요');
+                    return false;
+                }
+                if (minute == '') {
+                    alert('분을 선택해주세요');
+                    return false;
+                }
+                date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             }
-            if (month == '') {
-                alert('월을 선택해주세요');
-                return false;
-            }
-            if (day == '') {
-                alert('일을 선택해주세요');
-                return false;
-            }
-            if (hour == '') {
-                alert('시를 선택해주세요');
-                return false;
-            }
-            if (minute == '') {
-                alert('분을 선택해주세요');
-                return false;
-            }
-            date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
             var data = {
                 name: $('#txt_title').val(),
                 status: $('#status_sel').val(),
-                due_date: new Date(date).toGMTString()
+                due_date: date
             };
             console.log('[data 4251] : ', data);
             $.ajax({

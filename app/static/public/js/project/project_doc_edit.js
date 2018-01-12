@@ -1,6 +1,7 @@
 var PageScript = function () {
     var local = this,
-        project_id = getUrlParameter('project');
+        project_id = getUrlParameter('project'),
+        doc_id = getUrlParameter('doc_id');
     this.preInits = function () {
         SetMenuColor(getUrlParameter('project'), '프로젝트', '#ulProjectList li', '?project=', 'a', 'orange');
 
@@ -8,17 +9,18 @@ var PageScript = function () {
         $('#limited_date').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
 
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
-                console.log('(좌측메뉴) /api/v1/users/1/projects/ : ', data);
-                // 좌측메뉴
+        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+                //console.log('[/api/v1/7/projects/] : ', data);
+                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+                // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
-                if (data != undefined && data.result != '') {
+                if (data != undefined && data.results != '') {
                     menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-                    $(data.result).each(function (idx, res) {
+                    $(data.results).each(function (idx, res) {
                         menu += '<li>';
-                        if (project_id == res.project_id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
-                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
+                        if (project_id == res.id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
                         menu += '</li>';
                     });
                     menu += '</ul>';
@@ -28,10 +30,47 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                alert("error 4268");
+                console.log("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
+
+        // 문서정보
+        $.ajax({
+            url: '/api/v1/7/projects/docs/' + doc_id,
+            type: 'GET',
+            //data: data,
+            async: true,
+            success: function (args) {
+                console.log('[args] : ', args);
+                $('#txt_title').val(args.title);
+                $('#status_sel').val(args.status);
+                if(args.link != null)$('#txt_link').val(args.link);
+                $('#org_sel').val(args.origin_lang);
+                $('#tran_sel').val(args.trans_lang);
+                if(args.due_date != null && args.due_date != ''){
+                    var d_date = new Date(args.due_date);
+                    $('#sel_year').val(AddPreZero(d_date.getFullYear()));
+                    $('#sel_month').val(AddPreZero(parseInt(d_date.getMonth()+1)));
+                    $('#sel_day').val(AddPreZero(d_date.getDate()));
+                    var h = d_date.getHours(),
+                        m = d_date.getMinutes();
+                    if (parseInt(m) > 54) {
+                        h = parseInt(h) + parseInt(1);
+                        m = '00';
+                    }else{
+                        m = Math.floor(m / 10);
+                    }
+                    $('#sel_hour').val(AddPreZero(h));
+                    $('#sel_minute').val(AddPreZero(m));
+                }
+            },
+            error: function (err) {
+                alert('fail : error code 4157');
+                console.log('fail : error code 4157');
+                console.log(err.responseText);
+            }
+        });
     };
     this.btnEvents = function () {
         // 기간 제한없음 체크박스
@@ -51,35 +90,81 @@ var PageScript = function () {
             }
         });
         // 파일로 업로드 버튼
-        $('#rdo_file').on('click', function () {
-            $('#dv_file').fadeIn();
-            $('#dv_text').fadeOut();
+        $('#rdo_file').on('click', function(e){
+            e.preventDefault();
+            //$('#dv_file').fadeIn();
+            //$('#dv_text').fadeOut();
+            alert('파일업로드 방식은 개발중에 있습니다.');            
         });
         // 텍스트로 등록
         $('#rdo_text').on('click', function () {
             $('#dv_file').fadeOut();
             $('#dv_text').fadeIn();
         });
-        $('#mainArea input[type=button]').on('click', function () {
+        // 문서 수정
+        $('#mainArea input[type=button]').on('click', function (e) {
+            e.preventDefault();            
+            if($('#txt_title').val().trim() == ''){
+                alert('문서제목을 입력해주세요.');
+                $('#txt_title').focus();
+                return false;
+            }          
+           var date = '';
+            if ($('#chk_no_limit').prop('checked') == false) {
+                var year = $('#limited_date select:nth-of-type(1)').val(),
+                    month = $('#limited_date select:nth-of-type(2)').val(),
+                    day = $('#limited_date select:nth-of-type(3)').val(),
+                    hour = $('#limited_date select:nth-of-type(4)').val(),
+                    minute = $('#limited_date select:nth-of-type(5)').val();
+                if (year == '') {
+                    alert('년도를 선택해주세요');
+                    return false;
+                }
+                if (month == '') {
+                    alert('월을 선택해주세요');
+                    return false;
+                }
+                if (day == '') {
+                    alert('일을 선택해주세요');
+                    return false;
+                }
+                if (hour == '') {
+                    alert('시를 선택해주세요');
+                    return false;
+                }
+                if (minute == '') {
+                    alert('분을 선택해주세요');
+                    return false;
+                }
+                date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+            }
+            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
             var data = {
-                // example!
-                "project_id": 1,
-                "doc_title": $('#txt_title').val(),
-                "doc_content": $('#mainArea textarea').val()
+                'title': $('#txt_title').val(),
+                'status':$('#status_sel').val(),
+                'link':$('#txt_link').val(),
+                'origin_lang': $('#org_sel').val(),
+                'trans_lang': $('#tran_sel').val(),
+                'due_date': date,
             };
+            console.log('[data] : ', data);
             $.ajax({
-                url: 'http://52.196.164.64/translate',
-                type: 'post',
+                url: '/api/v1/7/projects/docs/' + doc_id,
+                type: 'PUT',
                 data: data,
                 async: true,
                 success: function (args) {
-                    alert(args);
-                    location.href = 'project_view.html?project=' + getUrlParameter('project');
+                    if(args.result == 'OK'){
+                        alert('정상적으로 저장되었습니다.');
+                        location.href='project_view.html?project=' + project_id;
+                    }else{
+                        alert('저장에 실패했습니다.\n\n오류코드 : 7784');
+                    }
                 },
-                error: function (e) {
-                    alert('fail');
-                    console.log(e.responseText);
-                    location.href = 'project_view.html?project=' + getUrlParameter('project');
+                error: function (err) {
+                    alert('fail : error code 4157');
+                    console.log('fail : error code 4157');
+                    console.log(err.responseText);
                 }
             });
         });

@@ -16,18 +16,50 @@ var PageScript = function () {
         // 프로젝트 삭제 버튼                
         $('#del_btn').on('click', function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
-                alert('프로젝트 삭제 프로세스');
+                $.ajax({
+                    url: '/api/v1/7/projects/' + project_id,
+                    type: 'DELETE',
+                    async: true,
+                    success: function (res) {
+                        console.log('[4563 res] : ', res);
+                        if (res.result == 'OK') {
+                            alert('프로젝트가 삭제되었습니다.');
+                            location.href = 'projects.html';
+                        }
+                    },
+                    error: function (e) {
+                        console.log('fail 8965');
+                        console.log(e.responseText);
+                    }
+                });
             }
         });
         // 프로젝트 문서 삭제 버튼
         $('#listTitleGroup li:nth-of-type(2) a').on('click', function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
                 if ($('#listContents td input[type=checkbox]:checked').length > 0) {
-                    alert('프로젝트 삭제 프로세스 : 체크된 문서 갯수만큼 루핑 하면서 삭제한다.');
+                    //alert('프로젝트 삭제 프로세스 : 체크된 문서 갯수만큼 루핑 하면서 삭제한다.');
 
                     $('#listContents td input[type=checkbox]:checked').each(function () {
-                        console.log('체크된 문서 : ', $(this).attr('data-id'));
+                        //console.log('체크된 문서 : ', $(this).attr('data-id'));
+                        $.ajax({
+                            url: '/api/v1/5/projects/docs/' + $(this).attr('data-id'),
+                            type: 'DELETE',
+                            async: true,
+                            success: function (res) {
+                                //console.log('[6578 res] : ', res);
+                                //if(res.result == 'OK') {
+                                //    alert('프로젝트가 삭제되었습니다.');
+                                //    location.href='projects.html';
+                                //}
+                            },
+                            error: function (e) {
+                                console.log(e.responseText);
+                                alert('삭제실패\n\nfail code : 3365');
+                            }
+                        });
                     });
+                    location.href = location.href;
                 } else {
                     alert('체크된 문서가 없습니다.');
                 }
@@ -70,11 +102,11 @@ var PageScript = function () {
                     $('#sp_project_id').text(res.id);
                     $('#sp_status').text(res.status);
 
-                    if (res.origin_langs != null && res.origin_langs != '') $('#sp_org_lang').text(res.origin_langs.toUpperCase());
-                    else $('#sp_org_lang').text(res.origin_langs);
+                    if (res.origin_langs != null) $('#sp_org_lang').text(res.origin_langs.toUpperCase());
+                    else $('#sp_org_lang').text('');
 
-                    if (res.trans_langs != null && res.trans_langs != '') $('#sp_trans_lang').text(res.trans_langs.toUpperCase());
-                    else $('#sp_trans_lang').text(res.trans_langs);
+                    if (res.trans_langs != null) $('#sp_trans_lang').text(res.trans_langs.toUpperCase());
+                    else $('#sp_trans_lang').text('');
 
                     $('#requester').text(res.client_company + ' ' + res.clients);
                     $('#transer').text(res.trans_company + ' ' + res.translators);
@@ -87,7 +119,8 @@ var PageScript = function () {
                     if (res.create_time != '') str_cdate = GetStringDate(new Date(res.create_time), '1');
                     $('#reg_date').text(str_cdate);
 
-                    $('#sp_members').text(res.project_members);
+                    var mem = res.project_members == null ? '' : res.project_members;
+                    $('#sp_members').text(mem);
                 }
             },
             error: function (e) {
@@ -100,7 +133,8 @@ var PageScript = function () {
                 //console.log('[/api/v1/7/projects/] : ', data);
                 //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
-                var menu = '', list = '';
+                var menu = '',
+                    list = '';
                 if (data != undefined && data.results != '') {
                     menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
                     $(data.results).each(function (idx, res) {

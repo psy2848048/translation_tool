@@ -36,13 +36,13 @@
                         <tr>
                             <td>제목</td>
                             <td>
-                                <input type="text" placeholder="문서제목을 입력해주세요(필수)">
+                                <input type="text" placeholder="문서제목을 입력해주세요(필수)" id="txt_title">
                             </td>
                         </tr>
                         <tr>
                             <td>상태</td>
                             <td>
-                                <select name="" id="">
+                                <select name="" id="status_sel">
                                     <option value="신규">신규</option>
                                     <option value="진행중">진행중</option>
                                     <option value="완료">완료</option>
@@ -53,26 +53,26 @@
                         <tr>
                             <td>링크</td>
                             <td>
-                                <input type="text" placeholder="번역문이 사용된 곳의 http 링크를 입력해주세요(선택)">
+                                <input type="text" placeholder="번역문이 사용된 곳의 http 링크를 입력해주세요(선택)" id="txt_link">
                             </td>
                         </tr>
                         <tr>
                             <td>원문</td>
                             <td>
-                                <select name="" id="">
-                                    <option value="ko">KO</option>
+                                <select name="" id="org_sel">
+                                    <option value="zh">ZH</option>
                                     <option value="en">EN</option>
-                                    <option value="cn">CN</option>
+                                    <option value="ko">KO</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>번역문</td>
                             <td>
-                                <select name="" id="">
+                                <select name="" id="tran_sel">
                                     <option value="ko">KO</option>
                                     <option value="en">EN</option>
-                                    <option value="cn">CN</option>
+                                    <option value="zh">ZH</option>
                                 </select>
                             </td>
                         </tr>
@@ -82,7 +82,7 @@
                                 <div id="limited_date"></div>
                             </td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                             <td>등록방식</td>
                             <td>
                                 <input type="radio" name="rdo_upload_method" id="rdo_file">
@@ -90,11 +90,11 @@
                                 <input type="radio" name="rdo_upload_method" id="rdo_text">
                                 <label for="rdo_text">텍스트</label>
                             </td>
-                        </tr>
+                        </tr> -->
                     </table>
 
 
-                    <div id="dv_file" style="display:none;">
+                    <!-- <div id="dv_file" style="display:none;">
                         <h3>파일로 업로드</h3>
                         <div>
                             <input type="file">
@@ -103,7 +103,7 @@
                     <div id="dv_text" style="display:none;">
                         <h3>기본 텍스트로 작성하기</h3>
                         <textarea></textarea>
-                    </div>
+                    </div> -->
                     <hr>
                     <input type="button" value=" 저 장 ">
                 </article>
@@ -113,8 +113,9 @@
                         참가자
                     </h3>
                     <div id="listContents">
-                            <table>
-                                <tbody><tr>
+                        <table>
+                            <tbody>
+                                <tr>
                                     <th>
                                         <input type="checkbox">
                                     </th>
@@ -132,9 +133,15 @@
                                     <td>1</td>
                                     <td>홍길동</td>
                                     <td>ciceron_staff2@gmail.com</td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td>
@@ -143,12 +150,19 @@
                                     <td>2</td>
                                     <td>김철수</td>
                                     <td>ciceron_staff3@gmail.com</td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
-                                    <td><input type="checkbox" checked="checked" disabled="disabled"></td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
+                                    <td>
+                                        <input type="checkbox" checked="checked" disabled="disabled">
+                                    </td>
                                 </tr>
-                            </tbody></table>
-                        </div>
+                            </tbody>
+                        </table>
+                    </div>
                 </article>
             </section>
         </div>
