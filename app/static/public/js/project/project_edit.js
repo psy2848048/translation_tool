@@ -1,8 +1,12 @@
 var PageScript = function () {
     var local = this,
-        project_id = getUrlParameter('project');
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '15',
+        page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
+        project_id = getUrlParameter('project'),
+        cur_path = $(location).attr('pathname');
     this.preInits = function () {
         var minutePadding = 10;
+        //$('#limited_date_area').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label><br>Mon, 05 Feb 2018 16:57:39 GMT<br>Tue Feb 06 2018 01:57:39 GMT+0900 (KST)');
         $('#limited_date_area').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
     };
     this.btnEvents = function () {
@@ -57,37 +61,110 @@ var PageScript = function () {
             }
             date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             var data = {
-                project_name: $('#txt_title').val(),
-                duration_date: date
+                name: $('#txt_title').val(),
+                status: $('#status_sel').val(),
+                due_date: new Date(date).toGMTString()
             };
-            console.log('data 4251 : ', data);
+            console.log('[data 4251] : ', data);
             $.ajax({
-                url: '/api/v1/users/1/projects',
-                type: 'POST',
+                url: '/api/v1/7/projects/' + project_id,
+                type: 'PUT',
                 data: data,
                 async: true,
                 success: function (args) {
-                    if (args == 'OK') {
-                        alert(args);
-                        location.href = 'project_view.html?project=프로젝트아이디';
+                    if (args.result == 'OK') {
+                        alert('정상적으로 수정되었습니다.');
+                        location.href = 'project_view.html?project=' + project_id;
                     } else {
-                        alert('등록실패 8893');
+                        alert('수정실패\n\n오류코드 : 8893');
                     }
                 },
                 error: function (e) {
-                    alert('fail 9976');
+                    alert('fail\n\n오류코드 : 7591');
                     console.log(e.responseText);
                 }
             });
         });
     };
-    this.changeEvents = function () {
+    this.getProjects = function () {
+        local.mask();
 
+        $(document).ajaxStart(function () {
+            $('#dvLoading').show();
+        });
+        $(document).ajaxComplete(function (event, request, settings) {
+            $('#dvLoading').hide();
+        });
+
+        // 본문중앙 프로젝트 상세설명            
+        $.ajax({
+            url: '/api/v1/7/projects/' + project_id,
+            type: 'GET',
+            async: true,
+            success: function (res) {
+                console.log('[/api/v1/7/projects/' + project_id + '] : ', res);
+                if (res != undefined && res != '') {
+                    $('#txt_title').val(res.name);
+                    $('#status_sel').val(res.status);
+                    var dt_duedate = new Date(res.due_date);
+                    $('#sel_year').val(dt_duedate.getFullYear());
+                    $('#sel_month').val(AddPreZero(parseInt(dt_duedate.getMonth() + 1)));
+                    $('#sel_day').val(AddPreZero(dt_duedate.getDate()));
+                    var h = dt_duedate.getHours(),
+                        m = dt_duedate.getMinutes();
+                    if (parseInt(m) > 54) {
+                        h = parseInt(h) + parseInt(1);
+                        m = '00';
+                    }
+                    $('#sel_hour').val(AddPreZero(h));
+                    $('#sel_minute').val(AddPreZero(m));
+                }
+            },
+            error: function (e) {
+                console.log('fail 8526');
+                console.log(e.responseText);
+            }
+        });
+        // 좌측 프로젝트 메뉴리스트
+        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+                //console.log('[/api/v1/7/projects/] : ', data);
+                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+                // 좌측 프로젝트 리스트
+                var menu = '',
+                    list = '';
+                if (data != undefined && data.results != '') {
+                    menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
+                    $(data.results).each(function (idx, res) {
+                        menu += '<li>';
+                        if (project_id == res.id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                        menu += '</li>';
+                    });
+                    menu += '</ul>';
+
+                    $('#left_menu_area>li:nth-of-type(1)').append(menu);
+                }
+            })
+            .done(function () {})
+            .fail(function () {
+                console.log("error 3594");
+            })
+            .always(function () {});
+        jqxhr.always(function () {});
+
+        $('#mask').fadeIn(1000);
+        $('#mask').fadeTo("slow", 1000).hide();
+    };
+    this.mask = function () {
+        $('#mask').css({
+            'width': $(document).height(),
+            'height': $(window).width()
+        });
     };
     this.bind = function () {
         local.preInits();
         local.btnEvents();
-        local.changeEvents();
+        local.getProjects(project_id);
     };
 };
 $(function () {

@@ -25,72 +25,73 @@ var PageScript = function () {
                 $('#sel_minute').attr('disabled', false);
             }
         });
-        // 프로젝트 등록버튼 클릭
+        // 프로젝트 저장버튼
         $('#mainArea input[type=button]').on('click', function () {
             if ($('#txt_title').val().trim() == '') {
                 alert('프로젝트명을 입력해주세요');
                 $('#txt_title').focus();
                 return false;
             }
-            var date = '',
-                year = $('#limited_date_area select:nth-of-type(1)').val(),
-                month = $('#limited_date_area select:nth-of-type(2)').val(),
-                day = $('#limited_date_area select:nth-of-type(3)').val(),
-                hour = $('#limited_date_area select:nth-of-type(4)').val(),
-                minute = $('#limited_date_area select:nth-of-type(5)').val();
-            if (year == '') {
-                alert('년도를 선택해주세요');
-                return false;
+            var date = '';
+            if ($('#chk_no_limit').prop('checked') == true) {
+                //date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
+            } else {
+                var year = $('#limited_date_area select:nth-of-type(1)').val(),
+                    month = $('#limited_date_area select:nth-of-type(2)').val(),
+                    day = $('#limited_date_area select:nth-of-type(3)').val(),
+                    hour = $('#limited_date_area select:nth-of-type(4)').val(),
+                    minute = $('#limited_date_area select:nth-of-type(5)').val();
+                if (year == '') {
+                    alert('년도를 선택해주세요');
+                    return false;
+                }
+                if (month == '') {
+                    alert('월을 선택해주세요');
+                    return false;
+                }
+                if (day == '') {
+                    alert('일을 선택해주세요');
+                    return false;
+                }
+                if (hour == '') {
+                    alert('시를 선택해주세요');
+                    return false;
+                }
+                if (minute == '') {
+                    alert('분을 선택해주세요');
+                    return false;
+                }
+                date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             }
-            if (month == '') {
-                alert('월을 선택해주세요');
-                return false;
-            }
-            if (day == '') {
-                alert('일을 선택해주세요');
-                return false;
-            }
-            if (hour == '') {
-                alert('시를 선택해주세요');
-                return false;
-            }
-            if (minute == '') {
-                alert('분을 선택해주세요');
-                return false;
-            }
-            date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             var data = {
-                project_name: $('#txt_title').val(),
-                duration_date: date
+                name: $('#txt_title').val(),
+                due_date: date
             };
-            console.log('data 4251 : ', data);
+            console.log('[입력데이타] : ', data);
             $.ajax({
-                url: '/api/v1/users/1/projects',
+                url: '/api/v1/7/projects/',
                 type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
-                    if (args == 'OK') {
-                        alert(args);
-                        location.href = 'project_view.html?project=프로젝트아이디';
+                    //console.log('[args] : ', args);
+                    if (args.result.toUpperCase() == 'OK') {
+                        alert('프로젝트가 정상적으로 등록되었습니다.');
+                        location.href = 'projects.html';
                     } else {
-                        alert('등록실패 8893');
+                        alert('등록실패\n\n에러코드 : 8893');
                     }
                 },
                 error: function (e) {
-                    alert('fail 9976');
+                    alert('등록실패\n\n에러코드 : 9976');
                     console.log(e.responseText);
                 }
             });
         });
     };
-    this.changeEvents = function () {
-
-    };
     this.bind = function () {
         local.preInits();
         local.btnEvents();
-        local.changeEvents();
     };
 };
 $(function () {

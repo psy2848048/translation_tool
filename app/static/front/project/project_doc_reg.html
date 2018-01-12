@@ -36,23 +36,23 @@
                         <tr>
                             <td>제목</td>
                             <td>
-                                <input type="text" placeholder="문서제목을 입력해주세요">
+                                <input type="text" placeholder="문서제목을 입력해주세요" id="txt_title">
                             </td>
                         </tr>
                         <tr>
                             <td>원문</td>
                             <td>
-                                <select name="" id="">
-                                    <option value="ko">KO</option>
-                                    <option value="en">EN</option>
+                                <select name="" id="org_sel">
                                     <option value="cn">CN</option>
+                                    <option value="en">EN</option>
+                                    <option value="ko">KO</option>
                                 </select>
                             </td>
                         </tr>
                         <tr>
                             <td>번역문</td>
                             <td>
-                                <select name="" id="">
+                                <select name="" id="tran_sel">
                                     <option value="ko">KO</option>
                                     <option value="en">EN</option>
                                     <option value="cn">CN</option>
@@ -75,8 +75,6 @@
                             </td>
                         </tr>
                     </table>
-
-
                     <div id="dv_file" style="display:none;">
                         <h3>파일로 업로드</h3>
                         <div>

@@ -1,4 +1,3 @@
-
 // 년,월,일,시,분 동적폼
 // id 로 지정되어 있기 때문에 한 화면에서 한번만 사용 주의!
 function SetDateSelect(maxYear, minuteBlock) {
@@ -70,7 +69,7 @@ $(document).on('change', '#sel_year, #sel_month', function () {
     ResetDay();
 });
 // 윤달에 따른 2월의 일수 자동으로 변경
-function ResetDay(){
+function ResetDay() {
     var maxK = 0;
     if ($('#sel_month').val() % 2 == 0) {
         if ($('#sel_month').val() == 2) {
@@ -97,9 +96,14 @@ function SetToday() {
     hour = parseInt(today.getHours()) < 10 ? '0' + today.getHours() : today.getHours();
     minute = Math.round(today.getMinutes() / 10) * 10;
     minute = parseInt(minute) < 10 ? '0' + minute : minute;
+    minute = minute == '60' ? '00' : minute;    
     $('#sel_year').val(today.getFullYear());
     $('#sel_month').val(month);
     $('#sel_day').val(day);
     $('#sel_hour').val(hour);
     $('#sel_minute').val(minute);
+}
+
+function AddPreZero(s){
+    return parseInt(s) < 10 ? '0' + parseInt(s) : s;
 }

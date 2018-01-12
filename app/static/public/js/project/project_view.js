@@ -1,8 +1,11 @@
 var PageScript = function () {
     var local = this,
-        project_id = getUrlParameter('project');
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '15',
+        page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
+        project_id = getUrlParameter('project'),
+        cur_path = $(location).attr('pathname');
     this.preInits = function () {
-        // 프로젝트의 작업리스트 신규 버튼
+        // 문서 목록 신규 버튼
         $('#listTitleGroup li:nth-of-type(1) a').attr('href', 'project_doc_reg.html?project=' + project_id);
     };
     this.btnEvents = function () {
@@ -17,7 +20,7 @@ var PageScript = function () {
             }
         });
         // 프로젝트 문서 삭제 버튼
-        $('#listTitleGroup li:nth-of-type(2) a').on('click', function(){
+        $('#listTitleGroup li:nth-of-type(2) a').on('click', function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
                 if ($('#listContents td input[type=checkbox]:checked').length > 0) {
                     alert('프로젝트 삭제 프로세스 : 체크된 문서 갯수만큼 루핑 하면서 삭제한다.');
@@ -57,13 +60,11 @@ var PageScript = function () {
 
         // 본문중앙 프로젝트 상세설명            
         $.ajax({
-            url: '/api/v1/users/1/projects/' + project_id,
+            url: '/api/v1/7/projects/' + project_id,
             type: 'GET',
-            //data: data,
             async: true,
             success: function (res) {
-                console.log('(프로젝트 상세설명) res : ', res);
-                //location.href = 'project_view.html?project=새프로젝트번호';
+                console.log('[/api/v1/7/projects/' + project_id + '] : ', res);
                 if (res != undefined && res != '') {
                     $('#h2_title').text(res.name);
                     $('#sp_project_id').text(res.id);
@@ -79,33 +80,33 @@ var PageScript = function () {
                     $('#transer').text(res.trans_company + ' ' + res.translators);
 
                     var str_ddate = '';
-                    if (res.duration_date != '') str_ddate = GetStringDate(new Date(res.duration_date));
+                    if (res.due_date != '') str_ddate = GetStringDate(new Date(res.due_date), '1');
                     $('#duration_date').text(str_ddate);
 
                     var str_cdate = '';
-                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.create_time));
+                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.create_time), '1');
                     $('#reg_date').text(str_cdate);
+
+                    $('#sp_members').text(res.project_members);
                 }
             },
             error: function (e) {
-                alert('fail 4516');
+                console.log('fail 4436');
                 console.log(e.responseText);
-                //location.href = 'project_view.html?project=새프로젝트번호';
             }
         });
-
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/users/1/projects/', function (data) {
-                console.log('(좌측메뉴) /api/v1/users/1/projects/ : ', data);
-                // 좌측메뉴
-                var menu = '',
-                    list = '';
-                if (data != undefined && data.result != '') {
+        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+                //console.log('[/api/v1/7/projects/] : ', data);
+                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+                // 좌측 프로젝트 리스트
+                var menu = '', list = '';
+                if (data != undefined && data.results != '') {
                     menu += '<ul id="ulProjectList" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-                    $(data.result).each(function (idx, res) {
+                    $(data.results).each(function (idx, res) {
                         menu += '<li>';
-                        if (project_id == res.project_id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
-                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.project_id + '">└ ' + res.project_name + '</a>';
+                        if (project_id == res.id) menu += '   <a style="color:orange" href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                        else menu += '   <a href="/static/front/project/project_view.html?project=' + res.id + '">└ ' + res.name + '</a>';
                         menu += '</li>';
                     });
                     menu += '</ul>';
@@ -115,27 +116,26 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                alert("error 4268");
+                console.log("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
 
         // 본문 프로젝트 문서 목록
-        var doc_list = $.get('/api/v1/users/1/projects/1/docs', function (data) {
-                console.log('(문서목록) /api/v1/users/1/projects/1/docs : ', data);
-                var row = '';
-                $(data.result).each(function (idx, res) {
-                    if (data != undefined) {
+        var doc_list = $.get('/api/v1/7/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page, function (data) {
+                console.log('[/api/v1/7/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page + '] : ', data);
+                if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
+                    var row = '';
+                    $(data.results).each(function (idx, res) {
                         row += '<tr>';
-                        row += '    <td><input type="checkbox" data-id="' + res.project_docs_id + '"></td>';
+                        row += '    <td><input type="checkbox" data-id="' + res.id + '"></td>';
                         row += '    <td>' + parseInt(idx + 1) + '</td>';
-                        row += '    <td>' + res.progress_percent + '</td>';
-                        row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.project_docs_id + '">' + res.title + '</a></td>';
+                        row += '    <td>' + res.progress_percent + '%</td>';
+                        row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.id + '">' + res.title + '</a></td>';
                         row += '    <td>' + res.status + '</td>';
-                        //if(res.progress_percent == 100) row += '    <td>완료</td>';
-                        //else row += '    <td>' + res.status + '</td>';
-                        row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
-                        //row += '    <td>KO<span class="super">KR</span></td>';
+
+                        if (res.link == null) row += '    <td>&nbsp;</td>';
+                        else row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
 
                         if (res.origin_lang != null && res.origin_lang != '') row += '    <td>' + res.origin_lang.toUpperCase() + '</td>';
                         else row += '    <td>' + res.origin_lang + '</td>';
@@ -143,22 +143,19 @@ var PageScript = function () {
                         if (res.trans_lang != null && res.trans_lang != '') row += '    <td>' + res.trans_lang.toUpperCase() + '</td>';
                         else row += '    <td>' + res.trans_lang + '</td>';
 
-                        //row += '<td class="oneline_wrap" title="' + NullToEmpty(res.translators) + '">' + NullToEmpty(res.translators) + '</td>';
-
-                        var str_date = '';
-                        if (res.duration_date != '' && res.duration_date != null) str_date = GetStringDate(new Date(res.duration_date));
-                        row += '    <td>' + str_date + '</td>';
-                        row += '    <td><input data-id="' + res.project_docs_id + '" type="button" value="편집"></td>';
+                        row += '    <td>' + GetStringDate(new Date(res.due_date)) + '</td>';
+                        row += '    <td><input data-id="' + res.id + '" type="button" value="편집"></td>';
 
                         row += '</tr>';
-                    }
-                });
-                //console.log('문서목록 : ', row);
-                $('#listContents table tbody').append(row);
+                    });
+                    $('#listContents table tbody').append(row);
+                }
+                var param_path = cur_path + '?project=' + project_id + '&rows=' + rows + '&';
+                SetPagebar(parseInt(data.total_cnt), rows, page, param_path, 10);
             })
             .done(function () {})
             .fail(function () {
-                alert("error");
+                console.log("error 3396");
             })
             .always(function () {});
         doc_list.always(function () {});
@@ -167,20 +164,15 @@ var PageScript = function () {
         $('#mask').fadeTo("slow", 1000).hide();
     };
     this.mask = function () {
-        //화면의 높이와 너비를 구한다.
-        var maskHeight = $(document).height();
-        var maskWidth = $(window).width();
-
-        //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
         $('#mask').css({
-            'width': maskWidth,
-            'height': maskHeight
+            'width': $(document).height(),
+            'height': $(window).width()
         });
     };
     this.bind = function () {
         local.preInits();
         local.btnEvents();
-        local.getProjects(getUrlParameter('project'));
+        local.getProjects(project_id);
     };
 };
 $(function () {
