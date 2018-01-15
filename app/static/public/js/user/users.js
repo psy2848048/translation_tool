@@ -3,36 +3,31 @@ var PageScript = function () {
         project_id = getUrlParameter('project');
     this.preInits = function () {
         // 좌측 프로젝트 리스트
-        setTimeout(function () {
-            var menu = '';
+        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+            //console.log('[/api/v1/7/projects/] : ', data);
+            //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+            // 좌측 프로젝트 리스트
+            var menu = '',
+                list = '';
+            if (data != undefined && data.results != '') {
+                menu += '<ul id="ulProjectList2" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
+                $(data.results).each(function (idx, res) {
+                    menu += '<li>';
+                    if (project_id == res.id) menu += '   <a style="color:orange" href="/static/front/user/users.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                    else menu += '   <a href="/static/front/user/users.html?project=' + res.id + '">└ ' + res.name + '</a>';
+                    menu += '</li>';
+                });
+                menu += '</ul>';
 
-            menu += '<ul id="ulProjectList2" style="max-height:200px;overflow-x:hidden;overflow-y:auto;">';
-            menu += '<li>';
-            menu += '<a href="/static/front/user/users.html?project=1">└ 내픽뉴스 영문번역</a>';
-            menu += '</li>';
-            menu += '<li>';
-            menu += '<a href="/static/front/user/users.html?project=2">└ 내픽뉴스 중문번역</a>';
-            menu += '</li>';
-            menu += '</ul>';
-
-            $('#left_menu_area>li:nth-of-type(4)').append(menu);
-
-            if (project_id == undefined || project_id == '1') {
-                $('#left_menu_area>li:nth-of-type(4) ul li:nth-of-type(1) a').css({
-                    'color': 'orange'
-                });
-                $('#left_menu_area>li:nth-of-type(4) ul li:nth-of-type(2) a').css({
-                    'color': '#333'
-                });
-            } else {
-                $('#left_menu_area>li:nth-of-type(4) ul li:nth-of-type(1) a').css({
-                    'color': '#333'
-                });
-                $('#left_menu_area>li:nth-of-type(4) ul li:nth-of-type(2) a').css({
-                    'color': 'orange'
-                });
+                $('#left_menu_area>li:nth-of-type(4)').append(menu);
             }
-        }, 100);
+        })
+        .done(function () {})
+        .fail(function () {
+            console.log("error 4416");
+        })
+        .always(function () {});
+    jqxhr.always(function () {});
     };
     this.btnEvents = function () { // 체크박스 전체선택, 해제   
         // 프로젝트 참가자 삭제

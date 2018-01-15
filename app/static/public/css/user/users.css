@@ -46,6 +46,7 @@ body {
 #menuArea ul li:nth-of-type(4) {
     background-color: #fff;
     font-weight: bolder;
+    white-space: nowrap;
 }
 
 #menuArea ul li:nth-of-type(4) a {
@@ -54,11 +55,7 @@ body {
 
 #menuArea ul li:nth-of-type(4) ul li a {
     font-weight: normal;
-    font-size: 14px;
-}
-
-#menuArea ul li:nth-of-type(4) ul li:nth-of-type(1) a {
-    color: orange;
+    font-size: 13px;
 }
 
 #left_menu_area>li:nth-of-type(4) ul li {

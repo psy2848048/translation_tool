@@ -20,7 +20,7 @@ function SetPagebar(total_count, row_size, cur_page, org_url, pagebar_size) {
         else html += '    <li style="opacity:0.3;cursor:auto;"><i class="fa fa-arrow-circle-o-left" aria-hidden="true"></i> 이전 10 페이지</li>';
 
         for (var i = start_page; i <= end_page; i++) {
-            if (i == cur_page) html += '        <li style="background-color:rgb(214, 216, 81);"><a href="' + org_url + 'page=' + i + '">' + i + '</a></li>';
+            if (i == cur_page) html += '        <li style="opacity:0.2;cursor:auto;">' + i + '</li>';
             else html += '        <li><a href="' + org_url + 'page=' + i + '">' + i + '</a></li>';
         }
 

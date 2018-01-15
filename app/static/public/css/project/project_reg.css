@@ -58,6 +58,7 @@ body {
 #menuArea ul li ul li a {
     font-weight: normal;
     color: rgb(219, 133, 20);
+    font-size:13px;
 }
 
 #ulProjectList li {
