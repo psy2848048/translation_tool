@@ -61,10 +61,15 @@ body {
 #menuArea ul:nth-of-type(2) li:nth-of-type(1) {
     background-color: #fff;
     font-weight: bolder;
+    white-space: nowrap;
+}
+
+#menuArea li:nth-of-type(1) a:nth-of-type(1) {
+    color: #365378;
 }
 
 #menuArea li:nth-of-type(1) a {
-    color: #365378;
+    color: #fff;
 }
 
 #menuArea ul li ul {
@@ -75,6 +80,7 @@ body {
 #menuArea ul li ul li a {
     font-weight: normal;
     color: rgb(219, 133, 20);
+    font-size:13px;
 }
 
 

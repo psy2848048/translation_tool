@@ -33,9 +33,7 @@ var PageScript = function () {
                 return false;
             }
             var date = '';
-            if ($('#chk_no_limit').prop('checked') == true) {
-                //date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
-            } else {
+            if ($('#chk_no_limit').prop('checked') == false) {
                 var year = $('#limited_date_area select:nth-of-type(1)').val(),
                     month = $('#limited_date_area select:nth-of-type(2)').val(),
                     day = $('#limited_date_area select:nth-of-type(3)').val(),
@@ -63,6 +61,7 @@ var PageScript = function () {
                 }
                 date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             }
+            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
             var data = {
                 name: $('#txt_title').val(),
                 due_date: date

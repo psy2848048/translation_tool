@@ -52,9 +52,11 @@ body {
 #menuArea ul:nth-of-type(2) li:nth-of-type(1) {
     background-color: #fff;
     font-weight: bolder;
+    white-space: nowrap;
 }
 
-#menuArea ul li:nth-of-type(1) a {
+
+#menuArea>ul>li:nth-of-type(1)>a {
     color: #365378;
 }
 
@@ -66,8 +68,11 @@ body {
 
 #menuArea ul li ul li a {
     font-weight: normal;
-    color: rgb(219, 133, 20);
+    color: rgb(7, 140, 228);
+    font-size:13px;
 }
+
+
 
 #ulProjectList li {
     padding: 5px !important;
@@ -205,15 +210,22 @@ body {
 #listContents table tr {
     border: 0px solid blue;
     box-sizing: border-box;
-    text-align: center;
+    /* text-align: center; */
     /* height: 30px; */
     line-height: 30px;
     vertical-align: middle;
     font-size: 14px;
 }
 
+#listContents table tr td{
+    text-align: center;
+}
+#listContents table tr td:nth-of-type(2){
+    text-align: left !important;
+}
+
 #listContents table td a {
-    color: rgb(51, 129, 219);
+    color: rgb(33, 111, 171);
     text-decoration: none;
 }
 
@@ -231,3 +243,5 @@ body {
     background-color: rgb(155, 167, 175);
     color: #fff;
 }
+
+
