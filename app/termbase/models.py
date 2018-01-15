@@ -9,11 +9,11 @@ def select_termbase(page, rows):
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
 
-    #: 사용자의 총 프로젝트 개수
-    res = conn.execute(func.count(tb.c.id)).fetchone()
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.termbase WHERE is_deleted = FALSE;""")).fetchone()
     total_cnt = res[0]
 
     results = conn.execute(text("""SELECT id as tid, origin_lang, trans_lang, origin_text, trans_text FROM `marocat v1.1`.termbase
+                                 WHERE is_deleted = FALSE
                                  LIMIT :row_count OFFSET :offset;"""), row_count=rows, offset=rows * (page - 1))
     terms = [dict(res) for res in results]
 

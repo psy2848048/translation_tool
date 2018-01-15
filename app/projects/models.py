@@ -7,7 +7,9 @@ def select_projects(uid, page, rows):
     conn = db.engine.connect()
 
     #: 사용자의 총 프로젝트 개수
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.project_members WHERE user_id = :uid;"""), uid=uid).fetchone()
+    res = conn.execute(text("""SELECT count(*) 
+                               FROM `marocat v1.1`.project_members pm JOIN projects p ON p.id = pm.project_id
+                               WHERE user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE;"""), uid=uid).fetchone()
     total_cnt = res[0]
 
     results = conn.execute(text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date
@@ -19,9 +21,10 @@ def select_projects(uid, page, rows):
                                                                         WHERE is_founder = True AND u.is_deleted = FALSE ) t2 ON ( t2.pid = p.id )
                                                                   LEFT JOIN ( SELECT d.project_id as pid, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
                                                                               FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
-                                                                              WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE
+                                                                              WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE AND d.is_deleted = FALSE
                                                                               GROUP BY d.project_id ) t1 ON ( t1.pid = p.id ) 
-                                    WHERE pm.user_id = :uid
+                                    WHERE pm.user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE
+                                    ORDER BY p.create_time DESC 
                                     LIMIT :row_count OFFSET :offset;"""), uid=uid, row_count=rows, offset=rows * (page - 1))
     projects = [dict(res) for res in results]
 
@@ -45,7 +48,7 @@ def select_project_docs(pid, page, rows):
     conn = db.engine.connect()
 
     #: 프로젝트의 총 문서 개수
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.docs WHERE project_id = :pid;"""), pid=pid).fetchone()
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.docs WHERE project_id = :pid AND is_deleted = FALSE;"""), pid=pid).fetchone()
     total_cnt = res[0]
 
     results = conn.execute(text("""SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
@@ -56,6 +59,7 @@ def select_project_docs(pid, page, rows):
                                                                           GROUP BY d.id ) t1 ON ( t1.did = d.id )
                                    WHERE d.project_id = :pid AND d.is_deleted = FALSE
                                    GROUP BY d.id
+                                   ORDER BY d.create_time DESC 
                                    LIMIT :row_count OFFSET :offset"""), pid=pid, row_count=rows, offset=rows * (page - 1))
     project_docs = [dict(res) for res in results]
 
@@ -65,7 +69,8 @@ def select_project_members(pid, page, rows):
     conn = db.engine.connect()
 
     #: 프로젝트 참가자의 총 인원
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), pid=pid).fetchone()
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.project_members pm JOIN users u ON u.id = pm.user_id
+                              WHERE project_id = :pid AND u.is_deleted = FALSE AND pm.is_deleted = FALSE;"""), pid=pid).fetchone()
     total_cnt = res[0]
 
     results = conn.execute(text("""SELECT pm.user_id, u.name, u.email, can_read, can_modify, can_delete, can_create_doc

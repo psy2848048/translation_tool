@@ -25,27 +25,23 @@ def sign_in():
         return make_response(json.jsonify(result='User does not exist'), 401)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
-        is_ok = model.verify_password(password, uid)
+        # is_ok = model.verify_password(password, uid)
+        is_ok = user.can_login(password)
 
-        if is_ok is False:
-            return make_response(json.jsonify(result="Password is wrong"), 401)
-        else:
-            #: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
+        if is_ok is True:#: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
             login_user(user, remember=True)
-            return make_response(json.jsonify(result="User '{}' signed in!".format(current_user.id)), 200)
+            return make_response(json.jsonify(result="User '{}' signed in!".format(user.get_id())), 200)
+        else:
+            return make_response(json.jsonify(result="Password is wrong"), 401)
 
 @login_manager.user_loader
-def user_loader():
-    user = current_user
+def user_loader(uid):
+    user = model.select_user_by_uid(uid)
     return user
 
 @login_required
 def sign_out():
     uid = current_user.id
+    print(current_user.id)
     logout_user()
-    return make_response(json.jsonify(result="User '%s' signed out!".format(uid)), 200)
-
-@login_required
-def print_user():
-    user = current_user
-    return make_response(json.jsonify(user=dict(user)), 200)
+    return make_response(json.jsonify(result="User '{}' signed out!".format(uid)), 200)

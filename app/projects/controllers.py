@@ -35,7 +35,7 @@ def make_project(uid):
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
 
-    if None in [name, due_date]:
+    if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
     is_done = model.insert_project(uid, name, due_date)
@@ -54,7 +54,7 @@ def add_doc(uid, pid):
     content = request.form.get('content', None)
     file = request.files.get('file', None)
 
-    if None in [title, origin_lang, trans_lang, due_date, type]:
+    if None in [title, origin_lang, trans_lang, type]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
