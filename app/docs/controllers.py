@@ -1,9 +1,12 @@
 from flask import request, make_response, json
 import app.docs.models as model
+from app import common
+
 
 def get_doc_info(uid, did):
     doc_info = model.select_doc_info(did)
     return make_response(json.jsonify(doc_info), 200)
+
 
 def get_doc_members(uid, did):
     page = int(request.values.get('page', 1))
@@ -21,8 +24,10 @@ def modify_doc_info(uid, did):
     trans_lang = request.form.get('trans_lang', None)
     due_date = request.form.get('due_date', None)
 
-    if None in [title, status, origin_lang, trans_lang, due_date]:
+    if None in [title, status, origin_lang, trans_lang]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
+    if due_date is not None:
+        due_date = common.convert_datetime_4mysql(due_date)
 
     is_done = model.update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
 
@@ -34,6 +39,7 @@ def modify_doc_info(uid, did):
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
+
 
 def modify_doc_member(uid, did, mid):
     can_read = request.form.get('can_read', None)

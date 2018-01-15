@@ -1,7 +1,8 @@
-from app import db, common
+from app import db
 from sqlalchemy import Table, MetaData, text, func, and_
 import traceback
 from datetime import datetime
+
 
 def select_projects(uid, page, rows):
     conn = db.engine.connect()
@@ -30,6 +31,7 @@ def select_projects(uid, page, rows):
 
     return projects, total_cnt
 
+
 def select_project_info(pid):
     conn = db.engine.connect()
     result = conn.execute(text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date,
@@ -43,6 +45,7 @@ def select_project_info(pid):
 
     project_info = dict(result)
     return project_info
+
 
 def select_project_docs(pid, page, rows):
     conn = db.engine.connect()
@@ -65,6 +68,7 @@ def select_project_docs(pid, page, rows):
 
     return project_docs, total_cnt
 
+
 def select_project_members(pid, page, rows):
     conn = db.engine.connect()
 
@@ -84,49 +88,27 @@ def select_project_members(pid, page, rows):
 
 def insert_project(uid, name, due_date):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     p = Table('projects', meta, autoload=True)
     pm = Table('project_members', meta, autoload=True)
-
-    due_date = common.convert_datetime_4mysql(due_date)
 
     try:
         #: 프로젝트 추가
         res = conn.execute(p.insert(), name=name, due_date=due_date)
         pid = res.lastrowid
 
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
         #: 프로젝트 추가한 사람을 프로젝트 참가자에 등록
-        conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True,
-                                  can_read=True, can_modify=True, can_delete=True, can_create_doc=True)
-        return True
-    except:
-        traceback.print_exc()
-        return False
+        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True
+                           , can_read=True, can_modify=True, can_delete=True, can_create_doc=True)
 
-def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences):
-    conn = db.engine.connect()
-    trans = conn.begin()
-    meta = MetaData(bind=db.engine)
-    d = Table('docs', meta, autoload=True)
-    os = Table('doc_origin_sentences', meta, autoload=True)
-
-    due_date = common.convert_datetime_4mysql(due_date)
-
-    try:
-        #: 문서 추가
-        res = conn.execute(d.insert(), project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang, due_date=due_date, type=type)
-        did = res.lastrowid
-
-        #: 문서의 문장들 저장
-        for sentence in sentences:
-            conn.execute(os.insert(), doc_id=did, text=sentence)
-
-        #: 프로젝트 참가자들의 문서 권한 저장
-        #  버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
-        conn.execute(text("""INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
-                             SELECT user_id, project_id, :did, True, True, True
-                             FROM `marocat v1.1`.project_members
-                             WHERE project_id = :pid;"""), did=did, pid=pid)
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
 
         trans.commit()
         return True
@@ -135,45 +117,113 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
         trans.rollback()
         return False
 
+
+def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    d = Table('docs', meta, autoload=True)
+    os = Table('doc_origin_sentences', meta, autoload=True)
+
+    try:
+        #: 문서 추가
+        res = conn.execute(d.insert(), project_id=pid, title=title
+                           , origin_lang=origin_lang, trans_lang=trans_lang, due_date=due_date, type=type)
+        did = res.lastrowid
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        #: 문서의 문장들 저장
+        for sentence in sentences:
+            res = conn.execute(os.insert(), doc_id=did, text=sentence)
+
+            if res.rowcount != 1:
+                trans.rollback()
+                return False
+
+        #: 프로젝트 참가자들의 문서 권한 저장
+        #  버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
+        res = conn.execute(text("""INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
+                             SELECT user_id, project_id, :did, True, True, True
+                             FROM `marocat v1.1`.project_members
+                             WHERE project_id = :pid;"""), did=did, pid=pid)
+
+        if res.rowcount == 0:
+            trans.rollback()
+            return False
+
+        trans.commit()
+        return True
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False
+
+
 def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create_doc):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     pm = Table('project_members', meta, autoload=True)
 
     try:
-        conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=False,
-                                  can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
+        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=False
+                           , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
 
 
 def update_project_member(pid, mid, can_read, can_modify, can_delete, can_create_doc):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     pm = Table('project_members', meta, autoload=True)
 
     try:
-        conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid)),
-                     can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc, update_time=datetime.now())
+        res = conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid))
+                           , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc, update_time=datetime.utcnow())
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
+
 
 def update_project_info(pid, name, status, due_date):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     p = Table('projects', meta, autoload=True)
 
-    due_date = common.convert_datetime_4mysql(due_date)
-
     try:
-        conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date)
+        res = conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date)
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
 
 
@@ -185,6 +235,7 @@ def delete_project(pid):
     -- doc_members, doc_origin_sentences, docs, doc_trans_sentences, project_members, projects, trans_comments
     """
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
 
     p = Table('projects', meta, autoload=True)
@@ -193,10 +244,7 @@ def delete_project(pid):
     d = Table('docs', meta, autoload=True)
 
     try:
-        conn.execute(p.update(p.c.id == pid), is_deleted=True, update_time=datetime.now())
-        conn.execute(pm.update(pm.c.project_id == pid), is_deleted=True, update_time=datetime.now())
-        conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True, update_time=datetime.now())
-        conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.now())
+        #: 번역문댓글 - 번역문 - 원문순으로 삭제
         conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
                              SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
                              WHERE project_id = :pid;
@@ -206,30 +254,67 @@ def delete_project(pid):
                              UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
                              SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
                              WHERE project_id = :pid;"""), pid=pid)
+
+        #: 프로젝트의 문서 삭제
+        conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
+
+        #: 프로젝트 참가자의 문서 권한 삭제
+        res = conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount == 0:
+            trans.rollback()
+            return False
+
+        #: 프로젝트 참가자 삭제
+        res = conn.execute(pm.update(pm.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount == 0:
+            trans.rollback()
+            return False
+
+        #: 프로젝트 삭제
+        res = conn.execute(p.update(p.c.id == pid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
+
 
 def delete_project_member(pid, mid):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
 
     pm = Table('project_members', meta, autoload=True)
     dm = Table('doc_members', meta, autoload=True)
 
     try:
-        #: 프로젝트 참가자 목록에서 삭제
-        conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid)), is_deleted=True, update_time=datetime.now())
-
-        #: 프로젝트 참가자의 문서 권한 목록에서 삭제
-        conn.execute(dm.update(and_(dm.c.project_id == pid, dm.c.user_id == mid)), is_deleted=True, update_time=datetime.now())
-
         #: 프로젝트 참가자가 작성한 댓글 삭제
         conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
                              SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
                              WHERE project_id = :pid AND tc.user_id = :mid;"""), pid=pid, mid=mid)
+
+        #: 프로젝트 참가자의 문서 권한 목록에서 삭제
+        res = conn.execute(dm.update(and_(dm.c.project_id == pid, dm.c.user_id == mid))
+                           , is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount == 0:
+            trans.rollback()
+            return False
+
+        #: 프로젝트 참가자 목록에서 삭제
+        res = conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid))
+                           , is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False

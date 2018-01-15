@@ -2,6 +2,7 @@ from app import db
 from sqlalchemy import Table, MetaData
 from sqlalchemy import text
 
+
 def select_similarity_trans_memory(query, target_lang):
     # 현재는 영어->한국어만 지원하기 때문에 target_lang 쓰이지 않고 있음
     conn = db.engine.connect()
@@ -18,6 +19,7 @@ def select_similarity_trans_memory(query, target_lang):
                                         LIMIT 3;"""
     results = conn.execute(text(select_similarity_trans_memory), sentence=query, first=first, second=second)
     return results
+
 
 def select_termbase(query):
     conn = db.engine.connect()
@@ -48,6 +50,7 @@ def select_termbase(query):
     words = {frozenset(item.items()): item for item in temp_words}.values()
     return list(words)
 
+
 def select_termbase_only_one(query):
     """
     유사한 단어 없이, 완전히 query와 일치하는 단어 찾는다.
@@ -74,6 +77,7 @@ def select_termbase_only_one(query):
             words.append(temp)
     return words
 
+
 def select_projects(query):
     conn = db.engine.connect()
 
@@ -83,6 +87,7 @@ def select_projects(query):
     results = [dict(r) for r in res]
     return results
 
+
 def select_docs(query):
     conn = db.engine.connect()
 
@@ -91,6 +96,7 @@ def select_docs(query):
                        query='%' + query + '%')
     results = [dict(r) for r in res]
     return results
+
 
 def select_users(query):
     conn = db.engine.connect()
