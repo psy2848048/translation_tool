@@ -4,6 +4,7 @@ import traceback
 import csv
 from datetime import datetime
 
+
 def select_termbase(page, rows):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
@@ -19,20 +20,31 @@ def select_termbase(page, rows):
 
     return terms, total_cnt
 
+
 def insert_term(origin_lang, trans_lang, origin_text, trans_text):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text)
+        res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang
+                           , origin_text=origin_text, trans_text=trans_text)
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
+
 
 def insert_term_csv_file(csv_file, origin_lang, trans_lang):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
     data = csv.reader(csv_file)
@@ -40,34 +52,62 @@ def insert_term_csv_file(csv_file, origin_lang, trans_lang):
     try:
         for row in data:
             if len(row) == 4:
-                conn.execute(tb.insert(), origin_lang=row[0], trans_lang=row[1], origin_text=row[2], trans_text=row[3])
+                res = conn.execute(tb.insert(), origin_lang=row[0], trans_lang=row[1]
+                                   , origin_text=row[2], trans_text=row[3])
+                if res.rowcount != 1:
+                    trans.rollback()
+                    return False
             else:
-                conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=row[0], trans_text=row[1])
+                res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang
+                                   , origin_text=row[0], trans_text=row[1])
+                if res.rowcount != 1:
+                    trans.rollback()
+                    return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
+
 
 def update_term(tid, origin_lang, trans_lang, origin_text, trans_text):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang, origin_text=origin_text, trans_text=trans_text, update_time=datetime.now())
+        res = conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang
+                           , origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False
+
 
 def delete_term(tid):
     conn = db.engine.connect()
+    trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        conn.execute(tb.update(tb.c.id == tid), is_deleted=True, update_time=datetime.now())
+        res = conn.execute(tb.update(tb.c.id == tid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
         return True
     except:
         traceback.print_exc()
+        trans.rollback()
         return False

@@ -3,6 +3,7 @@ from sqlalchemy import Table, MetaData, text, func, and_
 import traceback
 from datetime import datetime
 
+
 def select_doc_info(did):
     conn = db.engine.connect()
     result = conn.execute(text("""SELECT id as id, title, status, link, origin_lang, trans_lang, due_date
@@ -10,6 +11,7 @@ def select_doc_info(did):
 
     doc_info = dict(result)
     return doc_info
+
 
 def select_doc_members(did, page, rows):
     conn = db.engine.connect()
@@ -34,11 +36,9 @@ def update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
 
-    due_date = common.convert_datetime_4mysql(due_date)
-
     try:
-        res = conn.execute(d.update(d.c.id == did),
-                     title=title, status=status, link=link, origin_lang=origin_lang, trans_lang=trans_lang, due_date=due_date, update_time=datetime.now())
+        res = conn.execute(d.update(d.c.id == did), title=title, status=status, link=link
+                           , origin_lang=origin_lang, trans_lang=trans_lang, due_date=due_date, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
@@ -51,6 +51,7 @@ def update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
         trans.rollback()
         return False
 
+
 def update_doc_member(did, mid, can_read, can_modify, can_delete):
     conn = db.engine.connect()
     trans = conn.begin()
@@ -58,8 +59,8 @@ def update_doc_member(did, mid, can_read, can_modify, can_delete):
     dm = Table('doc_members', meta, autoload=True)
 
     try:
-        res = conn.execute(dm.update(and_(dm.c.doc_id == did, dm.c.user_id == mid)),
-                     can_read=can_read, can_modify=can_modify, can_delete=can_delete, update_time=datetime.now())
+        res = conn.execute(dm.update(and_(dm.c.doc_id == did, dm.c.user_id == mid))
+                           , can_read=can_read, can_modify=can_modify, can_delete=can_delete, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
@@ -82,12 +83,12 @@ def delete_doc(did):
     d = Table('docs', meta, autoload=True)
 
     try:
-        res = conn.execute(d.update(d.c.id == did), is_deleted=True, update_time=datetime.now())
+        res = conn.execute(d.update(d.c.id == did), is_deleted=True, update_time=datetime.utcnow())
         if res.rowcount != 1:
             trans.rollback()
             return False
 
-        res = conn.execute(dm.update(dm.c.doc_id == did), is_deleted=True, update_time=datetime.now())
+        res = conn.execute(dm.update(dm.c.doc_id == did), is_deleted=True, update_time=datetime.utcnow())
         if res.rowcount != 1:
             trans.rollback()
             return False
