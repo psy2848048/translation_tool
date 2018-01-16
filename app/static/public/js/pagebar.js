@@ -30,7 +30,7 @@ function SetPagebar(total_count, row_size, cur_page, org_url, pagebar_size) {
         if (cur_page != total_page_count) html += '<li><a href="' + org_url + 'page=' + total_page_count + '">마지막 페이지 <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a></li>';
         else html += '<li style="opacity:0.3;cursor:auto;">마지막 페이지 <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></li>';
 
-        $('#page_bar ul').html('<br>' + html);
+        $('#page_bar ul').html(html);
     }
 }
 // 임시호출 : 각 페이지마다 커스텀하게 별도로 호출해줘야 함!!

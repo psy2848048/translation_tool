@@ -58,15 +58,13 @@ var PageScript = function () {
                     if (parseInt(m) > 54) {
                         h = parseInt(h) + parseInt(1);
                         m = '00';
-                    }else{
-                        m = Math.floor(m / 10);
                     }
                     $('#sel_hour').val(AddPreZero(h));
                     $('#sel_minute').val(AddPreZero(m));
                 }
             },
             error: function (err) {
-                alert('fail : error code 4157');
+                alert('fail\n\nerror code 4157');
                 console.log('fail : error code 4157');
                 console.log(err.responseText);
             }

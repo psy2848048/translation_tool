@@ -3,6 +3,28 @@ body {
     /* height가 100% 적용되지 않을 때 */
     height: 100%;
     overflow: hidden;
+    position: relative;
+}
+
+#mask {  
+    position:absolute;  
+    left:0;
+    top:0;
+    z-index:100;  
+    background-color:#999;  
+    opacity:0.3;
+    display:block;  
+}
+#loading_img
+{
+    background:transparent url(/static/public/img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    top: 40%;
+    margin: 50px 0 0 0;
 }
 
 #mainWrap {
@@ -235,8 +257,8 @@ body {
 #upload_div {
     border: 1px solid #999;
     border-radius: 5px;
-    width: 300px;
-    height: 100px;
+    width: 320px;
+    height: 230px;
     padding: 20px;
     background-color:rgb(240, 234, 220);
 }
@@ -266,10 +288,15 @@ body {
     margin-top: 0;
 }
 
-#upload_div p {
+#upload_div>p:nth-of-type(1) {
     font-style:italic;
     font-size:13px;
     color:#666;
+}
+#upload_div div p {
+    font-style:normal;
+    font-size:13px;
+    color:#333;
 }
 
 p,

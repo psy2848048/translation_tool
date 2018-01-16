@@ -123,6 +123,7 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
             }
         }
     }
+    console.log('f_data : ', f_data);
     if (is_allowed_ext) {
         $.ajax({
             url: server_url,

@@ -102,7 +102,12 @@ var PageScript = function () {
                 }
                 date = year + '-' + month + '-' + day + ' ' + hour + ':' + minute;
             }
-            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
+            date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString(); 
+            if($('#mainArea textarea').val().trim() == ''){
+                alert('문서내용을 입력해주세요.');
+                  $('#mainArea textarea').focus();
+              return false;
+            }          
             var data = {
                 'title': $('#txt_title').val(),
                 'origin_lang': $('#org_sel').val(),
