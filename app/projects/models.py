@@ -77,7 +77,7 @@ def select_project_members(pid, page, rows):
                               WHERE project_id = :pid AND u.is_deleted = FALSE AND pm.is_deleted = FALSE;"""), pid=pid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT pm.user_id, u.name, u.email, can_read, can_modify, can_delete, can_create_doc
+    results = conn.execute(text("""SELECT pm.user_id as id, u.name, u.email, can_read, can_modify, can_delete, can_create_doc
                                    FROM `marocat v1.1`.project_members pm JOIN users u ON u.id = pm.user_id
                                    WHERE project_id = :pid AND pm.is_deleted = FALSE AND u.is_deleted = FALSE
                                    LIMIT :row_count OFFSET :offset;"""), pid=pid, row_count=rows, offset=rows * (page - 1))
@@ -192,7 +192,8 @@ def update_project_member(pid, mid, can_read, can_modify, can_delete, can_create
 
     try:
         res = conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid))
-                           , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc, update_time=datetime.utcnow())
+                           , can_read=can_read, can_modify=can_modify
+                           , can_delete=can_delete, can_create_doc=can_create_doc, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
@@ -213,7 +214,7 @@ def update_project_info(pid, name, status, due_date):
     p = Table('projects', meta, autoload=True)
 
     try:
-        res = conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date)
+        res = conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
@@ -259,14 +260,11 @@ def delete_project(pid):
         conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
 
         #: 프로젝트 참가자의 문서 권한 삭제
-        res = conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
-        if res.rowcount == 0:
-            trans.rollback()
-            return False
+        conn.execute(dm.update(dm.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
 
         #: 프로젝트 참가자 삭제
         res = conn.execute(pm.update(pm.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
-        if res.rowcount == 0:
+        if res.rowcount < 1:
             trans.rollback()
             return False
 

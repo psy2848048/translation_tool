@@ -39,7 +39,10 @@ def make_project(uid):
 
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
-    if due_date is not None:
+
+    if due_date in ["''", '""']:
+        due_date = None
+    elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
 
     is_done = model.insert_project(uid, name, due_date)
@@ -62,7 +65,10 @@ def add_doc(uid, pid):
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
-    if due_date is not None:
+
+    if due_date in ["''", '""']:
+        due_date = None
+    elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
 
     if type == 'text':
@@ -78,17 +84,17 @@ def add_doc(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def add_project_member(uid, pid):
-    uid = request.form.get('user_id', None)
+def add_project_member(mid, pid):
+    mid = request.form.get('mid', None)
     can_read = request.form.get('can_read', None)
     can_modify = request.form.get('can_modify', None)
     can_delete = request.form.get('can_delete', None)
     can_create_doc = request.form.get('can_create_doc', None)
 
-    if None in [uid, can_read, can_modify, can_delete, can_create_doc]:
+    if None in [mid, can_read, can_modify, can_delete, can_create_doc]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create_doc)
+    is_done = model.insert_project_member(pid, mid, can_read, can_modify, can_delete, can_create_doc)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
@@ -103,9 +109,12 @@ def modify_project_info(uid, pid):
 
     if None in [name, status]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
-    elif int(status) not in range(5):
-        return make_response(json.jsonify(result='Status is wrong'), 460)
-    if due_date is not None:
+    if status not in ['신규', '진행중', '완료', '취소']:
+        return make_response(json.jsonify(result='Status is wrong'), 461)
+
+    if due_date in ["''", '""']:
+        due_date = None
+    elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
 
     is_done = model.update_project_info(pid, name, status, due_date)

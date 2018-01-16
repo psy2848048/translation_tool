@@ -1,5 +1,6 @@
-from flask import request, make_response, json, session
+from flask import request, make_response, json, session, send_file
 import app.workbench.models as model
+import io
 
 
 def get_doc(did):
@@ -13,7 +14,15 @@ def get_trans_comments(sid):
 
 
 def output_doc_to_file(did):
-    file, http_code = model.export_doc_as_csv(did)
+    file, is_done = model.export_doc_as_csv(did)
+
+    if is_done is True:
+        # file_name = file[1][:10] + '.csv'
+        file_name = file[1] + '.csv'
+        print(file_name)
+        return send_file(io.BytesIO(file[0].encode('utf-8')), attachment_filename=file_name)
+    else:
+        return make_response(json.jsonify(result='Something Wrong! Is this document really complete?'), 461)
 
 
 def save_trans_sentence(sid):
@@ -28,12 +37,12 @@ def save_trans_sentence(sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def make_trans_comment(sid):
+def add_trans_comment(sid):
     # uid = session['uid']
-    uid = request.values.get('uid', None)   # 사용자 붙이면 없어질 예정
+    uid = 7
     comment = request.form.get('comment', None)
 
-    if not uid or not comment:
+    if not comment:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
     is_done = model.insert_trans_comment(uid, sid, comment)

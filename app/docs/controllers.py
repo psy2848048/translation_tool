@@ -26,7 +26,12 @@ def modify_doc_info(uid, did):
 
     if None in [title, status, origin_lang, trans_lang]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
-    if due_date is not None:
+    if status not in ['신규', '진행중', '완료', '취소']:
+        return make_response(json.jsonify(result='Status is wrong'), 461)
+
+    if due_date in ["''", '""']:
+        due_date = None
+    elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
 
     is_done = model.update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
