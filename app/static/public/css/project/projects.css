@@ -227,6 +227,7 @@ body {
 #listContents table td a {
     color: rgb(33, 111, 171);
     text-decoration: none;
+    display: inline-block;
 }
 
 #listContents table td a:hover {

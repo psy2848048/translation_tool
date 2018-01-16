@@ -43,7 +43,7 @@ var PageScript = function () {
                     $('#listContents td input[type=checkbox]:checked').each(function () {
                         //console.log('체크된 문서 : ', $(this).attr('data-id'));
                         $.ajax({
-                            url: '/api/v1/5/projects/docs/' + $(this).attr('data-id'),
+                            url: '/api/v1/7/projects/docs/' + $(this).attr('data-id'),
                             type: 'DELETE',
                             async: true,
                             success: function (res) {
@@ -52,6 +52,7 @@ var PageScript = function () {
                                 //    alert('프로젝트가 삭제되었습니다.');
                                 //    location.href='projects.html';
                                 //}
+                                location.href = location.href;
                             },
                             error: function (e) {
                                 console.log(e.responseText);
@@ -59,7 +60,6 @@ var PageScript = function () {
                             }
                         });
                     });
-                    location.href = location.href;
                 } else {
                     alert('체크된 문서가 없습니다.');
                 }
@@ -168,7 +168,7 @@ var PageScript = function () {
                         row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.id + '">' + res.title + '</a></td>';
                         row += '    <td>' + res.status + '</td>';
 
-                        if (res.link == null) row += '    <td>&nbsp;</td>';
+                        if (res.link == null || res.link.trim() == '') row += '    <td>&nbsp;</td>';
                         else row += '    <td><a target="_blank" href="' + res.link + '">링크</a></td>';
 
                         if (res.origin_lang != null && res.origin_lang != '') row += '    <td>' + res.origin_lang.toUpperCase() + '</td>';
@@ -195,7 +195,7 @@ var PageScript = function () {
         doc_list.always(function () {});
 
         $('#mask').fadeIn(1000);
-        $('#mask').fadeTo("slow", 1000).hide();
+        $('#mask').fadeTo("slow", 2000).hide();
     };
     this.mask = function () {
         $('#mask').css({

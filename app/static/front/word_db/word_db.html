@@ -20,7 +20,8 @@
 </head>
 
 <body>
-    <div id="mainWrap">
+        <div id="mask"></div>
+        <div id="mainWrap">
         <header id="menuArea">
         </header>
         <section id="mainArea">
@@ -51,114 +52,34 @@
                                 <i class="fa fa-times" aria-hidden="true"></i>
                             </th>
                         </tr>
-                        <tr>
-                            <td>1</td>
-                            <td>
-                                <input type="text" value="EN">
-                            </td>
-                            <td>
-                                <input type="text" value="book">
-                            </td>
-                            <td>
-                                <input type="text" value="KR">
-                            </td>
-                            <td>
-                                <input type="text" value="책">
-                            </td>
-                            <td>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                            <td>
-                                <input type="text" value="EN">
-                            </td>
-                            <td>
-                                <input type="text" value="apple">
-                            </td>
-                            <td>
-                                <input type="text" value="KR">
-                            </td>
-                            <td>
-                                <input type="text" value="사과, 건강식품">
-                            </td>
-                            <td>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                            <td>
-                                <input type="text" value="EN">
-                            </td>
-                            <td>
-                                <input type="text" value="coin">
-                            </td>
-                            <td>
-                                <input type="text" value="KR">
-                            </td>
-                            <td>
-                                <input type="text" value="동전, 재산">
-                            </td>
-                            <td>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>4</td>
-                            <td>
-                                <input type="text" value="CN">
-                            </td>
-                            <td>
-                                <input type="text" value="SEOUL of Korea">
-                            </td>
-                            <td>
-                                <input type="text" value="KR">
-                            </td>
-                            <td>
-                                <input type="text" value="대한민국 서울">
-                            </td>
-                            <td>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>5</td>
-                            <td>
-                                <input type="text" value="CN">
-                            </td>
-                            <td>
-                                <input type="text" value="North Republic Of Korea">
-                            </td>
-                            <td>
-                                <input type="text" value="KR">
-                            </td>
-                            <td>
-                                <input type="text" value="조선 민주주의 인민 공화국">
-                            </td>
-                            <td>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </td>
-                        </tr>
                     </table>
                 </div>
+                <br>
                 <div id="page_bar">
                     <ul>
                     </ul>
                 </div>
+                <div id="loading_img"></div>
             </article>
         </section>
         <footer id="mainFooter">
         </footer>
     </div>
-
     <div id="upload_div" style="display:none;">
-        <h3>단어 업로드</h3>
+        <h3>문장번역 업로드</h3>
         <i class="fa fa-times" aria-hidden="true"></i>
         <hr>
-        <input type="file" id="file_upload_frm">
+        <form>
+            <input type="file" id="file_upload_frm">
+        </form> 
         <p>아직 업로드가 진행되지 않았습니다.</p>
+        <div>
+            <h4>CSV 파일로 추가하는 방법</h4>
+            <p>1.
+                <a href="/static/sample.csv">이곳</a>을 클릭해서 샘플 CSV 파일을 받아주세요.</p>
+            <p>2. 샘플파일에 작성되어 있는 원문언어, 번역언어, 원문, 번역 순서대로 CSV 추가하여 파일을 만들어주세요.</p>
+            <p>3. 업로드 해주세요.</p>
+        </div>
     </div>
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
     <script src="/static/public/js/common.js"></script>
