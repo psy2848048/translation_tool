@@ -1,6 +1,6 @@
 from flask import request, make_response, json
 import app.auth.models as model
-from app import app
+from app import app, common
 
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 login_manager = LoginManager()
@@ -50,12 +50,30 @@ def send_password_recovery_email():
     if not email:
         return make_response(json.jsonify(result='Email Not Entered'), 460)
 
+    #: 인증코드 만들기
+    authcode, is_done, msg = model.create_auth_code(email)
+    print(authcode, is_done, msg)
+
+    if is_done is False:
+        return make_response(json.jsonify(result=msg), 461)
+
+    #: 인증코드 이메일 보내기
+    # 인증코드, 비밀번호 변경할 수 있는 링크 포함해서 보내기
+    title = '비밀번호 복구 인증코드입니다.'
+    content = ''
+    is_done = common.send_mail(email, title, content)
+
+    if is_done is True:
+        return make_response(json.jsonify(result=msg), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+
 
 def recover_password():
     email = request.form.get('email', None)
-    auth_code = request.form.get('auth_code', None)
+    authcode = request.form.get('authcode', None)
     new_pwd = request.form.get('new_pwd', None)
 
-    if None in [email, auth_code, new_pwd]:
+    if None in [email, authcode, new_pwd]:
         return make_response(json.jsonify(result='Email Not Entered'), 460)
 

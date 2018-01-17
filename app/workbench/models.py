@@ -23,10 +23,10 @@ def select_doc(did):
 
 def select_trans_comments(sid):
     conn = db.engine.connect()
-    results = conn.execute(text("""SELECT c.id as comment_id, user_id, text as comment, c.create_time
+    results = conn.execute(text("""SELECT c.id as comment_id, user_id, u.name, text as comment, c.create_time
                                    FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
                                    WHERE origin_id = :sid AND c.is_deleted = FALSE AND u.is_deleted = FALSE
-                                   ORDER BY c.create_time;"""), sid=sid)
+                                   ORDER BY c.create_time;"""), sid=sid).fetchall()
     comments = [dict(res) for res in results]
     return comments
 
