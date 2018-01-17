@@ -5,16 +5,16 @@ var PageScript = function () {
         project_id = getUrlParameter('project'),
         cur_path = $(location).attr('pathname');
     this.getProjects = function () {
+        local.show();
         console.log('[current pc] : ', new Date());
         console.log('[current pc gmt basic] : ', new Date().toGMTString());
-        local.mask();
 
-        $(document).ajaxStart(function () {
-            $('#dvLoading2').show();
-        });
-        $(document).ajaxComplete(function (event, request, settings) {
-            $('#dvLoading2').hide();
-        });
+        // $(document).ajaxStart(function () {
+        //     $('#dvLoading2').show();
+        // });
+        // $(document).ajaxComplete(function (event, request, settings) {
+        //     $('#dvLoading2').hide();
+        // });
         var jqxhr_l = $.get('/api/v1/7/projects?rows=200&page=1', function (data) {
                 console.log('[/api/v1/7/projects?rows=200&page=1] : ', data);
                 console.log('[/api/v1/7/projects?rows=200&page=1 data.results[0]] : ', data.results[0]);
@@ -83,13 +83,21 @@ var PageScript = function () {
                 console.log("error 5462");
             })
             .always(function () {});
-        jqxhr.always(function () {});
-    };
-    this.mask = function () {
-        $('#mask').css({
-            'width': $(document).height(),
-            'height': $(window).width()
+        jqxhr.always(function () {
+            local.hide();
         });
+    };
+    this.show = function () {
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+        $('#mask').css({
+            'width': maskWidth,
+            'height': maskHeight
+        });
+    };
+    this.hide = function () {
+        $('#mask').fadeTo("slow", 1000).hide();
+        $('#loading_img').fadeTo("slow", 1000).hide();
     };
     this.bind = function () {
         local.getProjects();

@@ -52,17 +52,20 @@ var PageScript = function () {
                                 //    alert('프로젝트가 삭제되었습니다.');
                                 //    location.href='projects.html';
                                 //}
-                                location.href = location.href;
+                                //location.href = location.href;
+                                //location.href = 'project_view.html?project=' + project_id;
                             },
                             error: function (e) {
                                 console.log(e.responseText);
                                 alert('삭제실패\n\nfail code : 3365');
+                                return false;
                             }
                         });
                     });
                 } else {
                     alert('체크된 문서가 없습니다.');
                 }
+                location.href = 'project_view.html?project=' + project_id;
             }
         });
         // 프로젝트 참가자 초대 버튼

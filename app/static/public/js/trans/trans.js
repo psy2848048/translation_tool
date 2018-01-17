@@ -7,16 +7,16 @@ var PageScript = function () {
         local.mask();
 
         // 원문 로딩
-        var jqxhr = $.get("/api/v1/users/1/docs/" + doc_id, function (data) {
-                console.log('내용 data : ', data);
+        var jqxhr = $.get("/api/v1/toolkit/workbench/docs/" + doc_id, function (data) {
+                console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + '] : ', data);
                 var html = '';
-                $(data.result).each(function (idx, res) {
+                $(data.results).each(function (idx, res) {
                     html += '<tr>';
                     html += '    <td>' + res.sentence_id + '</td>';
                     html += '    <td>' + res.origin_text + '</td>';
                     html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
                     html += '    <td>';
-                    if (res.status == '0') {
+                    if (res.trans_status == '0') {
                         html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer;"></i>';
                         html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer; display:none;"></i>';
                     } else {
@@ -36,7 +36,7 @@ var PageScript = function () {
                     html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:gray; cursor:pointer;"></i></td>';
                     html += '</tr>';
                 });
-                $('#mainTbl tbody').append(html);
+                $('#mainTbl tbody tr').after(html);
             })
             .done(function () {})
             .fail(function () {
@@ -77,7 +77,7 @@ var PageScript = function () {
         $(document).on('click', '#new_comment_div input[type=button]', function () {
             $(this).blur();
             var sentence_id = $('#commentDiv').attr('data-sentence-id');
-            var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id + '/comments';
+            var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/comments';
             console.log('url 4458 : ', url);
             var data = {
                 'comment': $('#new_comment_div input[type=text]').val()
@@ -85,7 +85,7 @@ var PageScript = function () {
             console.log('data 1145 : ', data);
             $.ajax({
                 url: url,
-                type: 'post',
+                type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
@@ -104,10 +104,10 @@ var PageScript = function () {
         $(document).on('click', '#comments img', function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
                 var sentence_id = $('#commentDiv').attr('data-sentence-id');
-                var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id + '/comments/' + $(this).attr('data-id');
+                var url = '/api/v1/toolkit/workbench/docs/sentences/comments/' + $(this).attr('data-id');
                 console.log('url 2893 : ', url);
-                var org = '/api/v1/users/1/docs/26/sentences/347/comments/1';
-                console.log('org 3329 : ', org);
+                //var org = '/api/v1/users/1/docs/26/sentences/347/comments/1';
+                //console.log('org 3329 : ', org);
                 $.ajax({
                     url: url,
                     type: 'DELETE',
@@ -128,15 +128,15 @@ var PageScript = function () {
         $('#btnPublicSearch').on('click', function (e) {
             e.preventDefault();
             var keyword = $('#txtPublicSearch').val();
-            var jqxhr = $.get("/api/v1/search/word?text=" + keyword, function (data) {
+            var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb', function (data) {
                     console.log(data);
                     var result = '';
-                    if (data.result.length > 0) {
-                        for (var i = 0; i < data.result.length; i++) {
+                    if (data != undefined && data.tb.length > 0) {
+                        for (var i = 0; i < data.tb.length; i++) {
                             result = '<div>';
-                            result += '    <input data-id="' + data.result[i].word_id + '" type="button" value="수정"> ';
+                            result += '    <input data-id="' + data.tb[i].term_id + '" type="button" value="수정"> ';
                             result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
-                            result += '    <input type="text" class="miniWord" value="' + data.result[i].trans_text + '">';
+                            result += '    <input type="text" class="miniWord" value="' + data.tb[i].trans_text + '">';
                             result += '</div>';
                         }
                         $('#tran2section table tr:nth-of-type(2) td').prepend(result);
@@ -155,13 +155,16 @@ var PageScript = function () {
                             e.preventDefault();
                             var trans_word = $(this).closest('div').find('input[type=text]').val();
                             var word_id = $(this).attr('data-id');
-                            var url = '/api/v1/users/1/words/' + word_id;
+                            var url = '/api/v1/toolkit/termbase/' + word_id;
                             console.log('url : ', url);
                             console.log('trans_word : ', trans_word);
                             $.ajax({
                                 url: url,
                                 type: 'PUT',
                                 data: {
+                                    origin_lang: trans_word,
+                                    trans_lang: trans_word,
+                                    origin_text: trans_word,
                                     trans_text: trans_word
                                 },
                                 success: function (args) {
@@ -234,13 +237,8 @@ var PageScript = function () {
         // 원문 클릭 : TB, TB, MT 검색
         $('#mainTbl tr td:nth-of-type(2)').on('click', function (e) {
             e.preventDefault();
-
-            $(document).ajaxStart(function () {
-                $('#dvLoading2').show();
-            });
-            $(document).ajaxComplete(function (event, request, settings) {
-                $('#dvLoading2').hide();
-            });
+            $('#loading_img1').show();
+            $('#loading_img2').show();
 
             // 원문 클릭했을 때 (우측에) ajax api 호출, TM, MT 따로 호출해야 함!
             var thisText = $(this).text(),
@@ -332,7 +330,7 @@ var PageScript = function () {
     };
     // 코멘트 리스트 가져오기
     this.getComments = function (user, doc, sentence) {
-        var url = '/api/v1/users/' + user + '/docs/' + doc + '/sentences/' + sentence + '/comments';
+        var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence + '/comments';
         var data = {};
         $.ajax({
             url: url,
@@ -342,11 +340,11 @@ var PageScript = function () {
             success: function (args) {
                 console.log('args 9756 : ', args);
                 var result = '';
-                if (args.result != undefined) {
-                    if (args.result.length > 0) {
-                        $(args.result).each(function (idx, res) {
+                if (args.results != undefined) {
+                    if (args.results.length > 0) {
+                        $(args.results).each(function (idx, res) {
                             console.log('res 4586 : ', res);
-                            result += '<p>' + res.username + ' : ' + res.comment + ' <img data-id="' + res.id + '" data-userid="' + res.user_id + '" data-docid="' + res.project_docs_id + '" src="/static/public/img/comment_del2.png"></p>';
+                            result += '<p>' + res.user_id + ' : ' + res.comment + ' <img data-id="' + res.comment_id + '" src="/static/public/img/comment_del2.png"></p>';
                         });
                     } else {
                         result = '<p>등록된 의견이 없습니다.</p>';
@@ -363,13 +361,15 @@ var PageScript = function () {
     // 번역상태 저장
     this.saveTranStatus = function (thisObj, xy) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
-        var url = '/api/v1/users/1/docs/1/sentences/' + sentence_id + '/status/' + xy;
+        var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/status/' + xy;
+        console.log(url);
         var x = thisObj.closest('tr').find('.fa-times');
         var y = thisObj.closest('tr').find('.fa-check');
         $.ajax({
             url: url,
             type: 'PUT',
             success: function (args) {
+                console.log(args);
                 if (args.result == 'OK') {
                     if (xy == '1') {
                         // 번역상태 미완료 -> 완료로 변경
@@ -390,7 +390,7 @@ var PageScript = function () {
     // 번역문 저장
     this.saveTrans = function (thisObj) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
-        var url = '/api/v1/users/1/docs/' + doc_id + '/sentences/' + sentence_id;
+        var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/trans';
         console.log('url 4975 : ', url);
         var trans_type = '';
 
@@ -438,11 +438,9 @@ var PageScript = function () {
         $('#mainTbl').find('textarea').keyup();
     };
     this.mask = function () {
-        //화면의 높이와 너비를 구한다.
         var maskHeight = $(document).height();
         var maskWidth = $(window).width();
 
-        //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
         $('#mask').css({
             'width': maskWidth,
             'height': maskHeight
@@ -450,14 +448,17 @@ var PageScript = function () {
     };
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var url = "/api/v1/users/1/docs/" + doc_id + "/sentences/" + sentence_id;
-        console.log('url 424 : ', url);
+        var url = '/api/v1/search?q=' + thisText + '&target=tm,tb';
+        console.log('[/api/v1/search?q=' + thisText + '&target=tb,tm]');
+        console.log(url);
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
-                console.log('data 426 : ', data);
+                console.log('## 결과 ################################');
+                console.log('[data] ', data);
+                console.log('[data.tm] ', data.tm);
                 var tm_html = '';
-                if (data.tm != undefined) {
+                if (data.tm != undefined && data.tm.length>0) {
                     for (var i = 0; i < data.tm.length; i++) {
                         tm_html += '<tr>';
                         tm_html += '    <td width="7%" style="text-align:center;">' + parseInt(i + 1) + '<br>(' + data.tm[i].score + '%)</td>';
@@ -466,7 +467,6 @@ var PageScript = function () {
                         tm_html += '</tr>';
                     }
                 }
-
                 $('#resultArea').css({
                     'border-top': '0'
                 });
@@ -496,13 +496,13 @@ var PageScript = function () {
                 });
                 var tb_html = '';
 
-                console.log('data 467 : ', data);
-                if (data.words != undefined) {
-                    for (var j = 0; j < data.words.length; j++) {
+                console.log('[data.tb] ', data.tb);
+                if (data.tb != undefined && data.tb.length>0) {
+                    for (var j = 0; j < data.tb.length; j++) {
                         tb_html += '<div>';
-                        tb_html += '    <input type="button" data-id="' + data.words[j].word_id + '" value="수정"> ';
-                        tb_html += '    <span class="boldWord">' + data.words[j].origin_text + '</span> ';
-                        tb_html += '    <input type="text" class="miniWord" value="' + data.words[j].trans_text + '">';
+                        tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정"> ';
+                        tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span> ';
+                        tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
                         tb_html += '</div>';
                     }
                 }
@@ -548,7 +548,10 @@ var PageScript = function () {
                 local.showMessage("error 348");
             })
             .always(function () {});
-        jqxhr.always(function () {});
+        jqxhr.always(function () {
+            $('#loading_img1').hide();
+            $('#loading_img2').hide();
+        });
     };
     // MT 번역문 불러오기
     this.getMtAjax = function (thisText, this_idx) {
