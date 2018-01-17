@@ -12,7 +12,26 @@ body {
     padding: 0px;
 }
 
-
+#mask {  
+    position:absolute;  
+    left:0;
+    top:0;
+    z-index:100;  
+    background-color:#999;  
+    opacity:0.3;
+    display:block;  
+}
+#loading_img
+{
+    background:transparent url(/static/public/img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    z-index: 1000;
+    left: 50%;
+    top: 40%;
+    margin: 50px 0 0 0;
+}
 /*********************************************/
 
 #menuArea,
@@ -99,9 +118,14 @@ body {
     background-color: #FFF;
 }
 
-#mainArea article:nth-of-type(2),
+#mainArea article:nth-of-type(2){
+    height: calc(60% - 120px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
 #mainArea article:nth-of-type(3) {
-    height: calc(50% - 120px);
+    height: calc(40% - 120px);
     overflow-x: hidden;
     overflow-y: auto;
 }
