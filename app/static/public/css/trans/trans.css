@@ -18,7 +18,7 @@ body {
     margin: -25px 0 0 -25px;
 }
 
-#dvLoading2 {
+/* #dvLoading2 {
     background: transparent url(../../img/loading.gif) no-repeat center center;
     height: 100px;
     width: 100px;
@@ -27,7 +27,7 @@ body {
     left: 50%;
     top: 50%;
     margin: -25px 0 0 -25px;
-}
+} */
 
 #mask {
     position: absolute;
@@ -39,6 +39,28 @@ body {
     display: block;
 }
 
+#loading_img1
+{
+    background:transparent url(/static/public/img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    z-index: 1000;
+    left: 30%;
+    top: 40%;
+    display:none;
+}
+#loading_img2
+{
+    background:transparent url(/static/public/img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: absolute;
+    z-index: 1000;
+    left: 30%;
+    top: 40%;
+    display:none;
+}
 
 /*-------------------------------------------------------------*/
 

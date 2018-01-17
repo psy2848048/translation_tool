@@ -1,6 +1,8 @@
 var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project'),
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '10',
+        page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
         doc_id = getUrlParameter('doc_id');
     this.preInits = function () {
         SetMenuColor(getUrlParameter('project'), '프로젝트', '#ulProjectList li', '?project=', 'a', 'orange');
@@ -45,13 +47,13 @@ var PageScript = function () {
                 console.log('[args] : ', args);
                 $('#txt_title').val(args.title);
                 $('#status_sel').val(args.status);
-                if(args.link != null)$('#txt_link').val(args.link);
+                if (args.link != null) $('#txt_link').val(args.link);
                 $('#org_sel').val(args.origin_lang);
                 $('#tran_sel').val(args.trans_lang);
-                if(args.due_date != null && args.due_date != ''){
+                if (args.due_date != null && args.due_date != '') {
                     var d_date = new Date(args.due_date);
                     $('#sel_year').val(AddPreZero(d_date.getFullYear()));
-                    $('#sel_month').val(AddPreZero(parseInt(d_date.getMonth()+1)));
+                    $('#sel_month').val(AddPreZero(parseInt(d_date.getMonth() + 1)));
                     $('#sel_day').val(AddPreZero(d_date.getDate()));
                     var h = d_date.getHours(),
                         m = d_date.getMinutes();
@@ -66,6 +68,45 @@ var PageScript = function () {
             error: function (err) {
                 alert('fail\n\nerror code 4157');
                 console.log('fail : error code 4157');
+                console.log(err.responseText);
+            }
+        });
+        // 하단 참가자 목록
+        $.ajax({
+            url: '/api/v1/7/projects/docs/' + doc_id + '/members?page=1&rows=100', // 1차는 하드코딩 : 페이징 필요여부가 애매
+            type: 'GET',
+            //data: data,
+            async: true,
+            success: function (args) {
+                if (IsValidObj(args) && IsValidObj(args.results) && args.results.length > 0) {
+                    console.log('[/api/v1/7/projects/docs/' + doc_id + '/members?page=1&rows=100] : ', args);
+                    var html = '';
+                    $(args.results).each(function (idx) {
+                        var result = args.results[idx];
+                        html += '<tr>';
+                        html += '    <td>';
+                        html += '        <input type="checkbox">';
+                        html += '    </td>';
+                        html += '    <td>' + parseInt(idx + 1) + '</td>';
+                        html += '    <td>' + result.name + '</td>';
+                        html += '    <td>' + result.email + '</td>';
+                        html += '    <td>';
+                        html += '        <input type="checkbox" checked="checked" disabled="disabled">';
+                        html += '    </td>';
+                        html += '    <td>';
+                        html += '        <input type="checkbox" checked="checked" disabled="disabled">';
+                        html += '    </td>';
+                        html += '    <td>';
+                        html += '        <input type="checkbox" checked="checked" disabled="disabled">';
+                        html += '    </td>';
+                        html += '</tr>';
+                    });
+                    $('#listContents table tbody tr').after(html);
+                }
+            },
+            error: function (err) {
+                alert('fail\n\nerror code 6454');
+                console.log('fail : error code 4556');
                 console.log(err.responseText);
             }
         });
@@ -88,11 +129,11 @@ var PageScript = function () {
             }
         });
         // 파일로 업로드 버튼
-        $('#rdo_file').on('click', function(e){
+        $('#rdo_file').on('click', function (e) {
             e.preventDefault();
             //$('#dv_file').fadeIn();
             //$('#dv_text').fadeOut();
-            alert('파일업로드 방식은 개발중에 있습니다.');            
+            alert('파일업로드 방식은 개발중에 있습니다.');
         });
         // 텍스트로 등록
         $('#rdo_text').on('click', function () {
@@ -101,13 +142,13 @@ var PageScript = function () {
         });
         // 문서 수정
         $('#mainArea input[type=button]').on('click', function (e) {
-            e.preventDefault();            
-            if($('#txt_title').val().trim() == ''){
+            e.preventDefault();
+            if ($('#txt_title').val().trim() == '') {
                 alert('문서제목을 입력해주세요.');
                 $('#txt_title').focus();
                 return false;
-            }          
-           var date = '';
+            }
+            var date = '';
             if ($('#chk_no_limit').prop('checked') == false) {
                 var year = $('#limited_date select:nth-of-type(1)').val(),
                     month = $('#limited_date select:nth-of-type(2)').val(),
@@ -139,8 +180,8 @@ var PageScript = function () {
             date = $('#chk_no_limit').prop('checked') ? '' : new Date(date).toGMTString();
             var data = {
                 'title': $('#txt_title').val(),
-                'status':$('#status_sel').val(),
-                'link':$('#txt_link').val(),
+                'status': $('#status_sel').val(),
+                'link': $('#txt_link').val(),
                 'origin_lang': $('#org_sel').val(),
                 'trans_lang': $('#tran_sel').val(),
                 'due_date': date,
@@ -152,10 +193,10 @@ var PageScript = function () {
                 data: data,
                 async: true,
                 success: function (args) {
-                    if(args.result == 'OK'){
+                    if (args.result == 'OK') {
                         alert('정상적으로 저장되었습니다.');
-                        location.href='project_view.html?project=' + project_id;
-                    }else{
+                        location.href = 'project_view.html?project=' + project_id;
+                    } else {
                         alert('저장에 실패했습니다.\n\n오류코드 : 7784');
                     }
                 },
