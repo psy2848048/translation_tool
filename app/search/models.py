@@ -3,8 +3,7 @@ from sqlalchemy import Table, MetaData
 from sqlalchemy import text
 
 
-def select_similarity_trans_memory(query, target_lang):
-    # 현재는 영어->한국어만 지원하기 때문에 target_lang 쓰이지 않고 있음
+def select_similarity_trans_memory(query):
     conn = db.engine.connect()
 
     #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
@@ -21,33 +20,24 @@ def select_similarity_trans_memory(query, target_lang):
     return results
 
 
-def select_termbase(query):
+def select_termbase(query, search_lang):
     conn = db.engine.connect()
-    temp_words = []
     nouns = query.split()
 
+    temp = []
     for noun in nouns:
-        res = conn.execute(text("""SELECT id as term_id, trans_lang, origin_text, trans_text FROM `marocat v1.1`.termbase 
-                                   WHERE (origin_text LIKE :noun OR trans_text LIKE :noun)
-                                   AND ( CHAR_LENGTH(origin_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
-                                   -- OR CHAR_LENGTH(trans_text) BETWEEN CHAR_LENGTH(:noun_pure) - 4 AND CHAR_LENGTH(:noun_pure) + 4
-                                   )"""), noun='%'+noun+'%', noun_pure=noun)
+        # 추후 수정사항: 나중에 검색대상 구분하자
+        if len(noun) > 2:
+            res = conn.execute(text("""SELECT id as term_id, origin_text, trans_text FROM `marocat v1.1`.termbase
+                                       WHERE origin_text LIKE :noun AND origin_lang = :origin_lang""")
+                               , noun='%'+noun+'%', origin_lang=search_lang).fetchall()
+        else:
+            continue
 
-        temp = {}
-        for r in res:
-            if r.trans_lang is not 'ko':
-                temp['term_id'] = r.term_id
-                temp['origin_text'] = r.origin_text
-                temp['trans_text'] = r.trans_text
-                temp_words.append(temp)
-            else:
-                temp['term_id'] = r.term_id
-                temp['origin_text'] = r.trans_text
-                temp['trans_text'] = r.origin_text
-                temp_words.append(temp)
+        temp += [dict(r) for r in res]
 
     #: 중복되는 단어 제거하기
-    words = {frozenset(item.items()): item for item in temp_words}.values()
+    words = {frozenset(item.items()): item for item in temp}.values()
     return list(words)
 
 

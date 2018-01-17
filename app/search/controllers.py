@@ -3,7 +3,7 @@ import app.search.models as model
 
 def search():
     query = request.values.get('q', None)
-    target_lang = request.values.get('tl', None)
+    origin_lang = request.values.get('ol', None)
     target = request.values.get('target', None)
 
     targets = target.split(',')
@@ -13,7 +13,7 @@ def search():
         #: 문장저장소 검색
         if t == 'tm':
             temp = []
-            res = model.select_similarity_trans_memory(query, target_lang)
+            res = model.select_similarity_trans_memory(query)
             for r in res:
                 if r.score >= 50:
                     temp.append(dict(r))
@@ -21,7 +21,7 @@ def search():
 
         #: 단어저장소 검색
         elif t == 'tb':
-            res = model.select_termbase(query)
+            res = model.select_termbase(query, origin_lang)
             results['tb'] = res
 
         #: 프로젝트 검색
