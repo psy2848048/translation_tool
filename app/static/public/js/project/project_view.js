@@ -132,7 +132,7 @@ var PageScript = function () {
             }
         });
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
                 //console.log('[/api/v1/7/projects/] : ', data);
                 //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
