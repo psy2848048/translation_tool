@@ -8,16 +8,7 @@ var PageScript = function () {
         local.show();
         console.log('[current pc] : ', new Date());
         console.log('[current pc gmt basic] : ', new Date().toGMTString());
-
-        // $(document).ajaxStart(function () {
-        //     $('#dvLoading2').show();
-        // });
-        // $(document).ajaxComplete(function (event, request, settings) {
-        //     $('#dvLoading2').hide();
-        // });
-        var jqxhr_l = $.get('/api/v1/7/projects?rows=200&page=1', function (data) {
-                console.log('[/api/v1/7/projects?rows=200&page=1] : ', data);
-                console.log('[/api/v1/7/projects?rows=200&page=1 data.results[0]] : ', data.results[0]);
+        var jqxhr_l = $.get('/api/v1/7/projects?rows=1000', function (data) {
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {

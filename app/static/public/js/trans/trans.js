@@ -8,7 +8,8 @@ var PageScript = function () {
 
         // 원문 로딩
         var jqxhr = $.get("/api/v1/toolkit/workbench/docs/" + doc_id, function (data) {
-                console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + '] : ', data);
+                console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + ' 9987] : ');
+                console.log(data);
                 var html = '';
                 $(data.results).each(function (idx, res) {
                     html += '<tr>';
@@ -24,12 +25,12 @@ var PageScript = function () {
                         html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer;"></i>';
                     }
                     html += '    </td>';
-                    if (res.trans_type == 'T') {
-                        html += '<td>T</td>';
-                    } else if (res.trans_type == 'TM') {
-                        html += '<td class="tmColor" title="문장저장소">문</td>';
+                    if (res.trans_type == 'TM') {
+                        html += '<td class="tmColor" title="문장저장소">문<br>장</td>';
                     } else if (res.trans_type == 'MT') {
-                        html += '<td class="mtColor" title="실시간번역">실</td>';
+                        html += '<td class="mtColor" title="실시간번역">실<br>시<br>간</td>';
+                    } else if (res.trans_type == 'T') {
+                        html += '<td class="tColor" title="자체번역">자<br>체</td>';
                     } else {
                         html += '<td></td>';
                     }
@@ -344,7 +345,7 @@ var PageScript = function () {
                     if (args.results.length > 0) {
                         $(args.results).each(function (idx, res) {
                             console.log('res 4586 : ', res);
-                            result += '<p>' + res.user_id + ' : ' + res.comment + ' <img data-id="' + res.comment_id + '" src="/static/public/img/comment_del2.png"></p>';
+                            result += '<p>' + res.name + ' : ' + res.comment + ' <img data-id="' + res.comment_id + '" src="/static/public/img/comment_del2.png"></p>';
                         });
                     } else {
                         result = '<p>등록된 의견이 없습니다.</p>';
@@ -362,6 +363,7 @@ var PageScript = function () {
     this.saveTranStatus = function (thisObj, xy) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
         var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/status/' + xy;
+        console.log('[6545 url]');
         console.log(url);
         var x = thisObj.closest('tr').find('.fa-times');
         var y = thisObj.closest('tr').find('.fa-check');
@@ -369,6 +371,7 @@ var PageScript = function () {
             url: url,
             type: 'PUT',
             success: function (args) {
+                console.log('[2145 args]');
                 console.log(args);
                 if (args.result == 'OK') {
                     if (xy == '1') {
@@ -391,7 +394,8 @@ var PageScript = function () {
     this.saveTrans = function (thisObj) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
         var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/trans';
-        console.log('url 4975 : ', url);
+        console.log('4975 [번역문저장 url]');
+        console.log(url);
         var trans_type = '';
 
         if (thisObj.val().trim() == '') trans_type = 'X';
@@ -406,7 +410,8 @@ var PageScript = function () {
             trans_type: trans_type,
             trans_text: thisObj.val()
         };
-        console.log('data 391 : ', data);
+        console.log('3391 [data]');
+        console.log(data);
         $.ajax({
             url: url,
             type: 'PUT',
@@ -449,7 +454,7 @@ var PageScript = function () {
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
         var url = '/api/v1/search?q=' + thisText + '&target=tm,tb';
-        console.log('[/api/v1/search?q=' + thisText + '&target=tb,tm]');
+        console.log('[/api/v1/search?q=' + thisText + '&target=tb,tm] 4526');
         console.log(url);
         var jqxhr = $.get(url, {
                 sentence: thisText
@@ -458,7 +463,7 @@ var PageScript = function () {
                 console.log('[data] ', data);
                 console.log('[data.tm] ', data.tm);
                 var tm_html = '';
-                if (data.tm != undefined && data.tm.length>0) {
+                if (data.tm != undefined && data.tm.length > 0) {
                     for (var i = 0; i < data.tm.length; i++) {
                         tm_html += '<tr>';
                         tm_html += '    <td width="7%" style="text-align:center;">' + parseInt(i + 1) + '<br>(' + data.tm[i].score + '%)</td>';
@@ -471,23 +476,28 @@ var PageScript = function () {
                     'border-top': '0'
                 });
                 $('#resultTbl').append(tm_html);
-                // 이벤트 등록
+
                 $('#resultTbl tr').on('click', function (e) {
                     e.preventDefault();
                     //alert('1. 좌측에 해석문 입력\n2. 아이콘 x 로 변경 혹은 유지\n3. TM/TB/MT 선택에 따른 변경');
                     var transType = $(this).find('td:eq(1)').text();
                     var transBgClass = '';
                     switch (transType) {
-                        case 'TM':
+                        case 'TM': // 문장
                             transBgClass = 'tmColor';
                             break;
-                        case 'TB':
+                        case 'TB': // 단어
                             transBgClass = 'tbColor';
                             break;
-                        case 'MT':
+                        case 'MT': // 실시간
                             transBgClass = 'mtColor';
                             break;
+                        case 'T': // 자체
+                            transBgClass = 'tColor';
+                            break;
                     }
+                    console.log('[transType] 5556 : ', transType);
+                    console.log('[transBgClass] 8546 : ', transBgClass);
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
@@ -496,8 +506,9 @@ var PageScript = function () {
                 });
                 var tb_html = '';
 
-                console.log('[data.tb] ', data.tb);
-                if (data.tb != undefined && data.tb.length>0) {
+                console.log('[5692 data.tb] ');
+                console.log(data.tb);
+                if (data.tb != undefined && data.tb.length > 0) {
                     for (var j = 0; j < data.tb.length; j++) {
                         tb_html += '<div>';
                         tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정"> ';
@@ -523,12 +534,13 @@ var PageScript = function () {
                     var trans_word = $(this).closest('div').find('input[type=text]').val();
                     var word_id = $(this).attr('data-id');
                     $.ajax({
-                        url: '/api/v1/users/1/words/' + word_id,
+                        url: '/api/v1/toolkit/termbase/' + word_id,
                         type: 'PUT',
                         data: {
                             trans_text: trans_word
                         },
                         success: function (args) {
+                            console.log('6695 [args]');
                             console.log(args);
                             if (args.result == 'OK') {
                                 local.showMessage('수정되었습니다.');
@@ -556,8 +568,8 @@ var PageScript = function () {
     // MT 번역문 불러오기
     this.getMtAjax = function (thisText, this_idx) {
         var data = {
-            "source_lang_id": 2, // 1: 한국어 2: 영어
-            "target_lang_id": 1, // 1: 한국어 2: 영어
+            "source_lang_id": 2, // 1=한국어 2=영어 4=표준중국어
+            "target_lang_id": 1, // 1=한국어 2=영어 4=표준중국어
             "where": "phone", // 노상관
             "sentence": thisText, // 번역할문장
             "user_email": "admin@sexycookie.com" // 일종의 암호로, 이거 바꾸면 안돌아가요
@@ -568,13 +580,13 @@ var PageScript = function () {
             data: data,
             async: true,
             success: function (args) {
-                console.log('args 536 : ', args);
+                console.log('[args 5326] ', args);
                 var mt_html = '';
 
                 mt_html += '<tr>';
                 mt_html += '    <td width="7%" style="text-align:center;">1</td>';
                 mt_html += '    <td width="5%" class="mtColor" style="tsext-align:center;">MT</td>';
-                mt_html += '    <td width="88%">' + args.google + '</td>';
+                mt_html += '    <td width="88%">' + args.ciceron + '</td>';
                 mt_html += '</tr>';
 
                 $('#resultArea').css({
@@ -588,16 +600,21 @@ var PageScript = function () {
                     var transType = $(this).find('td:eq(1)').text();
                     var transBgClass = '';
                     switch (transType) {
-                        case 'TM':
+                        case 'TM': // 문장
                             transBgClass = 'tmColor';
                             break;
-                        case 'TB':
+                        case 'TB': // 단어
                             transBgClass = 'tbColor';
                             break;
-                        case 'MT':
+                        case 'MT': // 실시간
                             transBgClass = 'mtColor';
                             break;
+                        case 'T': // 자체
+                            transBgClass = 'tColor';
+                            break;
                     }
+                    console.log('[transType] 8457 : ', transType);
+                    console.log('[transBgClass] 3696 : ', transBgClass);
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
