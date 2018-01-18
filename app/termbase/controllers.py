@@ -19,15 +19,14 @@ def save_termbase():
     trans_text = request.form.get('trans_text', None)
 
     #: CSV 파일로 받을 때
-    _file = request.files.get('file', None)
+    file = request.files.get('file', None)
 
     if not None in [origin_lang, trans_lang, origin_text, trans_text]:
         is_done = model.insert_term(origin_lang, trans_lang, origin_text, trans_text)
-    elif _file is not None:
-        if _file.mimetype != 'text/csv':
+    elif file is not None:
+        if file.mimetype != 'text/csv':
             return make_response(json.jsonify(result='File mimetype is not CSV'), 461)
 
-        file = TextIOWrapper(_file)
         is_done = model.insert_term_csv_file(file, origin_lang, trans_lang)
     else:
         return make_response(json.jsonify('Something Not Entered'), 460)

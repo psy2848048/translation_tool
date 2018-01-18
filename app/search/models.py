@@ -68,22 +68,26 @@ def select_termbase_only_one(query):
     return words
 
 
-def select_projects(query):
+def select_projects(uid, query):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id as project_id, name, due_date, create_time FROM `marocat v1.1`.projects 
-                               WHERE name LIKE :query"""),
-                       query='%' + query + '%')
+    res = conn.execute(text("""SELECT id as project_id, name, due_date, p.create_time 
+                              FROM `marocat v1.1`.projects p JOIN project_members pm ON pm.project_id=p.id
+                              WHERE name LIKE :query AND pm.user_id=:uid
+                              AND p.is_deleted=FALSE AND pm.is_deleted=FALSE ;"""),
+                       query='%' + query + '%', uid=uid)
     results = [dict(r) for r in res]
     return results
 
 
-def select_docs(query):
+def select_docs(uid, query):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id as doc_id, title, origin_lang, trans_lang, due_date, create_time FROM `marocat v1.1`.docs 
-                               WHERE title LIKE :query"""),
-                       query='%' + query + '%')
+    res = conn.execute(text("""SELECT id as doc_id, title, origin_lang, trans_lang, due_date, d.create_time 
+                              FROM `marocat v1.1`.docs d JOIN doc_members dm ON dm.doc_id=d.id
+                              WHERE title LIKE :query AND dm.user_id=:uid
+                              AND d.is_deleted=FALSE AND dm.is_deleted=FALSE ;"""),
+                       query='%' + query + '%', uid=uid)
     results = [dict(r) for r in res]
     return results
 

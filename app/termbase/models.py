@@ -1,6 +1,7 @@
 from sqlalchemy import Table, MetaData, func, text
 from app import db
 import traceback
+import io
 import csv
 from datetime import datetime
 
@@ -47,22 +48,30 @@ def insert_term_csv_file(csv_file, origin_lang, trans_lang):
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
-    data = csv.reader(csv_file)
+
+    file = io.StringIO(csv_file.stream.read().decode("UTF8"), newline=None)
+    data = csv.reader(file)
 
     try:
         for row in data:
+            #: CSV 파일 형식이 `원문언어, 번역언어, 원문단어, 번역단어`순인 경우
             if len(row) == 4:
                 res = conn.execute(tb.insert(), origin_lang=row[0], trans_lang=row[1]
                                    , origin_text=row[2], trans_text=row[3])
                 if res.rowcount != 1:
                     trans.rollback()
                     return False
-            else:
+
+            #: CSV 파일 형식이 `원문단어, 번역단어`순인 경우
+            elif len(row) == 2:
                 res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang
                                    , origin_text=row[0], trans_text=row[1])
                 if res.rowcount != 1:
                     trans.rollback()
                     return False
+            else:
+                trans.rollback()
+                return False
 
         trans.commit()
         return True

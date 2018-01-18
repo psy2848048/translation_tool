@@ -1,6 +1,5 @@
 from flask import request, make_response, json
 import app.trans_memory.models as model
-from io import TextIOWrapper
 
 
 def get_trans_memory_list():
@@ -28,8 +27,7 @@ def save_trans_memory():
         if file.mimetype != 'text/csv':
             return make_response(json.jsonify(result='File mimetype is not CSV'), 461)
 
-        _file = TextIOWrapper(file)
-        is_done = model.insert_trans_memory_csv_file(_file)
+        is_done = model.insert_trans_memory_csv_file(file)
     else:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
@@ -39,13 +37,13 @@ def save_trans_memory():
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def modify_trans_memory(tid):
+def modify_trans_memory(sid):
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
     origin_text = request.form.get('origin_text', None)
     trans_text = request.form.get('trans_text', None)
 
-    is_done = model.update_trans_memory(tid, origin_lang, trans_lang, origin_text, trans_text)
+    is_done = model.update_trans_memory(sid, origin_lang, trans_lang, origin_text, trans_text)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

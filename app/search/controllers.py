@@ -1,7 +1,10 @@
-from flask import request, make_response, json
+from flask import request, make_response, json, session
+from flask_login import login_required, current_user
 import app.search.models as model
 
 def search():
+    # uid = current_user.id
+    uid = 7
     query = request.values.get('q', None)
     origin_lang = request.values.get('ol', None)
     target = request.values.get('target', None)
@@ -26,12 +29,12 @@ def search():
 
         #: 프로젝트 검색
         elif t == 'p':
-            res = model.select_projects(query)
+            res = model.select_projects(uid, query)
             results['p'] = res
 
         #: 문서 검색
         elif t == 'd':
-            res = model.select_docs(query)
+            res = model.select_docs(uid, query)
             results['d'] = res
 
         #: 사용자 검색

@@ -8,7 +8,7 @@ workbench = Blueprint('workbench', __name__)
 workbench.add_url_rule('/docs/<int:did>', view_func=ctrl.get_doc, methods=['GET'])
 
 # 번역내용 CSV파일로 다운로드
-workbench.add_url_rule('/docs/<int:did>/output', view_func=ctrl.output_doc_to_file, methods=['POST'])
+workbench.add_url_rule('/docs/<int:did>/output', view_func=ctrl.output_doc_to_file, methods=['GET'])
 
 
 # 번역문 저장
