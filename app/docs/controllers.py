@@ -29,7 +29,7 @@ def modify_doc_info(uid, did):
     if status not in ['신규', '진행중', '완료', '취소']:
         return make_response(json.jsonify(result='Status is wrong'), 461)
 
-    if due_date in ["''", '""']:
+    if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)

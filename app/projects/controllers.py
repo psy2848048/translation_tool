@@ -40,7 +40,7 @@ def make_project(uid):
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    if due_date in ["''", '""']:
+    if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
@@ -66,7 +66,7 @@ def add_doc(uid, pid):
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    if due_date in ["''", '""']:
+    if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)
@@ -112,7 +112,7 @@ def modify_project_info(uid, pid):
     if status not in ['신규', '진행중', '완료', '취소']:
         return make_response(json.jsonify(result='Status is wrong'), 461)
 
-    if due_date in ["''", '""']:
+    if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
         due_date = common.convert_datetime_4mysql(due_date)

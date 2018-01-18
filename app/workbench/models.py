@@ -14,8 +14,11 @@ def select_doc(did):
                                         , IF(ts.text is not NULL, ts.text, '') as trans_text
                                         , IF(ts.status is not NULL, ts.status, 0) as trans_status
                                         , IF(ts.type is not NULL, ts.type, 0) as trans_type
-                                   FROM `marocat v1.1`.doc_origin_sentences os LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
-                                   WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did)
+                                        , IF(comment_cnt is not NULL, comment_cnt, 0) as comment_cnt
+                                  FROM `marocat v1.1`.doc_origin_sentences os LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
+																			  LEFT JOIN ( SELECT origin_id, COUNT(*) as comment_cnt FROM trans_comments 
+								                                                          WHERE is_deleted = FALSE GROUP BY origin_id ) tc ON tc.origin_id = os.id
+                                  WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did)
 
     doc_sentences = [dict(res) for res in results]
     return doc_sentences
