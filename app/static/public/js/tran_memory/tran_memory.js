@@ -2,7 +2,8 @@ var pageScript = function () {
     var local = this,
         rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '15',
         page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
-        cur_path = $(location).attr('pathname');
+        cur_path = $(location).attr('pathname'),
+        project_id = $(location).attr('project');
     this.preInits = function () {
         local.showList();
     };
@@ -14,15 +15,15 @@ var pageScript = function () {
         });
         //$('#listTitleGroup').find('textarea').keyup();
     };
-    this.outFocusEvents = function(){
-        $(document).on('focusout', '#listTitleGroup table td input[type=text], #listTitleGroup table td textarea', function(e){
+    this.outFocusEvents = function () {
+        $(document).on('focusout', '#listTitleGroup table td input[type=text], #listTitleGroup table td textarea', function (e) {
             e.preventDefault();
             var thisTr = $(this).closest('tr');
             var data = {
-                origin_lang:thisTr.find('td:eq(1) input[type=text]').val(),
-                origin_text:thisTr.find('td:eq(2) textarea').val(),
-                trans_lang:thisTr.find('td:eq(3) input[type=text]').val(),
-                trans_text:thisTr.find('td:eq(4) textarea').val()
+                origin_lang: thisTr.find('td:eq(1) input[type=text]').val(),
+                origin_text: thisTr.find('td:eq(2) textarea').val(),
+                trans_lang: thisTr.find('td:eq(3) input[type=text]').val(),
+                trans_text: thisTr.find('td:eq(4) textarea').val()
             };
             console.log('[data] : ', data);
             $.ajax({
@@ -31,10 +32,10 @@ var pageScript = function () {
                 data: data,
                 async: true,
                 success: function (args) {
-                    if(args.result == 'OK'){
+                    if (args.result == 'OK') {
                         //alert('정상적으로 저장되었습니다.');
                         //location.href='project_view.html?project=' + project_id;
-                    }else{
+                    } else {
                         alert('저장에 실패했습니다.\n\n오류코드 : 6456');
                     }
                 },
@@ -89,21 +90,24 @@ var pageScript = function () {
     };
     this.show = function () {
         //화면의 높이와 너비를 구한다.
-        var maskHeight = $(document).height();  
-        var maskWidth = $(window).width();  
-        
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
         //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
-        $('#mask').css({'width':maskWidth,'height':maskHeight}); 
+        $('#mask').css({
+            'width': maskWidth,
+            'height': maskHeight
+        });
     };
-    this.hide = function(){
+    this.hide = function () {
         //$('#mask').fadeIn(1000);      
-        $('#mask').fadeTo("slow", 1000).hide();    
-        $('#loading_img').fadeTo("slow", 1000).hide();    
+        $('#mask').fadeTo("slow", 1000).hide();
+        $('#loading_img').fadeTo("slow", 1000).hide();
     };
     this.showList = function () {
         local.show();
         var list = $.get('/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page, function (data) {
-                console.log('/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page, data);
+                console.log('8546 [/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page + '] ', data);
                 if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
                     var row = '';
                     $(data.results).each(function (idx, res) {

@@ -35,7 +35,7 @@ var PageScript = function () {
             }
 
             var date = '';
-            if (date = $('#chk_no_limit').prop('checked') == false) {
+            if ($('#chk_no_limit').prop('checked') == false) {
                 var year = $('#limited_date_area select:nth-of-type(1)').val(),
                     month = $('#limited_date_area select:nth-of-type(2)').val(),
                     day = $('#limited_date_area select:nth-of-type(3)').val(),
@@ -110,18 +110,29 @@ var PageScript = function () {
                 if (res != undefined && res != '') {
                     $('#txt_title').val(res.name);
                     $('#status_sel').val(res.status);
-                    var dt_duedate = new Date(res.due_date);
-                    $('#sel_year').val(dt_duedate.getFullYear());
-                    $('#sel_month').val(AddPreZero(parseInt(dt_duedate.getMonth() + 1)));
-                    $('#sel_day').val(AddPreZero(dt_duedate.getDate()));
-                    var h = dt_duedate.getHours(),
-                        m = dt_duedate.getMinutes();
-                    if (parseInt(m) > 54) {
-                        h = parseInt(h) + parseInt(1);
-                        m = '00';
+
+                    if (IsValidObj(res.due_date)) {
+                        var dt_duedate = new Date(res.due_date);
+                        $('#sel_year').val(dt_duedate.getFullYear());
+                        $('#sel_month').val(AddPreZero(parseInt(dt_duedate.getMonth() + 1)));
+                        $('#sel_day').val(AddPreZero(dt_duedate.getDate()));
+                        var h = dt_duedate.getHours(),
+                            m = dt_duedate.getMinutes();
+                        if (parseInt(m) > 54) {
+                            h = parseInt(h) + parseInt(1);
+                            m = '00';
+                        }
+                        $('#sel_hour').val(AddPreZero(h));
+                        $('#sel_minute').val(AddPreZero(m));
+                    } else {
+                        $('#chk_no_limit').prop('checked', true);
+
+                        $('#sel_year').attr('disabled', true);
+                        $('#sel_month').attr('disabled', true);
+                        $('#sel_day').attr('disabled', true);
+                        $('#sel_hour').attr('disabled', true);
+                        $('#sel_minute').attr('disabled', true);
                     }
-                    $('#sel_hour').val(AddPreZero(h));
-                    $('#sel_minute').val(AddPreZero(m));
                 }
             },
             error: function (e) {
@@ -130,7 +141,7 @@ var PageScript = function () {
             }
         });
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/7/projects/', function (data) {
+        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
                 //console.log('[/api/v1/7/projects/] : ', data);
                 //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트

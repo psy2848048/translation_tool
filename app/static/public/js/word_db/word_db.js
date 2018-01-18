@@ -13,17 +13,17 @@ var pageScript = function () {
             this.css("left", Math.max(0, (($(window).width() - $(this).outerWidth()) / 2) + $(window).scrollLeft()) +
                 "px");
             return this;
-        };        
+        };
     };
-    this.outFocusEvents = function(){
-        $(document).on('focusout', '#listTitleGroup table td input[type=text]', function(e){
+    this.outFocusEvents = function () {
+        $(document).on('focusout', '#listTitleGroup table td input[type=text]', function (e) {
             e.preventDefault();
             var thisTr = $(this).closest('tr');
             var data = {
-                origin_lang:thisTr.find('td:eq(1) input[type=text]').val(),
-                origin_text:thisTr.find('td:eq(2) input[type=text]').val(),
-                trans_lang:thisTr.find('td:eq(3) input[type=text]').val(),
-                trans_text:thisTr.find('td:eq(4) input[type=text]').val()
+                origin_lang: thisTr.find('td:eq(1) input[type=text]').val(),
+                origin_text: thisTr.find('td:eq(2) input[type=text]').val(),
+                trans_lang: thisTr.find('td:eq(3) input[type=text]').val(),
+                trans_text: thisTr.find('td:eq(4) input[type=text]').val()
             };
             console.log('[data] : ', data);
             $.ajax({
@@ -32,10 +32,10 @@ var pageScript = function () {
                 data: data,
                 async: true,
                 success: function (args) {
-                    if(args.result == 'OK'){
+                    if (args.result == 'OK') {
                         //alert('정상적으로 저장되었습니다.');
                         //location.href='project_view.html?project=' + project_id;
-                    }else{
+                    } else {
                         alert('저장에 실패했습니다.\n\n오류코드 : 6456');
                     }
                 },
@@ -67,24 +67,26 @@ var pageScript = function () {
         });
         $(document).on('click', '#listTitleGroup table td .fa-times', function (e) {
             e.preventDefault();
-            var id = $(this).closest('tr').find('td:eq(0)').text();
-            $.ajax({
-                url: '/api/v1/toolkit/termbase/' + id,
-                type: 'DELETE',
-                async: true,
-                success: function (res) {
-                    console.log('[5462 res] : ', res);
-                    if (res.result == 'OK') {
-                        alert('단어가 삭제되었습니다.');
-                        location.href = location.href;
-                        //local.showList();
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                var id = $(this).closest('tr').find('td:eq(0)').text();
+                $.ajax({
+                    url: '/api/v1/toolkit/termbase/' + id,
+                    type: 'DELETE',
+                    async: true,
+                    success: function (res) {
+                        console.log('[5462 res] : ', res);
+                        if (res.result == 'OK') {
+                            alert('단어가 삭제되었습니다.');
+                            location.href = location.href;
+                            //local.showList();
+                        }
+                    },
+                    error: function (e) {
+                        console.log('fail 6653');
+                        console.log(e.responseText);
                     }
-                },
-                error: function (e) {
-                    console.log('fail 6653');
-                    console.log(e.responseText);
-                }
-            });
+                });
+            }
         });
         $('#upload_div .fa-times').on('click', function (e) {
             e.preventDefault();
@@ -103,16 +105,19 @@ var pageScript = function () {
     };
     this.show = function () {
         //화면의 높이와 너비를 구한다.
-        var maskHeight = $(document).height();  
-        var maskWidth = $(window).width();  
-        
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
         //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
-        $('#mask').css({'width':maskWidth,'height':maskHeight}); 
+        $('#mask').css({
+            'width': maskWidth,
+            'height': maskHeight
+        });
     };
-    this.hide = function(){
+    this.hide = function () {
         //$('#mask').fadeIn(1000);      
-        $('#mask').fadeTo("slow", 1000).hide();    
-        $('#loading_img').fadeTo("slow", 1000).hide();    
+        $('#mask').fadeTo("slow", 1000).hide();
+        $('#loading_img').fadeTo("slow", 1000).hide();
     };
     this.showList = function () {
         local.show();
