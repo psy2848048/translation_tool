@@ -5,5 +5,5 @@ trans_memory = Blueprint('trans_memory', __name__)
 
 trans_memory.add_url_rule('/', view_func=ctrl.get_trans_memory_list, methods=['GET'])
 trans_memory.add_url_rule('/', view_func=ctrl.save_trans_memory, methods=['POST'])
-trans_memory.add_url_rule('/<int:tid>', view_func=ctrl.modify_trans_memory, methods=['PUT'])
-trans_memory.add_url_rule('/<int:tid>', view_func=ctrl.delete_trans_memory, methods=['DELETE'])
+trans_memory.add_url_rule('/<int:sid>', view_func=ctrl.modify_trans_memory, methods=['PUT'])
+trans_memory.add_url_rule('/<int:sid>', view_func=ctrl.delete_trans_memory, methods=['DELETE'])

@@ -1,6 +1,8 @@
 from sqlalchemy import Table, MetaData, func, text
 from app import db
 import traceback
+from io import TextIOWrapper
+import io
 import csv
 from datetime import datetime
 
@@ -43,25 +45,21 @@ def insert_trans_memory(origin_lang, trans_lang, origin_text, trans_text):
         return False
 
 
-def insert_trans_memory_csv_file(csv_file, origin_lang, trans_lang):
+def insert_trans_memory_csv_file(csv_file):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tm = Table('translation_memory', meta, autoload=True)
-    data = csv.reader(csv_file)
+
+    # file = TextIOWrapper(csv_file)
+    file = io.StringIO(csv_file.stream.read().decode("UTF8"), newline=None)
+    data = csv.reader(file)
 
     try:
         for row in data:
             if len(row) == 4:
                 res = conn.execute(tm.insert(), origin_lang=row[0], trans_lang=row[1]
                                    , origin_text=row[2], trans_text=row[3])
-                if res.rowcount != 1:
-                    trans.rollback()
-                    return False
-
-            elif len(row) == 2 and origin_lang is not None and trans_lang is not None:
-                res = conn.execute(tm.insert(), origin_lang=origin_lang, trans_lang=trans_lang
-                                   , origin_text=row[0], trans_text=row[1])
                 if res.rowcount != 1:
                     trans.rollback()
                     return False
