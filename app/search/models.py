@@ -3,7 +3,7 @@ from sqlalchemy import Table, MetaData
 from sqlalchemy import text
 
 
-def select_similarity_trans_memory(query):
+def select_similarity_trans_memory(query, origin_lang, trans_lang):
     conn = db.engine.connect()
 
     #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
@@ -11,16 +11,19 @@ def select_similarity_trans_memory(query):
     first = "%" + ' '.join(split_sentence[:3]) + "%"
     second = "%" + ' '.join(split_sentence[-3:]) + "%"
 
-    select_similarity_trans_memory = """SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score, sm.origin_text, sm.trans_text
-                                        FROM ( SELECT origin_text, trans_text FROM `marocat v1.1`.translation_memory
-                                               WHERE origin_text LIKE :first OR origin_text LIKE :second) sm
-                                        ORDER BY score DESC
-                                        LIMIT 3;"""
-    results = conn.execute(text(select_similarity_trans_memory), sentence=query, first=first, second=second)
+    res = conn.execute(text("""SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score, tm_id, sm.origin_text, sm.trans_text
+                                    FROM ( SELECT id as tm_id, origin_text, trans_text FROM `marocat v1.1`.translation_memory
+                                           WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
+                                           AND origin_lang = :ol AND trans_lang = :tl) sm
+                                    ORDER BY score DESC 
+                                    LIMIT 3;""")
+                       , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
+
+    results = [dict(r) for r in res]
     return results
 
 
-def select_termbase(query, search_lang):
+def select_termbase(query, origin_lang, trans_lang):
     conn = db.engine.connect()
     nouns = query.split()
 
@@ -29,16 +32,18 @@ def select_termbase(query, search_lang):
         # 추후 수정사항: 나중에 검색대상 구분하자
         if len(noun) > 2:
             res = conn.execute(text("""SELECT id as term_id, origin_text, trans_text FROM `marocat v1.1`.termbase
-                                       WHERE origin_text LIKE :noun AND origin_lang = :origin_lang""")
-                               , noun='%'+noun+'%', origin_lang=search_lang).fetchall()
+                                       WHERE origin_text LIKE :noun 
+                                       AND origin_lang = :ol AND trans_lang = :tl
+                                       """)
+                               , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang).fetchall()
         else:
             continue
 
         temp += [dict(r) for r in res]
 
     #: 중복되는 단어 제거하기
-    words = {frozenset(item.items()): item for item in temp}.values()
-    return list(words)
+    terms = {frozenset(item.items()): item for item in temp}.values()
+    return list(terms)
 
 
 def select_termbase_only_one(query):

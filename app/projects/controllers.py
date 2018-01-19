@@ -33,7 +33,7 @@ def get_proejct_members(uid, pid):
     return make_response(json.jsonify(total_cnt=total_cnt, results=project_members), 200)
 
 
-def make_project(uid):
+def add_project(uid):
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
 
@@ -84,7 +84,7 @@ def add_doc(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def add_project_member(mid, pid):
+def add_project_member(uid, pid):
     mid = request.form.get('mid', None)
     can_read = request.form.get('can_read', None)
     can_modify = request.form.get('can_modify', None)
@@ -96,8 +96,10 @@ def add_project_member(mid, pid):
 
     is_done = model.insert_project_member(pid, mid, can_read, can_modify, can_delete, can_create_doc)
 
-    if is_done is True:
+    if is_done is 1:
         return make_response(json.jsonify(result='OK'), 200)
+    elif is_done is 2:
+        return make_response(json.jsonify(result='Duplicate! Already Exist'), 462)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 

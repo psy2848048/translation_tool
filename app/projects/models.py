@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import Table, MetaData, text, func, and_
+import sqlalchemy.exc
 import traceback
 from datetime import datetime
 
@@ -169,19 +170,23 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
     pm = Table('project_members', meta, autoload=True)
 
     try:
-        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=False
-                           , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
-
-        if res.rowcount != 1:
-            trans.rollback()
-            return False
+        conn.execute(text("""INSERT INTO project_members (user_id, project_id, can_read, can_modify, can_delete, can_create_doc)
+                            VALUES (:uid, :pid, :can_read, :can_modify, :can_delete, :can_create_doc)
+                            ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
+                                                  , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete, can_create_doc=:can_create_doc;""")
+                     , uid=uid, pid=pid, is_founder=False
+                     , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
 
         trans.commit()
-        return True
+        return 1
+    except sqlalchemy.exc.IntegrityError:
+        traceback.print_exc()
+        trans.rollback()
+        return 2
     except:
         traceback.print_exc()
         trans.rollback()
-        return False
+        return 0
 
 
 def update_project_member(pid, mid, can_read, can_modify, can_delete, can_create_doc):

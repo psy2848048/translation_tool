@@ -18,6 +18,7 @@ def select_trans_memory(page, rows):
 
     results = conn.execute(text("""SELECT id as tmid, origin_lang, trans_lang, origin_text, trans_text FROM `marocat v1.1`.translation_memory
                                   WHERE is_deleted = FALSE
+                                  ORDER BY create_time DESC 
                                   LIMIT :row_count OFFSET :offset;"""), row_count=rows, offset=rows * (page - 1))
     tm = [dict(res) for res in results]
 
