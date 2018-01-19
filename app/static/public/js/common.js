@@ -1,4 +1,4 @@
-var _OFFSET = new Date().getTimezoneOffset(); 
+var _OFFSET = new Date().getTimezoneOffset();
 
 // 특정 파라미터값 추출
 function getUrlParameter(sParam) {
@@ -49,7 +49,7 @@ function CheckAll(checkerObj, checkboxes) {
 
 // date 타입을 string 타입으로 전환
 function GetStringDate(date, format) {
-    if(date == undefined || date == null) return '';
+    if (date == undefined || date == null) return '';
 
     format = format == undefined || format == null || format == '' ? '0' : format; // 콤마주의!
     var strMonth = parseInt(date.getMonth()) + parseInt(1);
@@ -58,13 +58,13 @@ function GetStringDate(date, format) {
     var strHour = parseInt(date.getHours()) < 10 ? '0' + date.getHours().toString() : date.getHours().toString();
     var strMinute = parseInt(date.getMinutes()) < 10 ? '0' + date.getMinutes().toString() : date.getMinutes().toString();
     var result = '';
-    switch(format){
+    switch (format) {
         case '0': // 2018-01-11 9:7
             result = date.getFullYear() + '-' + strMonth + '-' + strDay + ' ' + parseInt(strHour) + ':' + parseInt(strMinute);
-        break;
+            break;
         case '1': // 2018-01-11 09:07
             result = date.getFullYear() + '-' + strMonth + '-' + strDay + ' ' + strHour + ':' + strMinute;
-        break;
+            break;
     }
     return result;
 }
@@ -121,7 +121,8 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
                     continue;
                 }
             }
-        }
+        }   
+        f_data.append('file', files[i]);
     }
     console.log('f_data : ', f_data);
     if (is_allowed_ext) {
@@ -148,13 +149,33 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
     }
 }
 
-function IsValidObj(o){
-    if(o == undefined || o == null) return false;
+function IsValidObj(o) {
+    if (o == undefined || o == null) return false;
     else return true;
 }
-function IsValidStr(s){
-    if(s == undefined || s == null || s == '') return false;
+
+function IsValidStr(s) {
+    if (s == undefined || s == null || s == '') return false;
     else return true;
+}
+
+// 날짜용도와 타입에 따른 결과 반환
+function GetDateText(o, purpose, format) {
+    if (purpose == 1) {
+        if (o == null || o == '' || o == '1970-01-01 9:0') {
+            return '제한없음';
+        } else {
+            var dt2 = new Date(o);
+            return GetStringDate(dt2, format);
+        }
+    }else{
+        if (o == null || o == '' || o == '1970-01-01 9:0') {
+            return '';
+        } else {
+            var dt2 = new Date(o);
+            return GetStringDate(dt2, format);
+        }
+    }
 }
 
 $(function () {

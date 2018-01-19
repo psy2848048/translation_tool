@@ -100,7 +100,7 @@ var pageScript = function () {
             //var reg_ext = ['JPG','JPEG','GIF','PNG'];
             var reg_ext = ['CSV'];
             var msg = 'CSV 파일 확장자만 허용합니다.';
-            onFileSelect($('#file_upload_frm'), '/api/v1/toolkit/termbase', 5, reg_ext, msg);
+            onFileSelect($('#file_upload_frm'), '/api/v1/toolkit/termbase/', 5, reg_ext, msg);
         });
     };
     this.show = function () {

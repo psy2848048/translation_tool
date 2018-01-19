@@ -143,8 +143,14 @@ body {
     overflow-y: auto;
 }
 
+#listTitleGroup{
+    position: relative;
+}
+
 #listTitleGroup ul {
-    float: right;
+    position: absolute;
+    right:0;
+    top:7px;
 }
 
 #listTitleGroup li {
@@ -306,4 +312,20 @@ pre,
 table,
 blockquote {
     margin-bottom: 0;
+}
+
+/**************************************/
+#search_box{    
+    display: inline-block;
+    position: absolute;
+    right:50px;
+    top:15px;
+}
+#search_box select,
+#search_box input{ 
+    font-size:13px;
+}
+#search_box input{ 
+    border:1px solid #dbd3d3;
+    border-radius: 5px;
 }

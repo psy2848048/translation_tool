@@ -50,7 +50,9 @@ var PageScript = function () {
                 if (args.link != null) $('#txt_link').val(args.link);
                 $('#org_sel').val(args.origin_lang);
                 $('#tran_sel').val(args.trans_lang);
-                if (args.due_date != null && args.due_date != '') {
+                if (args.due_date == null || args.due_date == '1970-01-01 9:0' || args.due_date == '') {
+                    $('#chk_no_limit').prop('checked', true);
+                }else{
                     var d_date = new Date(args.due_date);
                     $('#sel_year').val(AddPreZero(d_date.getFullYear()));
                     $('#sel_month').val(AddPreZero(parseInt(d_date.getMonth() + 1)));
