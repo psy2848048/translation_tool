@@ -19,10 +19,10 @@ workbench.add_url_rule('/docs/sentences/<int:sid>/status/<int:status>', view_fun
 
 
 # 번역문 댓글 조회
-workbench.add_url_rule('/docs/sentences/<int:sid>/comments', view_func=ctrl.get_trans_comments, methods=['GET'])
+workbench.add_url_rule('/docs/<int:did>/sentences/<int:sid>/comments', view_func=ctrl.get_trans_comments, methods=['GET'])
 
 # 번역문 댓글 추가
-workbench.add_url_rule('/docs/sentences/<int:sid>/comments', view_func=ctrl.add_trans_comment, methods=['POST'])
+workbench.add_url_rule('/docs/<int:did>/sentences/<int:sid>/comments', view_func=ctrl.add_trans_comment, methods=['POST'])
 
 # 번역문 댓글 삭제
 workbench.add_url_rule('/docs/sentences/comments/<int:cid>', view_func=ctrl.delete_trans_comment, methods=['DELETE'])
