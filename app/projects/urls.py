@@ -8,7 +8,7 @@ projects.add_url_rule('/<int:pid>', view_func=ctrl.get_project_info, methods=['G
 projects.add_url_rule('/<int:pid>/docs', view_func=ctrl.get_proejct_docs, methods=['GET'])
 projects.add_url_rule('/<int:pid>/members', view_func=ctrl.get_proejct_members, methods=['GET'])
 
-projects.add_url_rule('/', view_func=ctrl.make_project, methods=['POST'])
+projects.add_url_rule('/', view_func=ctrl.add_project, methods=['POST'])
 projects.add_url_rule('/<int:pid>/docs', view_func=ctrl.add_doc, methods=['POST'])
 projects.add_url_rule('/<int:pid>/members', view_func=ctrl.add_project_member, methods=['POST'])
 

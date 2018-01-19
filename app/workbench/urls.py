@@ -26,3 +26,7 @@ workbench.add_url_rule('/docs/sentences/<int:sid>/comments', view_func=ctrl.add_
 
 # 번역문 댓글 삭제
 workbench.add_url_rule('/docs/sentences/comments/<int:cid>', view_func=ctrl.delete_trans_comment, methods=['DELETE'])
+
+# 문서 댓글 조회
+# 문서 댓글 추가
+# 문서 댓글 삭제
