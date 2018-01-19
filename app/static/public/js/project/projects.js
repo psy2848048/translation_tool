@@ -49,14 +49,21 @@ var PageScript = function () {
 
                         var ko_res_time = '',
                             ko_duration_date = '';
-                        if (res.create_time != '') {
-                            var dt1 = new Date(res.create_time);
-                            ko_res_time = GetStringDate(dt1);
-                        }
-                        if (res.due_date != '') {
-                            var dt2 = new Date(res.due_date);
-                            ko_duration_date = GetStringDate(dt2);
-                        }
+                        // if (res.create_time == null || res.create_time == '' || res.create_time == '1970-01-01 9:0') {
+                        //     ko_res_time = '';
+                        // }else{
+                        //     var dt1 = new Date(res.create_time);
+                        //     ko_res_time = GetStringDate(dt1);
+                        // }
+                        ko_res_time = GetDateText(res.create_time, '0', '0');
+
+                        // if (res.due_date == null || res.due_date == '' || res.due_date == '1970-01-01 9:0') {
+                        //     ko_duration_date = '제한없음';
+                        // }else{
+                        //     var dt2 = new Date(res.due_date);
+                        //     ko_duration_date = GetStringDate(dt2);
+                        // }
+                        ko_duration_date = GetDateText(res.due_date, '1', '0');
 
                         list += '   <td>' + ko_res_time + '</td>';
                         list += '   <td>' + ko_duration_date + '</td>';

@@ -114,13 +114,15 @@ var PageScript = function () {
                     $('#requester').text(res.client_company + ' ' + res.clients);
                     $('#transer').text(res.trans_company + ' ' + res.translators);
 
-                    var str_ddate = '';
-                    if (res.due_date != '') str_ddate = GetStringDate(new Date(res.due_date), '1');
-                    $('#duration_date').text(str_ddate);
+                    //var str_ddate = GetDurationText(res.due_date);
+                    // if (res.due_date == null || res.due_date == '' || res.due_date == '1970-01-01 09:00') str_ddate = '제한없음';
+                    // else str_ddate = GetStringDate(new Date(res.due_date), '1');                    
+                    $('#duration_date').text(GetDateText(res.due_date, '1', '1'));
 
-                    var str_cdate = '';
-                    if (res.create_time != '') str_cdate = GetStringDate(new Date(res.create_time), '1');
-                    $('#reg_date').text(str_cdate);
+                    // var str_cdate = '';
+                    // if (res.create_time == null || res.create_time == '' || res.create_time == '1970-01-01 09:00') str_cdate = '';
+                    // else str_cdate = GetStringDate(new Date(res.create_time), '1');
+                    $('#reg_date').text(GetDateText(res.create_time, '0', '1'));
 
                     var mem = res.project_members == null ? '' : res.project_members;
                     $('#sp_members').text(mem);
@@ -167,7 +169,10 @@ var PageScript = function () {
                         row += '<tr>';
                         row += '    <td><input type="checkbox" data-id="' + res.id + '"></td>';
                         row += '    <td>' + parseInt(idx + 1) + '</td>';
-                        row += '    <td>' + res.progress_percent + '%</td>';
+
+                        if(res.progress_percent == 100) row += '    <td><a href="/api/v1/toolkit/workbench/docs/' + res.id + '/output">다운로드</a></td>';
+                        else row += '    <td>' + res.progress_percent + '%</td>';
+
                         row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.id + '">' + res.title + '</a></td>';
                         row += '    <td>' + res.status + '</td>';
 
@@ -180,7 +185,8 @@ var PageScript = function () {
                         if (res.trans_lang != null && res.trans_lang != '') row += '    <td>' + res.trans_lang.toUpperCase() + '</td>';
                         else row += '    <td>' + res.trans_lang + '</td>';
 
-                        row += '    <td>' + GetStringDate(new Date(res.due_date)) + '</td>';
+                        row += '    <td>' + GetDateText(res.due_date, '1', '0') + '</td>';
+                        
                         row += '    <td><input data-id="' + res.id + '" type="button" value="편집"></td>';
 
                         row += '</tr>';
