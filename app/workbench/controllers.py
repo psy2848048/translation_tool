@@ -69,3 +69,37 @@ def delete_trans_comment(cid):
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
+def get_doc_comments(did):
+    page = int(request.values.get('page', 1))
+    rows = int(request.values.get('rows', 50))
+
+    comments, total_cnt = model.select_doc_comments(did, page, rows)
+    return make_response(json.jsonify(total_cnt=total_cnt, results=comments), 200)
+
+
+def add_doc_comment(did):
+    uid = 7
+    comment = request.form.get('comment', None)
+
+    if not comment:
+        return make_response(json.jsonify('Something Not Entered'), 460)
+
+    is_done = model.insert_doc_comment(uid, did, comment)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
+def delete_doc_comment(cid):
+    uid = 7
+    is_done = model.delete_trans_comment(cid)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+

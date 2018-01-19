@@ -28,5 +28,10 @@ workbench.add_url_rule('/docs/sentences/<int:sid>/comments', view_func=ctrl.add_
 workbench.add_url_rule('/docs/sentences/comments/<int:cid>', view_func=ctrl.delete_trans_comment, methods=['DELETE'])
 
 # 문서 댓글 조회
+workbench.add_url_rule('/docs/<int:did>/comments', view_func=ctrl.get_doc_comments, methods=['GET'])
+
 # 문서 댓글 추가
+workbench.add_url_rule('/docs/<int:did>/comments', view_func=ctrl.add_doc_comment, methods=['POST'])
+
 # 문서 댓글 삭제
+workbench.add_url_rule('/docs/comments/<int:cid>', view_func=ctrl.delete_doc_comment, methods=['DELETE'])

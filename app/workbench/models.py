@@ -24,16 +24,6 @@ def select_doc(did):
     return doc_sentences
 
 
-def select_trans_comments(sid):
-    conn = db.engine.connect()
-    results = conn.execute(text("""SELECT c.id as comment_id, user_id, u.name, text as comment, c.create_time
-                                   FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
-                                   WHERE origin_id = :sid AND c.is_deleted = FALSE AND u.is_deleted = FALSE
-                                   ORDER BY c.create_time;"""), sid=sid).fetchall()
-    comments = [dict(res) for res in results]
-    return comments
-
-
 def export_doc_as_csv(did):
     conn = db.engine.connect()
 
@@ -86,14 +76,14 @@ def insert_or_update_trans(sid, trans_text, trans_type):
         return False
 
 
-def insert_trans_comment(uid, sid, comment):
+def update_sentence_status(sid, status):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
-    c = Table('trans_comments', meta, autoload=True)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
 
     try:
-        res = conn.execute(c.insert(), user_id=uid, origin_id=sid, text=comment)
+        res = conn.execute(ts.update(ts.c.origin_id == sid), status=status, update_time=datetime.utcnow())
         if res.rowcount != 1:
             trans.rollback()
             return 0
@@ -106,14 +96,24 @@ def insert_trans_comment(uid, sid, comment):
         return False
 
 
-def update_sentence_status(sid, status):
+def select_trans_comments(sid):
+    conn = db.engine.connect()
+    results = conn.execute(text("""SELECT c.id as comment_id, user_id, u.name, text as comment, c.create_time
+                                   FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
+                                   WHERE origin_id = :sid AND c.is_deleted = FALSE AND u.is_deleted = FALSE
+                                   ORDER BY c.create_time;"""), sid=sid).fetchall()
+    comments = [dict(res) for res in results]
+    return comments
+
+
+def insert_trans_comment(uid, sid, comment):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
-    ts = Table('doc_trans_sentences', meta, autoload=True)
+    c = Table('trans_comments', meta, autoload=True)
 
     try:
-        res = conn.execute(ts.update(ts.c.origin_id == sid), status=status, update_time=datetime.utcnow())
+        res = conn.execute(c.insert(), user_id=uid, origin_id=sid, text=comment)
         if res.rowcount != 1:
             trans.rollback()
             return 0
@@ -143,4 +143,63 @@ def delete_trans_comment(cid):
     except:
         traceback.print_exc()
         trans.rollback()
-        return
+        return False
+
+
+def select_doc_comments(did, page, rows):
+    conn = db.engine.connect()
+
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.trans_comments WHERE doc_id = :did AND is_deleted = FALSE;""")
+                       , did=did).fetchone()
+    total_cnt = res[0]
+
+    results = conn.execute(text("""SELECT c.id as comment_id, doc_id, origin_id as sentence_id, user_id, u.name, text as comment, c.create_time
+                                   FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
+                                   WHERE doc_id = :did AND c.is_deleted = FALSE AND u.is_deleted = FALSE
+                                   ORDER BY c.create_time
+                                  LIMIT :row_count OFFSET :offset;""")
+                           , did=did, row_count=rows, offset=rows * (page - 1)).fetchall()
+
+    comments = [dict(res) for res in results]
+    return comments, total_cnt
+
+
+def insert_doc_comment(uid, did, comment):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    c = Table('trans_comments', meta, autoload=True)
+
+    try:
+        res = conn.execute(c.insert(), user_id=uid, doc_id=did, text=comment)
+        if res.rowcount != 1:
+            trans.rollback()
+            return 0
+
+        trans.commit()
+        return True
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False
+
+
+def delete_doc_comment(cid):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    sc = Table('trans_comments', meta, autoload=True)
+
+    try:
+        res = conn.execute(sc.update(sc.c.id == cid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return 0
+
+        trans.commit()
+        return True
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False
+
