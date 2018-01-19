@@ -8,7 +8,7 @@ def get_doc(did):
     return make_response(json.jsonify(results=doc_sentences), 200)
 
 
-def get_trans_comments(sid):
+def get_trans_comments(did, sid):
     comments = model.select_trans_comments(sid)
     return make_response(json.jsonify(results=comments), 200)
 
@@ -37,7 +37,7 @@ def save_trans_sentence(sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def add_trans_comment(sid):
+def add_trans_comment(did, sid):
     # uid = session['uid']
     uid = 7
     comment = request.form.get('comment', None)
@@ -45,7 +45,7 @@ def add_trans_comment(sid):
     if not comment:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
-    is_done = model.insert_trans_comment(uid, sid, comment)
+    is_done = model.insert_trans_comment(uid, did, sid, comment)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

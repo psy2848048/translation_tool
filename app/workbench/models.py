@@ -98,7 +98,7 @@ def update_sentence_status(sid, status):
 
 def select_trans_comments(sid):
     conn = db.engine.connect()
-    results = conn.execute(text("""SELECT c.id as comment_id, user_id, u.name, text as comment, c.create_time
+    results = conn.execute(text("""SELECT c.id as comment_id, doc_id, origin_id as sentence_id, user_id, u.name, text as comment, c.create_time
                                    FROM `marocat v1.1`.trans_comments c JOIN users u ON u.id = c.user_id
                                    WHERE origin_id = :sid AND c.is_deleted = FALSE AND u.is_deleted = FALSE
                                    ORDER BY c.create_time;"""), sid=sid).fetchall()
@@ -106,14 +106,14 @@ def select_trans_comments(sid):
     return comments
 
 
-def insert_trans_comment(uid, sid, comment):
+def insert_trans_comment(uid, did, sid, comment):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     c = Table('trans_comments', meta, autoload=True)
 
     try:
-        res = conn.execute(c.insert(), user_id=uid, origin_id=sid, text=comment)
+        res = conn.execute(c.insert(), user_id=uid, doc_id=did, origin_id=sid, text=comment)
         if res.rowcount != 1:
             trans.rollback()
             return 0
