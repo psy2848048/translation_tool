@@ -219,3 +219,13 @@ body {
     background-color: rgb(155, 167, 175);
     color: #fff;
 }
+
+
+
+#listContents article ul{
+    padding-left:40px;
+}
+
+#listContents article ul li{
+    list-style-type: square;
+}

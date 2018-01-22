@@ -39,40 +39,126 @@ var PageScript = function () {
             .always(function () {});
         jqxhr.always(function () {});
     };
-    this.btnEvents = function () { // 체크박스 전체선택, 해제   
+    this.btnEvents = function () {
+        // 체크박스 전체선택, 해제
+        $(document).on('click', '#listContents2 th input[type=checkbox]', function (e) {
+            //e.preventDefault(); 활성화 하면 체크 안됨!
+            CheckAll($(this), '#listContents2 td input[type=checkbox]');
+        });
         // 프로젝트 참가자 삭제
         $('#listTitleGroup li:nth-of-type(1)').on('click', function () {
             if ($('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').length > 0) {
                 $('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
-                    console.log('선택된 사용자 삭제 : ', $(this).closest('tr').find('td:eq(3)').text());
+                    var user = $(this).closest('tr').find('td:eq(2)').text();
+                    var url = '/api/v1/7/projects/' + project_id + '/members/' + user;
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        async: true,
+                        success: function (res) {
+                            console.log('[3362 res] : ', res);
+                            if (res.result == 'OK') {
+                                alert('참가자가 삭제 되었습니다.');
+                                location.href = location.href;
+                                //local.showList();
+                            }
+                        },
+                        error: function (e) {
+                            alert('참가자가 삭제되지 않았습니다.');
+                            console.log('fail 4452');
+                            console.log(e.responseText);
+                        }
+                    });
                 });
             } else {
                 alert('선택된 사용자가 없습니다.');
             }
         });
         // 검색버튼 클릭
-        $('#listTitleGroup2 li:nth-of-type(2)').on('click', function () {
-            alert($('#txt_search').val());
+        $('#listTitleGroup2 li:nth-of-type(2)').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                url: '/api/v1/search?q=' + $('#txt_search').val() + '&target=u',
+                type: 'GET',
+                async: true,
+                success: function (res) {
+                    console.log('[4594 res] : ', res);
+                    //$('#listContents2 table tbody tr:nth-of-type(1)').next().empty();
+                    if (res.u != undefined && res.u != null) {
+                        var html = '';
+                        $(res.u).each(function (idx, data) {
+                            html += '<tr>';
+                            html += '<th>';
+                            html += '    <input type="checkbox">';
+                            html += '</th>';
+                            html += '<th>번호</th>';
+                            html += '<th>이름</th>';
+                            html += '<th>이메일</th>';
+                            html += '</tr>';
+                            html += '<tr>';
+                            html += '<td>';
+                            html += '    <input type="checkbox">';
+                            html += '</td>';
+                            html += '    <td>' + data.user_id + '</td>';
+                            html += '    <td>' + data.name + '</td>';
+                            html += '    <td>' + data.email + '</td>';
+                            html += '</tr>';
+                        });
+                        $('#listContents2 table tbody').empty().append(html);
+                    }
+                },
+                error: function (e) {
+                    console.log('fail 4265');
+                    console.log(e.responseText);
+                }
+            });
         });
         // (검색 후)추가버튼 클릭
         $('#listTitleGroup2 li:nth-of-type(3)').on('click', function () {
             if ($('#listContents2 table td:nth-of-type(1) input[type=checkbox]:checked').length > 0) {
                 $('#listContents2 table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
-                    console.log('체크된 사용자 : ', $(this).closest('tr').find('td:eq(3)').text());
+                    var user = $(this).closest('tr').find('td:eq(1)').text();
+                    var url = '/api/v1/7/projects/' + project_id + '/members';
+                    var data = {
+                        mid: user,
+                        can_read: 1,
+                        can_modify: 1,
+                        can_delete: 1,
+                        can_create_doc: 1
+                    };
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        async: true,
+                        success: function (res) {
+                            console.log('[5469 res] : ', res);
+                            if (res.result == 'OK') {
+                                alert('참가자가 추가 되었습니다.');
+                                location.href = location.href;
+                                //local.showList();
+                            }
+                        },
+                        error: function (e) {
+                            alert('참가자가 추가되지 않았습니다.');
+                            console.log('fail 5562');
+                            console.log(e.responseText);
+                        }
+                    });
                 });
             } else {
                 alert('선택된 사용자가 없습니다.');
             }
         });
-        // 체크박스 전체선택, 해제
-        $('#listContents th input[type=checkbox]').on('click', function (e) {
-            //e.preventDefault(); 활성화 하면 체크 안됨!
-            CheckAll($(this), '#listContents td input[type=checkbox]');
-        });
-        $('#listContents2 th input[type=checkbox]').on('click', function (e) {
-            //e.preventDefault(); 활성화 하면 체크 안됨!
-            CheckAll($(this), '#listContents2 td input[type=checkbox]');
-        });
+        // // 체크박스 전체선택, 해제
+        // $('#listContents th input[type=checkbox]').on('click', function (e) {
+        //     //e.preventDefault(); 활성화 하면 체크 안됨!
+        //     CheckAll($(this), '#listContents td input[type=checkbox]');
+        // });
+        // $('#listContents2 th input[type=checkbox]').on('click', function (e) {
+        //     //e.preventDefault(); 활성화 하면 체크 안됨!
+        //     CheckAll($(this), '#listContents2 td input[type=checkbox]');
+        // });
     };
     this.show = function () {
         var maskHeight = $(document).height();
@@ -89,7 +175,7 @@ var PageScript = function () {
     this.getUsers = function (first_project_id) {
         if (project_id == undefined || project_id.trim() == '') {
             location.href = 'users.html?project=' + first_project_id + '&rows=' + rows + '&page=' + page;
-        } else {            
+        } else {
             local.show();
             $.ajax({
                 url: '/api/v1/7/projects/' + project_id + '/members?page=' + page + '&rows=' + rows,
