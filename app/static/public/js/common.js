@@ -94,7 +94,7 @@ function getFileExtension(file_name) {
     }
 }
 
-function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
+function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
     var fileUpload = id.get(0);
     var files = fileUpload.files;
     var f_data = new FormData();
@@ -133,8 +133,13 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
             processData: false,
             data: f_data,
             // dataType: "json",
-            success: function (result) {
-                console.log('[4576] result : ', result);
+            success: function (res) {
+                if(res.result=='OK') {
+                    $('#' + result_p).text('업로드가 완료되었습니다.');
+                    setTimeout(hidePopup, 1000);
+                }
+                else $(result_p).text('업로드에 문제가 있습니다.');
+                console.log('[4576] res.result : ', res.result);
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 console.log('[9786] xhr.status : ', xhr.status);
@@ -147,6 +152,12 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg) {
         id.val('');
         return false;
     }
+}
+
+function hidePopup() {
+    $('#mainWrap').css('opacity', '1');
+    $("#upload_div").fadeOut('slow');
+    location.href=location.href;
 }
 
 function IsValidObj(o) {
@@ -165,8 +176,8 @@ function GetDateText(o, purpose, format) {
         if (o == null || o == '' || o == '1970-01-01 9:0') {
             return '제한없음';
         } else {
-            var dt2 = new Date(o);
-            return GetStringDate(dt2, format);
+            var dt1 = new Date(o);
+            return GetStringDate(dt1, format);
         }
     }else{
         if (o == null || o == '' || o == '1970-01-01 9:0') {

@@ -1,7 +1,9 @@
 var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project'),
-        doc_id = getUrlParameter('doc_id');
+        doc_id = getUrlParameter('doc_id'),
+        origin_lang,
+        trans_lang;
     this.preInits = function () {
         // body 흐리게
         local.mask();
@@ -10,38 +12,43 @@ var PageScript = function () {
         var jqxhr = $.get("/api/v1/toolkit/workbench/docs/" + doc_id, function (data) {
                 console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + ' 9987] : ');
                 console.log(data);
-                var html = '';
-                $(data.results).each(function (idx, res) {
-                    html += '<tr>';
-                    html += '    <td>' + res.sentence_id + '</td>';
-                    html += '    <td>' + res.origin_text + '</td>';
-                    html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
-                    html += '    <td>';
-                    if (res.trans_status == '0') {
-                        html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer;"></i>';
-                        html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer; display:none;"></i>';
-                    } else {
-                        html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer; display:none;"></i>';
-                        html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer;"></i>';
-                    }
-                    html += '    </td>';
-                    if (res.trans_type == 'TM') {
-                        html += '<td class="tmColor" title="문장저장소">문<br>장</td>';
-                    } else if (res.trans_type == 'MT') {
-                        html += '<td class="mtColor" title="실시간번역">실<br>시<br>간</td>';
-                    } else if (res.trans_type == 'T') {
-                        html += '<td class="tColor" title="자체번역">자<br>체</td>';
-                    } else {
-                        html += '<td></td>';
-                    }
-                    html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:gray; cursor:pointer;"></i></td>';
-                    html += '</tr>';
-                });
-                $('#mainTbl tbody tr').after(html);
+                if (data.results != null && data.results != undefined && data.results.length > 0) {
+                    origin_lang = data.results[0].origin_lang;
+                    trans_lang = data.results[0].trans_lang;
+                    var html = '';
+                    $(data.results).each(function (idx, res) {
+                        html += '<tr>';
+                        html += '    <td>' + res.sentence_id + '</td>';
+                        html += '    <td>' + res.origin_text + '</td>';
+                        html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
+                        html += '    <td>';
+                        if (res.trans_status == '0') {
+                            html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer;"></i>';
+                            html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer; display:none;"></i>';
+                        } else {
+                            html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer; display:none;"></i>';
+                            html += '    <i class="fa fa-check" aria-hidden="true" style="color:orange; cursor:pointer;"></i>';
+                        }
+                        html += '    </td>';
+                        if (res.trans_type == 'TM') {
+                            html += '<td class="tmColor" title="문장저장소">문<br>장</td>';
+                        } else if (res.trans_type == 'MT') {
+                            html += '<td class="mtColor" title="실시간번역">실<br>시<br>간</td>';
+                        } else if (res.trans_type == 'T') {
+                            html += '<td class="tColor" title="자체번역">자<br>체</td>';
+                        } else {
+                            html += '<td></td>';
+                        }
+                        if (res.comment_cnt > 0) html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:orange; cursor:pointer;"></i></td>';
+                        else html += '    <td><i class="fa fa-comment" aria-hidden="true" style="color:gray; cursor:pointer;"></i></td>';
+                        html += '</tr>';
+                    });
+                    $('#mainTbl tbody tr').after(html);
+                }
             })
             .done(function () {})
             .fail(function () {
-                //alert("error"); // 시연에 방해될 수 있어서 일부러 주석처리함
+                console.log("error : 5565");
             })
             .always(function () {});
         jqxhr.always(function () {
@@ -277,7 +284,7 @@ var PageScript = function () {
         $('#tabTbl td:nth-of-type(1)').on('click', function (e) {
             e.preventDefault();
             $('#resultTbl').show();
-            $('#resultTbl2').hide();
+            $('#resultTbl2').show();
             $('#tabTbl td:nth-of-type(1)').css({
                 'font-weight': 'bold',
                 'border': '1px solid rgba(207, 204, 204, 0.404)',
@@ -294,19 +301,20 @@ var PageScript = function () {
             });
             $('#tran1section').show();
             $('#tran2section').show();
+            $('#doc_chat').hide();
         });
         // 탭2
         $('#tabTbl td:nth-of-type(2)').on('click', function (e) {
             e.preventDefault();
-            $('#resultArea').css({
-                'border-top': '0'
-            });
+            // $('#resultArea').css({
+            //     'border': '0px solid rgba(207, 204, 204, 0.404)'
+            // });
             $('#resultTbl').hide();
-            $('#resultTbl2').show();
+            $('#resultTbl2').hide();
             $('#tabTbl td:nth-of-type(1)').css({
                 'font-weight': 'normal',
                 'border-bottom': '0px',
-                'border-left': '0px',
+                'border-left': '1px solid #fff',
                 'border-top': '1px solid rgba(207, 204, 204, 0.404)',
                 'background-color': '#fff'
             });
@@ -319,6 +327,7 @@ var PageScript = function () {
             });
             $('#tran1section').hide();
             $('#tran2section').hide();
+            $('#doc_chat').show();
         });
 
         // 완전히 로딩 후 로더 숨김
@@ -567,9 +576,16 @@ var PageScript = function () {
     };
     // MT 번역문 불러오기
     this.getMtAjax = function (thisText, this_idx) {
+        var o_lang, t_lang;
+        if (origin_lang == 'ko') o_lang = 1;
+        else if (origin_lang == 'en') o_lang = 2;
+        else if (origin_lang == 'zh') o_lang = 4;
+        if (trans_lang == 'ko') t_lang = 1;
+        else if (trans_lang == 'en') t_lang = 2;
+        else if (trans_lang == 'zh') t_lang = 4;
         var data = {
-            "source_lang_id": 2, // 1=한국어 2=영어 4=표준중국어
-            "target_lang_id": 1, // 1=한국어 2=영어 4=표준중국어
+            "source_lang_id": o_lang, // 1=한국어 2=영어 4=표준중국어
+            "target_lang_id": t_lang, // 1=한국어 2=영어 4=표준중국어
             "where": "phone", // 노상관
             "sentence": thisText, // 번역할문장
             "user_email": "admin@sexycookie.com" // 일종의 암호로, 이거 바꾸면 안돌아가요
@@ -624,8 +640,7 @@ var PageScript = function () {
                 });
             },
             error: function (e) {
-                //alert('fail 410');
-                console.log('fail 410 : ' + e.responseText);
+                console.log('fail 4102 : ' + e.responseText);
             }
         });
     };

@@ -85,22 +85,19 @@ var pageScript = function () {
             //var reg_ext = ['JPG','JPEG','GIF','PNG'];
             var reg_ext = ['CSV'];
             var msg = 'CSV 파일 확장자만 허용합니다.';
-            onFileSelect($('#file_upload_frm'), '/api/v1/toolkit/transMemory/', 5, reg_ext, msg);
+            onFileSelect($('#file_upload_frm'), '/api/v1/toolkit/transMemory/', 5, reg_ext, msg, 'upload_result');
         });
     };
     this.show = function () {
-        //화면의 높이와 너비를 구한다.
         var maskHeight = $(document).height();
         var maskWidth = $(window).width();
 
-        //마스크의 높이와 너비를 화면 것으로 만들어 전체 화면을 채운다.
         $('#mask').css({
             'width': maskWidth,
             'height': maskHeight
         });
     };
     this.hide = function () {
-        //$('#mask').fadeIn(1000);      
         $('#mask').fadeTo("slow", 1000).hide();
         $('#loading_img').fadeTo("slow", 1000).hide();
     };
