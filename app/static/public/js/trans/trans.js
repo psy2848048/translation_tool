@@ -1,9 +1,13 @@
+var interval_sec = 600; // 600초 -> 10분
 var PageScript = function () {
     var local = this,
         project_id = getUrlParameter('project'),
         doc_id = getUrlParameter('doc_id'),
         origin_lang,
-        trans_lang;
+        trans_lang,
+        current_reply_obj,
+        page = 1,
+        rows = 200;
     this.preInits = function () {
         // body 흐리게
         local.mask();
@@ -54,30 +58,46 @@ var PageScript = function () {
         jqxhr.always(function () {
             if ($('#mainTbl tbody tr').length < 1) location.href = location.href;
         });
+
+        local.getDocReplies();
     };
     this.regEvents = function () {
+        // 문서댓글 새로고침 버튼
+        $('#comment_refresh input[type=button]').on('click', function(){
+            local.getDocReplies();
+        });
+        // 문서댓글 추가
+        $('#new_comment_div2 input[type=button]').on('click', function (e) {
+            e.preventDefault();
+            var comment = $('#new_comment_div2 input[type=text]').val();
+            $.ajax({
+                url: '/api/v1/toolkit/workbench/docs/' + doc_id + '/comments',
+                type: 'POST',
+                data: {
+                    comment: comment
+                },
+                async: true,
+                success: function (args) {
+                    console.log('9658 args : ', args);
+                    if (args.result == 'OK') {
+                        local.getDocReplies();
+                        $('#new_comment_div2').find('input[type=text]').val('');
+                    }
+                },
+                error: function (e) {
+                    console.log('fail code : 5595');
+                    console.log(e.responseText);
+                }
+            });
+        });
         // 댓글 보기 아이콘 클릭 : 미리 가져오지 않고 실시간으로 댓글리스트 가져옴
         $(document).on('click', '.fa-comment', function () {
-            var sentence_id = $(this).closest('tr').find('td:nth-of-type(1)').text();
-            $('#sp_sentence').text(sentence_id);
-            $('#comments').empty();
-            $('#commentDiv').attr('data-sentence-id', sentence_id);
-            local.getComments('1', doc_id, sentence_id);
-            $('#commentDiv').show();
-            $('#transArea').css({
-                'opacity': '0.2'
-            });
-            $('#resultArea').css({
-                'opacity': '0.2'
-            });
+            showComment(null, this);
         });
         // 댓글창 닫기 아이콘 클릭
         $(document).on('click', '.fa-close', function () {
             $('#commentDiv').hide();
-            $('#transArea').css({
-                'opacity': '1'
-            });
-            $('#resultArea').css({
+            $('#transArea, #resultArea').css({
                 'opacity': '1'
             });
         });
@@ -85,7 +105,7 @@ var PageScript = function () {
         $(document).on('click', '#new_comment_div input[type=button]', function () {
             $(this).blur();
             var sentence_id = $('#commentDiv').attr('data-sentence-id');
-            var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/comments';
+            var url = '/api/v1/toolkit/workbench/docs/' + doc_id + '/sentences/' + sentence_id + '/comments';
             console.log('url 4458 : ', url);
             var data = {
                 'comment': $('#new_comment_div input[type=text]').val()
@@ -114,8 +134,6 @@ var PageScript = function () {
                 var sentence_id = $('#commentDiv').attr('data-sentence-id');
                 var url = '/api/v1/toolkit/workbench/docs/sentences/comments/' + $(this).attr('data-id');
                 console.log('url 2893 : ', url);
-                //var org = '/api/v1/users/1/docs/26/sentences/347/comments/1';
-                //console.log('org 3329 : ', org);
                 $.ajax({
                     url: url,
                     type: 'DELETE',
@@ -127,7 +145,30 @@ var PageScript = function () {
                         }
                     },
                     error: function (e) {
-                        console.log('fail 4573 : ' + e.responseText);
+                        console.log('fail code : 4554');
+                        console.log(e.responseText);
+                    }
+                });
+            }
+        });
+        // 문서댓글 삭제아이콘 클릭
+        $(document).on('click', '#doc_chat_content img', function () {
+            if (confirm('정말로 삭제하시겠습니까?')) {
+                var comment_id = $(this).closest('p').attr('data-comment-id');
+                var url = '/api/v1/toolkit/workbench/docs/comments/' + comment_id;
+                $.ajax({
+                    url: url,
+                    type: 'DELETE',
+                    async: true,
+                    success: function (args) {
+                        console.log('args 7774 : ', args);
+                        if (args.result == 'OK') {
+                            local.getDocReplies();
+                        }
+                    },
+                    error: function (e) {
+                        console.log('fail code : 4411');
+                        console.log(e.responseText);
                     }
                 });
             }
@@ -340,8 +381,11 @@ var PageScript = function () {
     };
     // 코멘트 리스트 가져오기
     this.getComments = function (user, doc, sentence) {
-        var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence + '/comments';
-        var data = {};
+        //var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence + '/comments';
+        var url = '/api/v1/toolkit/workbench/docs/' + doc_id + '/sentences/' + sentence + '/comments';
+        console.log('5124 url');
+        console.log(url);
+        //var data = {};
         $.ajax({
             url: url,
             type: 'GET',
@@ -644,6 +688,44 @@ var PageScript = function () {
             }
         });
     };
+    // 문서댓글 출력
+    this.getDocReplies = function () {
+        console.log('/api/v1/toolkit/workbench/docs/' + doc_id + '/comments?page=' + page + '&rows=' + rows);
+        //var data = {};
+        $.ajax({
+            url: '/api/v1/toolkit/workbench/docs/' + doc_id + '/comments?page=' + page + '&rows=' + rows,
+            type: 'GET',
+            //data: data,
+            async: true,
+            success: function (args) {
+                console.log('5481 args');
+                console.log(args);
+                if (args != null && args != undefined) {
+                    if (parseInt(args.total_cnt) > 0 && parseInt(args.results.length) > 0) {
+                        $('#total_comment').html('의견공유 (' + args.total_cnt + ')');
+                        var rows = '';
+                        $(args.results).each(function (idx, args) {
+                            if (args.sentence_id == '') {
+                                rows += '<p data-comment-id="' + args.comment_id + '">[' + args.name + '] ' + args.comment;
+                                rows += '    <img data-id="13" src="/static/public/img/comment_del2.png">';
+                                rows += '</p>';
+                            } else {
+                                rows += '<p data-comment-id="' + args.comment_id + '"><a href="javascript:;" onclick="javascript:showComment(' + args.sentence_id + ', null);">좌측 ' + args.sentence_id + '번 문장에 의견이 추가되었습니다</a></p>';
+                            }
+                        });
+                        $('#doc_chat_content').html(rows);
+                        interval_sec = 600;
+                    } else {
+                        $('#doc_chat_content').html('아직 등록된 댓글이 없습니다.');
+                    }
+                }
+            },
+            error: function (e) {
+                console.log('fail code : 8459');
+                console.log(e.responseText);
+            }
+        });
+    };
     // 인스턴트 메시지
     this.showMessage = function (msg) {
         $('#instant_div').text(msg);
@@ -669,6 +751,25 @@ var PageScript = function () {
         local.preInits();
     };
 };
+
+this.showComment = function (sid, thisObj) {
+    var script = new PageScript();
+    var sentence_id;
+    if (IsValidStr(sid)) sentence_id = sid;
+    else sentence_id = $(thisObj).closest('tr').find('td:nth-of-type(1)').text();
+    console.log(sentence_id);
+    $('#sp_sentence').text(sentence_id);
+    $('#comments').empty();
+    $('#commentDiv').attr('data-sentence-id', sentence_id);
+    script.getComments('7', script.doc_id, sentence_id);
+    $('#commentDiv').show();
+    $('#transArea').css({
+        'opacity': '0.2'
+    });
+    $('#resultArea').css({
+        'opacity': '0.2'
+    });
+};
 $(function () {
     var script = new PageScript();
     script.bind();
@@ -678,4 +779,13 @@ $(function () {
         script.textAreaExpand();
         $('#mainTbl tr').show();
     }, 3000);
+
+    // [실험적!] 600초(10분)에 한번씩 우측 문서댓글 리뉴얼
+    setInterval(function () {
+        script.getDocReplies();
+    }, interval_sec*1000);
+    // 카운터
+    setInterval(function () {
+        $('#counter').text(interval_sec--);
+    }, 1000);
 });

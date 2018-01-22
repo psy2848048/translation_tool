@@ -41,6 +41,11 @@ var PageScript = function () {
     };
     this.btnEvents = function () {
         // 체크박스 전체선택, 해제
+        $(document).on('click', '#listContents th input[type=checkbox]', function (e) {
+            //e.preventDefault(); 활성화 하면 체크 안됨!
+            CheckAll($(this), '#listContents td input[type=checkbox]');
+        });
+        // 체크박스 전체선택, 해제
         $(document).on('click', '#listContents2 th input[type=checkbox]', function (e) {
             //e.preventDefault(); 활성화 하면 체크 안됨!
             CheckAll($(this), '#listContents2 td input[type=checkbox]');
@@ -49,8 +54,9 @@ var PageScript = function () {
         $('#listTitleGroup li:nth-of-type(1)').on('click', function () {
             if ($('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').length > 0) {
                 $('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
-                    var user = $(this).closest('tr').find('td:eq(2)').text();
+                    var user = $(this).closest('tr').find('td:eq(1)').text();
                     var url = '/api/v1/7/projects/' + project_id + '/members/' + user;
+                    console.log('4512 url : ', url);
                     $.ajax({
                         url: url,
                         type: 'POST',
