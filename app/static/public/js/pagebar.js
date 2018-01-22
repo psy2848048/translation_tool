@@ -31,7 +31,8 @@ function SetPagebar(total_count, row_size, cur_page, org_url, pagebar_size) {
         else html += '<li style="opacity:0.3;cursor:auto;">마지막 페이지 <i class="fa fa-arrow-circle-right" aria-hidden="true"></i></li>';
 
         $('#page_bar ul').html(html);
+    }else{
+        if(parseInt(total_count) < 1) $('#page_bar ul').html('데이타가 없습니다.');
+        else $('#page_bar ul').html('');
     }
 }
-// 임시호출 : 각 페이지마다 커스텀하게 별도로 호출해줘야 함!!
-// SetPagebar(2500, 15, getUrlParameter('page') == undefined || getUrlParameter('page') == '' ? 1 : getUrlParameter('page'), $(location).attr('pathname') + '?', 10);

@@ -515,3 +515,16 @@ body {
     /* opacity:0.5; */
     padding: 10px;
 }
+
+#doc_chat_content a{
+    text-decoration: none;
+    color:rgb(52, 102, 209);
+    /* font-style:italic; */
+}
+#comment_refresh{
+    float:right;
+}
+#comment_refresh li{
+    padding:2px;
+    text-align: center;
+}

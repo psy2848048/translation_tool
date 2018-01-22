@@ -36,14 +36,14 @@
 
                     <div id="search_box">
                             <select name="" id="">
-                                <option value="">영어 -> 한국어</option>
-                                <option value="">영어 -> 중국어</option>
-                                <option value="">중국어 -> 한국어</option>
-                                <option value="">중국어 -> 영어</option>
-                                <option value="">한국어 -> 영어</option>
-                                <option value="">한국어 -> 중국어</option>
+                                <option value="1">영어 -> 한국어</option>
+                                <option value="2">영어 -> 중국어</option>
+                                <option value="3">중국어 -> 한국어</option>
+                                <option value="4">중국어 -> 영어</option>
+                                <option value="5">한국어 -> 영어</option>
+                                <option value="6">한국어 -> 중국어</option>
                             </select>
-                            <input type="text" name="" id="">
+                            <!-- 추후에 붙일 예정 <input type="text" name="" id=""> -->
                             <input type="button" value="검색">
                         </div>
 
@@ -51,22 +51,6 @@
                         <li id="new_li_btn">신규</li>
                     </ul>
                     <table>
-                        <colgroup>
-                            <col width="8%">
-                            <col width="5%">
-                            <col width="39%">
-                            <col width="5%">
-                            <col width="39%">
-                            <col width="4%">
-                        </colgroup>
-                        <tr>
-                            <th>#</th>
-                            <th colspan=2>단어</th>
-                            <th colspan=2>해석</th>
-                            <th>
-                                <i class="fa fa-times" aria-hidden="true"></i>
-                            </th>
-                        </tr>
                     </table>
                 </div>
                 <br>
@@ -91,7 +75,7 @@
         <div>
             <h4>CSV 파일로 추가하는 방법</h4>
             <p>1.
-                <a href="/static/sample.csv">이곳</a>을 클릭해서 샘플 CSV 파일을 받아주세요.</p>
+                <a href="/static/tb_sample.csv">이곳</a>을 클릭해서 샘플 CSV 파일을 받아주세요.</p>
             <p>2. 샘플파일에 작성되어 있는 원문언어, 번역언어, 원문, 번역 순서대로 CSV 추가하여 파일을 만들어주세요.</p>
             <p>3. 업로드 해주세요.</p>
         </div>

@@ -3,8 +3,11 @@ var pageScript = function () {
         rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '15',
         page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
         cur_path = $(location).attr('pathname'),
-        project_id = $(location).attr('project');
+        project_id = $(location).attr('project'),
+        lang = IsValidStr(getUrlParameter('lang')) ? getUrlParameter('lang') : '1',
+        o_lang, t_lang;
     this.preInits = function () {
+        $('#search_box select').val(lang);
         local.showList();
     };
     this.keyupEvents = function () {
@@ -48,6 +51,11 @@ var pageScript = function () {
         });
     };
     this.clickEvents = function () {
+        $('#search_box input').on('click', function (e) {
+            e.preventDefault();
+            local.getSelectedLang();
+            location.href='/static/front/tran_memory/tran_memory.html?rows=' + rows + '&lang=' + $('#search_box select').val();
+        });
         $('#new_li_btn').on('click', function (e) {
             e.preventDefault();
             local.showPopup();
@@ -101,12 +109,49 @@ var pageScript = function () {
         $('#mask').fadeTo("slow", 1000).hide();
         $('#loading_img').fadeTo("slow", 1000).hide();
     };
+    this.getSelectedLang = function () {
+        switch ($('#search_box select').val()) {
+            case '1':
+                local.o_lang = 'EN';
+                local.t_lang = 'KO';
+                break;
+            case '2':
+                local.o_lang = 'EN';
+                local.t_lang = 'ZH';
+                break;
+            case '3':
+                local.o_lang = 'ZH';
+                local.t_lang = 'KO';
+                break;
+            case '4':
+                local.o_lang = 'ZH';
+                local.t_lang = 'EN';
+                break;
+            case '5':
+                local.o_lang = 'KO';
+                local.t_lang = 'EN';
+                break;
+            case '6':
+                local.o_lang = 'KO';
+                local.t_lang = 'ZH';
+                break;
+        }
+    };
     this.showList = function () {
+        local.getSelectedLang();
         local.show();
-        var list = $.get('/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page, function (data) {
+        var list = $.get('/api/v1/toolkit/transMemory?origin_lang=' + o_lang + '&trans_lang=' + t_lang + '&rows=' + rows + '&page=' + page, function (data) {
                 console.log('8546 [/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page + '] ', data);
+                var row = '';
+                row += '<tr>';
+                row += '    <th>#</th>';
+                row += '    <th colspan=2>원문</th>';
+                row += '    <th colspan=2>번역문</th>';
+                row += '    <th>';
+                row += '        <i class="fa fa-times" aria-hidden="true"></i>';
+                row += '    </th>';
+                row += '</tr>';
                 if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
-                    var row = '';
                     $(data.results).each(function (idx, res) {
                         row += '<tr>';
                         row += '    <td>' + res.tmid + '</td>';
@@ -128,10 +173,10 @@ var pageScript = function () {
                         row += '    </td>';
                         row += '</tr>';
                     });
-                    $('#listTitleGroup table tbody').append(row);
-                    $('#listTitleGroup textarea').keyup();
                 }
-                var param_path = cur_path + '?rows=' + rows + '&';
+                $('#listTitleGroup table').html(row);
+                $('#listTitleGroup textarea').keyup();
+                var param_path = cur_path + '?lang=' + $('#search_box select').val() + '&rows=' + rows + '&';
                 SetPagebar(parseInt(data.total_cnt), rows, page, param_path, 10);
             })
             .done(function () {})
