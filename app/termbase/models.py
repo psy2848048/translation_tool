@@ -22,7 +22,7 @@ def select_termbase(uid, origin_lang, trans_lang, page, rows):
                                   FROM `marocat v1.1`.termbase t JOIN users_tblist ut ON ut.tb_id = t.id 
                                   WHERE ut.user_id = :uid AND origin_lang = :ol AND trans_lang = :tl
                                         AND t.is_deleted = FALSE AND ut.is_deleted = FALSE
-                                  ORDER BY t.create_time DESC 
+                                  ORDER BY t.id DESC 
                                   LIMIT :row_count OFFSET :offset;""")
                            , uid=uid, ol=origin_lang, tl=trans_lang, row_count=rows, offset=rows * (page - 1))
     terms = [dict(res) for res in results]

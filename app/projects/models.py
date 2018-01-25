@@ -78,7 +78,7 @@ def select_project_members(pid, page, rows):
                               WHERE project_id = :pid AND u.is_deleted = FALSE AND pm.is_deleted = FALSE;"""), pid=pid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT pm.user_id as id, u.name, u.email, can_read, can_modify, can_delete, can_create_doc
+    results = conn.execute(text("""SELECT pm.user_id as id, u.name, u.email, is_founder, can_read, can_modify, can_delete, can_create_doc
                                    FROM `marocat v1.1`.project_members pm JOIN users u ON u.id = pm.user_id
                                    WHERE project_id = :pid AND pm.is_deleted = FALSE AND u.is_deleted = FALSE
                                    LIMIT :row_count OFFSET :offset;"""), pid=pid, row_count=rows, offset=rows * (page - 1))
@@ -287,7 +287,7 @@ def delete_project(pid):
         return False
 
 
-def delete_project_member(pid, mid):
+def delete_project_member(mid, pid):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -297,16 +297,15 @@ def delete_project_member(pid, mid):
 
     try:
         #: 프로젝트 참가자가 작성한 댓글 삭제
-        conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
-                             SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
-                             WHERE project_id = :pid AND tc.user_id = :mid;"""), pid=pid, mid=mid)
+        conn.execute(
+            text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
+            SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
+            WHERE project_id = :pid AND tc.user_id = :mid;""")
+            , pid=pid, mid=mid)
 
         #: 프로젝트 참가자의 문서 권한 목록에서 삭제
-        res = conn.execute(dm.update(and_(dm.c.project_id == pid, dm.c.user_id == mid))
-                           , is_deleted=True, update_time=datetime.utcnow())
-        if res.rowcount == 0:
-            trans.rollback()
-            return False
+        conn.execute(dm.update(and_(dm.c.project_id == pid, dm.c.user_id == mid))
+                     , is_deleted=True, update_time=datetime.utcnow())
 
         #: 프로젝트 참가자 목록에서 삭제
         res = conn.execute(pm.update(and_(pm.c.project_id == pid, pm.c.user_id == mid))
@@ -321,3 +320,16 @@ def delete_project_member(pid, mid):
         traceback.print_exc()
         trans.rollback()
         return False
+
+
+def check_can_proceed_pm_delete(perform_uid, target_uid, pid):
+    conn = db.engine.connect()
+    select_is_founder = "SELECT is_founder FROM `marocat v1.1`.project_members WHERE user_id = :uid AND project_id = :pid;"
+
+    p = conn.execute(text(select_is_founder), uid=perform_uid, pid=pid).fetchone()
+    t = conn.execute(text(select_is_founder), uid=target_uid, pid=pid).fetchone()
+
+    if p['is_founder'] == 0 and t['is_founder'] == 1:
+        return False
+    else:
+        return True

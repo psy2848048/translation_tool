@@ -3,19 +3,27 @@ import app.trans_memory.models as model
 
 
 def get_trans_memory_list():
+    uid = 7
+    origin_lang = request.values.get('origin_lang', None)
+    trans_lang = request.values.get('trans_lang', None)
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 30))
 
-    tm, total_cnt = model.select_trans_memory(page, rows)
+    if None in [origin_lang, trans_lang]:
+        return make_response(json.jsonify('Something Not Entered'), 460)
+
+    tm, total_cnt = model.select_trans_memory(uid, origin_lang, trans_lang, page, rows)
     return make_response(json.jsonify(total_cnt=total_cnt, results=tm), 200)
 
 
 def save_trans_memory():
+    uid = 7
+
     #: 문장 하나만 받을 때
-    # origin_lang = request.form.get('origin_lang', None)
-    # trans_lang = request.form.get('trans_lang', None)
-    # origin_text = request.form.get('origin_text', None)
-    # trans_text = request.form.get('trans_text', None)
+    origin_lang = request.form.get('origin_lang', None)
+    trans_lang = request.form.get('trans_lang', None)
+    origin_text = request.form.get('origin_text', None)
+    trans_text = request.form.get('trans_text', None)
 
     #: CSV 파일로 받을 때
     file = request.files.get('file', None)
@@ -27,7 +35,7 @@ def save_trans_memory():
         if file.mimetype != 'text/csv':
             return make_response(json.jsonify(result='File mimetype is not CSV'), 461)
 
-        is_done = model.insert_trans_memory_csv_file(file)
+        is_done = model.insert_trans_memory_csv_file(uid, file, origin_lang, trans_lang)
     else:
         return make_response(json.jsonify('Something Not Entered'), 460)
 
