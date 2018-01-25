@@ -7,7 +7,7 @@ var PageScript = function () {
         trans_lang,
         current_reply_obj,
         page = 1,
-        rows = 200;
+        rows = 20000;
     this.preInits = function () {
         // body 흐리게
         local.mask();
