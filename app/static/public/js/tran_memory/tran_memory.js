@@ -140,8 +140,9 @@ var pageScript = function () {
     this.showList = function () {
         local.getSelectedLang();
         local.show();
-        var list = $.get('/api/v1/toolkit/transMemory?origin_lang=' + o_lang + '&trans_lang=' + t_lang + '&rows=' + rows + '&page=' + page, function (data) {
-                console.log('8546 [/api/v1/toolkit/transMemory?rows=' + rows + '&page=' + page + '] ', data);
+
+        var list = $.get('/api/v1/toolkit/transMemory?origin_lang=' + local.o_lang + '&trans_lang=' + local.t_lang + '&rows=' + rows + '&page=' + page, function (data) {
+                console.log('8546 [/api/v1/toolkit/transMemory?origin_lang=' + local.o_lang + '&trans_lang=' + local.t_lang + '&rows=' + rows + '&page=' + page + '] ', data);
                 var row = '';
                 row += '<tr>';
                 row += '    <th>#</th>';

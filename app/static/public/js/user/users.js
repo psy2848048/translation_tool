@@ -56,10 +56,11 @@ var PageScript = function () {
                 $('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
                     var user = $(this).closest('tr').find('td:eq(1)').text();
                     var url = '/api/v1/7/projects/' + project_id + '/members/' + user;
-                    console.log('4512 url : ', url);
+                    console.log('[4512 url]');
+                    console.log(url);
                     $.ajax({
                         url: url,
-                        type: 'POST',
+                        type: 'DELETE',
                         async: true,
                         success: function (res) {
                             console.log('[3362 res] : ', res);
@@ -67,11 +68,15 @@ var PageScript = function () {
                                 alert('참가자가 삭제 되었습니다.');
                                 location.href = location.href;
                                 //local.showList();
+                            } else if(res.result == '463') {
+                                // 463 : Founder can not be deleted!
+                                alert('개설자는 삭제되지 않습니다.');
+                                location.href = location.href;
                             }
                         },
                         error: function (e) {
                             alert('참가자가 삭제되지 않았습니다.');
-                            console.log('fail 4452');
+                            console.log('[fail 4452]');
                             console.log(e.responseText);
                         }
                     });
@@ -105,7 +110,7 @@ var PageScript = function () {
                             html += '<td>';
                             html += '    <input type="checkbox">';
                             html += '</td>';
-                            html += '    <td>' + data.user_id + '</td>';
+                            html += '    <td>' + data.id + '</td>';
                             html += '    <td>' + data.name + '</td>';
                             html += '    <td>' + data.email + '</td>';
                             html += '</tr>';
@@ -199,8 +204,11 @@ var PageScript = function () {
                             html += '    <td>';
                             html += '        <input type="checkbox">';
                             html += '    </td>';
-                            html += '    <td>' + parseInt(idx + 1) + '</td>';
-                            html += '    <td>' + result.name + '</td>';
+                            html += '    <td>' + result.id + '</td>';
+
+                            if (result.is_founder == 1) html += '    <td>' + result.name + ' <img src="/static/public/img/king.png" style="height:15px;"></td>';
+                            else html += '    <td>' + result.name + '</td>';
+
                             html += '    <td>' + result.email + '</td>';
                             html += '    <td>';
                             html += '        <input type="checkbox" checked="checked" disabled="disabled">';
