@@ -154,9 +154,10 @@ def delete_project(uid, pid):
 
 
 def delete_project_member(uid, pid, mid):
-    res = model.check_can_proceed_pm_delete(uid, mid, pid)
+    res = model.check_is_founder(mid, pid)
     if res is False:
-        return make_response(json.jsonify(result='Founder can not be deleted!'), 463)
+        # return make_response(json.jsonify(result='Founder can not be deleted!'), 463)
+        return make_response(json.jsonify(result=463), 463)
 
     is_done = model.delete_project_member(mid, pid)
 

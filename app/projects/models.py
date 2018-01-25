@@ -322,14 +322,13 @@ def delete_project_member(mid, pid):
         return False
 
 
-def check_can_proceed_pm_delete(perform_uid, target_uid, pid):
+def check_is_founder(uid, pid):
     conn = db.engine.connect()
     select_is_founder = "SELECT is_founder FROM `marocat v1.1`.project_members WHERE user_id = :uid AND project_id = :pid;"
 
-    p = conn.execute(text(select_is_founder), uid=perform_uid, pid=pid).fetchone()
-    t = conn.execute(text(select_is_founder), uid=target_uid, pid=pid).fetchone()
+    res = conn.execute(text(select_is_founder), uid=uid, pid=pid).fetchone()
 
-    if p['is_founder'] == 0 and t['is_founder'] == 1:
+    if res['is_founder'] == 1:
         return False
     else:
         return True
