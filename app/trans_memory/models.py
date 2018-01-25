@@ -7,19 +7,24 @@ import csv
 from datetime import datetime
 
 
-def select_trans_memory(page, rows):
+def select_trans_memory(uid, origin_lang, trans_lang, page, rows):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
-    tm = Table('translation_memory', meta, autoload=True)
 
-    #: 사용자의 총 프로젝트 개수
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.translation_memory WHERE is_deleted = FALSE;""")).fetchone()
+    res = conn.execute(text("""SELECT count(*) 
+                              FROM `marocat v1.1`.translation_memory tm JOIN users_tmlist ut ON ut.tm_id = tm.id 
+                              WHERE ut.user_id = :uid AND origin_lang = :ol AND trans_lang = :tl
+                                    AND tm.is_deleted = FALSE AND ut.is_deleted = FALSE;""")
+                       , uid=uid, ol=origin_lang, tl=trans_lang).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT id as tmid, origin_lang, trans_lang, origin_text, trans_text FROM `marocat v1.1`.translation_memory
-                                  WHERE is_deleted = FALSE
-                                  ORDER BY create_time DESC 
-                                  LIMIT :row_count OFFSET :offset;"""), row_count=rows, offset=rows * (page - 1))
+    results = conn.execute(text("""SELECT tm.id as tmid, origin_lang, trans_lang, origin_text, trans_text 
+                                  FROM `marocat v1.1`.translation_memory tm JOIN users_tmlist ut ON ut.tm_id = tm.id 
+                                  WHERE ut.user_id = :uid AND origin_lang = :ol AND trans_lang = :tl
+                                        AND tm.is_deleted = FALSE AND ut.is_deleted = FALSE
+                                  ORDER BY tm.id DESC 
+                                  LIMIT :row_count OFFSET :offset;""")
+                           , uid=uid, ol=origin_lang, tl=trans_lang, row_count=rows, offset=rows * (page - 1))
     tm = [dict(res) for res in results]
 
     return tm, total_cnt
@@ -46,11 +51,12 @@ def insert_trans_memory(origin_lang, trans_lang, origin_text, trans_text):
         return False
 
 
-def insert_trans_memory_csv_file(csv_file):
+def insert_trans_memory_csv_file(uid, csv_file, origin_lang, trans_lang):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tm = Table('translation_memory', meta, autoload=True)
+    ut = Table('users_tmlist', meta, autoload=True)
 
     # file = TextIOWrapper(csv_file)
     file = io.StringIO(csv_file.stream.read().decode("UTF8"), newline=None)
@@ -58,12 +64,41 @@ def insert_trans_memory_csv_file(csv_file):
 
     try:
         for row in data:
+            #: CSV 파일 형식이 `원문언어, 번역언어, 원문단어, 번역단어`순인 경우
             if len(row) == 4:
+                print(1)
                 res = conn.execute(tm.insert(), origin_lang=row[0], trans_lang=row[1]
                                    , origin_text=row[2], trans_text=row[3])
                 if res.rowcount != 1:
                     trans.rollback()
                     return False
+
+                print(2)
+
+                #: 단어 주인(사용자) 저장하기
+                tid = res.lastrowid
+                res = conn.execute(ut.insert(), user_id=uid, tm_id=tid)
+
+                if res.rowcount != 1:
+                    trans.rollback()
+                    return False
+
+            #: CSV 파일 형식이 `원문단어, 번역단어`순인 경우
+            elif len(row) == 2:
+                res = conn.execute(tm.insert(), origin_lang=origin_lang, trans_lang=trans_lang
+                                   , origin_text=row[0], trans_text=row[1])
+                if res.rowcount != 1:
+                    trans.rollback()
+                    return False
+
+                #: 단어 주인(사용자) 저장하기
+                tid = res.lastrowid
+                res = conn.execute(ut.insert(), user_id=uid, tm_id=tid)
+
+                if res.rowcount != 1:
+                    trans.rollback()
+                    return False
+
             else:
                 trans.rollback()
                 return False
