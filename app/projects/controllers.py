@@ -157,7 +157,7 @@ def delete_project_member(uid, pid, mid):
     res = model.check_is_founder(mid, pid)
     if res is False:
         # return make_response(json.jsonify(result='Founder can not be deleted!'), 463)
-        return make_response(json.jsonify(result=463), 463)
+        return make_response(json.jsonify(result=463), 200)
 
     is_done = model.delete_project_member(mid, pid)
 
