@@ -68,7 +68,7 @@ var PageScript = function () {
                                 alert('참가자가 삭제 되었습니다.');
                                 location.href = location.href;
                                 //local.showList();
-                            } else if(res.result == '463') {
+                            } else if(res.result == 463) {
                                 // 463 : Founder can not be deleted!
                                 alert('개설자는 삭제되지 않습니다.');
                                 location.href = location.href;
@@ -88,6 +88,11 @@ var PageScript = function () {
         // 검색버튼 클릭
         $('#listTitleGroup2 li:nth-of-type(2)').on('click', function (e) {
             e.preventDefault();
+            if($('#txt_search').val().trim() == ''){
+                alert('검색할 이메일을 입력해주세요.');
+                $('#txt_search').focus();
+                return false;
+            }
             $.ajax({
                 url: '/api/v1/search?q=' + $('#txt_search').val() + '&target=u',
                 type: 'GET',
@@ -110,7 +115,7 @@ var PageScript = function () {
                             html += '<td>';
                             html += '    <input type="checkbox">';
                             html += '</td>';
-                            html += '    <td>' + data.id + '</td>';
+                            html += '    <td>' + data.user_id + '</td>';
                             html += '    <td>' + data.name + '</td>';
                             html += '    <td>' + data.email + '</td>';
                             html += '</tr>';
