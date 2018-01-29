@@ -23,7 +23,7 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
                         ON ( ut.tm_id = tm.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
                         WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
                         AND origin_lang = :ol AND trans_lang = :tl AND tm.is_deleted = FALSE) sm
-                GROUP BY username
+                GROUP BY username, sm.trans_text
                 ORDER BY score DESC 
                 LIMIT 3;""")
         , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
