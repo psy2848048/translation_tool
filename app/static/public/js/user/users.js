@@ -68,7 +68,7 @@ var PageScript = function () {
                                 alert('참가자가 삭제 되었습니다.');
                                 location.href = location.href;
                                 //local.showList();
-                            } else if(res.result == 463) {
+                            } else if (res.result == 463) {
                                 // 463 : Founder can not be deleted!
                                 alert('개설자는 삭제되지 않습니다.');
                                 location.href = location.href;
@@ -88,7 +88,7 @@ var PageScript = function () {
         // 검색버튼 클릭
         $('#listTitleGroup2 li:nth-of-type(2)').on('click', function (e) {
             e.preventDefault();
-            if($('#txt_search').val().trim() == ''){
+            if ($('#txt_search').val().trim() == '') {
                 alert('검색할 이메일을 입력해주세요.');
                 $('#txt_search').focus();
                 return false;
@@ -100,28 +100,35 @@ var PageScript = function () {
                 success: function (res) {
                     console.log('[4594 res] : ', res);
                     //$('#listContents2 table tbody tr:nth-of-type(1)').next().empty();
-                    if (res.u != undefined && res.u != null) {
-                        var html = '';
-                        $(res.u).each(function (idx, data) {
-                            html += '<tr>';
-                            html += '<th>';
-                            html += '    <input type="checkbox">';
-                            html += '</th>';
-                            html += '<th>번호</th>';
-                            html += '<th>이름</th>';
-                            html += '<th>이메일</th>';
-                            html += '</tr>';
-                            html += '<tr>';
-                            html += '<td>';
-                            html += '    <input type="checkbox">';
-                            html += '</td>';
-                            html += '    <td>' + data.user_id + '</td>';
-                            html += '    <td>' + data.name + '</td>';
-                            html += '    <td>' + data.email + '</td>';
-                            html += '</tr>';
-                        });
-                        $('#listContents2 table tbody').empty().append(html);
+                    var html = '';
+                    html += '<tr>';
+                    html += '<th>';
+                    html += '    <input type="checkbox">';
+                    html += '</th>';
+                    html += '<th>번호</th>';
+                    html += '<th>이름</th>';
+                    html += '<th>이메일</th>';
+                    html += '</tr>';
+
+                    if (res.u == undefined || res.u == null) {
+                        html += '<tr><td colspan=4 style="padding-top:10px;">존재하지 않는 사용자 입니다.</td></td>';
+                    } else {
+                        if (res.u.length < 1) {
+                            html += '<tr><td colspan=4 style="padding-top:10px;">존재하지 않는 사용자 입니다.</td></td>';
+                        } else {
+                            $(res.u).each(function (idx, data) {
+                                html += '<tr>';
+                                html += '<td>';
+                                html += '    <input type="checkbox">';
+                                html += '</td>';
+                                html += '    <td>' + data.user_id + '</td>';
+                                html += '    <td>' + data.name + '</td>';
+                                html += '    <td>' + data.email + '</td>';
+                                html += '</tr>';
+                            });
+                        }
                     }
+                    $('#listContents2 table tbody').empty().append(html);
                 },
                 error: function (e) {
                     console.log('fail 4265');
@@ -149,10 +156,12 @@ var PageScript = function () {
                         async: true,
                         success: function (res) {
                             console.log('[5469 res] : ', res);
-                            if (res.result == 'OK') {
+                            if (res.result.toUpperCase() == 'OK') {
                                 alert('참가자가 추가 되었습니다.');
                                 location.href = location.href;
                                 //local.showList();
+                            }else if(res.result.toUpperCase() == 'DUP'){
+                                alert('이미 초대된 사용자 입니다.');
                             }
                         },
                         error: function (e) {

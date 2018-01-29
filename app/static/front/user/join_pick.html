@@ -16,6 +16,7 @@
     <link href="/static/public/css/reset.css" rel="stylesheet" />
     <link href="/static/public/css/site.css" rel="stylesheet" />
     <link href="/static/public/css/user/join_pick.css" rel="stylesheet" />
+    <script src="/static/public/js/user/social.js"></script>
 </head>
 
 <body>
@@ -26,40 +27,37 @@
             </a>
             <h1>마로캣 회원가입</h1>
             <hr>
-            <div>
+            <!-- <div>
                 <span>버전</span>
                 <select id="selVersion">
                     <option value="무료버전">무료버전</option>
                     <option value="유료버전">유료버전</option>
                 </select>
-            </div>
-            <div>
-                <span>언어</span>
+            </div> -->
+            <div id="lang_div">
+                <span>웹사이트 언어</span>
                 <select id="selLang">
                     <option value="한국어">한국어</option>
                     <!-- <option value="영어">영어</option> -->
                     <!-- <option value="중국어">중국어</option> -->
                 </select>
             </div>
-            <p>가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은 하단에서 가입한 계정을 선택하세요.</p>
+            <p>가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은 <a href="login.html">이곳을 클릭</a>해서 로그인 하세요.</p>
             <ul>
                 <li>
-                    <!-- <a href="join_google.html"> -->
-                    <a href="#">
+                    <a href="javascript:JoinGoogle();">
                         <img src="/static/public/img/google.jpg">
                     </a>
                     <p>소셜 구글</p>
                 </li>
                 <li>
-                    <!-- <a href="join_facebook.html"> -->
-                    <a href="#">
+                        <a href="javascript:JoinFacebook();">
                         <img src="/static/public/img/facebook.png">
                     </a>
                     <p>소셜 페이스북</p>
                 </li>
                 <li>
-                    <!-- <a href="join_email.html"> -->
-                    <a href="#">
+                    <a href="signup.html?type=e">
                         <img src="/static/public/img/email.png">
                     </a>
                     <p>회원님 이메일</p>

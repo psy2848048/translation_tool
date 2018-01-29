@@ -121,7 +121,7 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
                     continue;
                 }
             }
-        }   
+        }
         f_data.append('file', files[i]);
     }
     console.log('f_data : ', f_data);
@@ -134,11 +134,10 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
             data: f_data,
             // dataType: "json",
             success: function (res) {
-                if(res.result=='OK') {
+                if (res.result == 'OK') {
                     $('#' + result_p).text('업로드가 완료되었습니다.');
                     setTimeout(hidePopup, 1000);
-                }
-                else $(result_p).text('업로드에 문제가 있습니다.');
+                } else $(result_p).text('업로드에 문제가 있습니다.');
                 console.log('[4576] res.result : ', res.result);
             },
             error: function (xhr, ajaxOptions, thrownError) {
@@ -157,7 +156,7 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
 function hidePopup() {
     $('#mainWrap').css('opacity', '1');
     $("#upload_div").fadeOut('slow');
-    location.href=location.href;
+    location.href = location.href;
 }
 
 function IsValidObj(o) {
@@ -172,6 +171,7 @@ function IsValidStr(s) {
 
 // 날짜용도와 타입에 따른 결과 반환
 function GetDateText(o, purpose, format) {
+    //alert(format);
     if (purpose == 1) {
         if (o == null || o == '' || o == '1970-01-01 9:0') {
             return '제한없음';
@@ -179,7 +179,7 @@ function GetDateText(o, purpose, format) {
             var dt1 = new Date(o);
             return GetStringDate(dt1, format);
         }
-    }else{
+    } else {
         if (o == null || o == '' || o == '1970-01-01 9:0') {
             return '';
         } else {
@@ -187,6 +187,18 @@ function GetDateText(o, purpose, format) {
             return GetStringDate(dt2, format);
         }
     }
+}
+
+// 이메일 정규식
+function CheckEmail(email) {
+    var is_ok = false;
+
+    var regExp =
+        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+
+    if (email.match(regExp) != null) is_ok = true;
+
+    return is_ok;
 }
 
 $(function () {

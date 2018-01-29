@@ -73,11 +73,11 @@ function ResetDay() {
     var maxK = 0;
     if ($('#sel_month').val() % 2 == 0) {
         if ($('#sel_month').val() == 2) {
-            if ($('#sel_year').val() == 2020 || $('#sel_year').val() == 2024 || $('#sel_year').val() == 2028) maxK = 30;
-            else maxK = 29;
+            if ($('#sel_year').val() == 2020 || $('#sel_year').val() == 2024 || $('#sel_year').val() == 2028 || $('#sel_year').val() == 2032) maxK = 29;
+            else maxK = 28;
         } else maxK = 31;
     } else {
-        maxK = 32;
+        maxK = 30;
     }
     var result = '    <option value="">일</option>';
     for (var k = 1; k < maxK; k++) {
@@ -85,6 +85,7 @@ function ResetDay() {
         else result += '    <option value="' + k + '">' + k + '</option>';
     }
     $('#sel_day').empty().html(result);
+    if(!IsValidStr($('#sel_day').val())) $('#sel_day').val('01');
 }
 // 1개월 후로 자동선택   
 function SetToday() {
@@ -96,14 +97,19 @@ function SetToday() {
     hour = parseInt(today.getHours()) < 10 ? '0' + today.getHours() : today.getHours();
     minute = Math.round(today.getMinutes() / 10) * 10;
     minute = parseInt(minute) < 10 ? '0' + minute : minute;
-    minute = minute == '60' ? '00' : minute;    
+    minute = minute == '60' ? '00' : minute;
     $('#sel_year').val(today.getFullYear());
     $('#sel_month').val(month);
     $('#sel_day').val(day);
     $('#sel_hour').val(hour);
     $('#sel_minute').val(minute);
+
+    //alert($('#sel_day').val());
+    //if ($('#sel_day').val() == null || $('#sel_day').val() == undefined || $('#sel_day').val() == '') {
+    //    $('#sel_day').val('01');
+    //}
 }
 
-function AddPreZero(s){
+function AddPreZero(s) {
     return parseInt(s) < 10 ? '0' + parseInt(s) : s;
 }

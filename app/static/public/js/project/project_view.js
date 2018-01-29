@@ -185,7 +185,7 @@ var PageScript = function () {
                         if (res.trans_lang != null && res.trans_lang != '') row += '    <td>' + res.trans_lang.toUpperCase() + '</td>';
                         else row += '    <td>' + res.trans_lang + '</td>';
 
-                        row += '    <td>' + GetDateText(res.due_date, '1', '0') + '</td>';
+                        row += '    <td>' + GetDateText(res.due_date, '1', '1') + '</td>';
                         
                         row += '    <td><input data-id="' + res.id + '" type="button" value="편집"></td>';
 

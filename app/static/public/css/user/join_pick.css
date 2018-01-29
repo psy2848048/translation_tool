@@ -1,85 +1,165 @@
-html, body{
-    width:100%;
-    height:100%;
-    background-color:#44455f;
+html,
+body {
+    width: 100%;
+    height: 100%;
+    background-color: #44455f;
 }
-
-#mainWrap{
+a{
+    text-decoration: none;
+    color:rgb(0, 110, 255);
+}
+a:hover{
+    opacity: 0.8;
+}
+#mainWrap {
     position: relative;
-    border:0px solid red;   
-    box-sizing:border-box;
-    width:100%;
-    height:100%;
+    border: 0px solid red;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
 }
 
 #join_box {
     border: 0px solid #5f5c44;
     border-radius: 5px;
     background-color: #fff;
-    position: absolute;   
+    position: absolute;
     width: 400px;
-    height:540px;
-    top: -50px; /* 현재박스 높이 고려해서 적당히 - 적용 */               
-    bottom: 0;            
-    left: 0;              
-    right: 0;             
-    margin: auto; 
+    height: 540px;
+    top: -50px;
+    /* 현재박스 높이 고려해서 적당히 - 적용 */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
     text-align: center;
-    vertical-align: middle; 
-    padding:20px;  
+    vertical-align: middle;
+    padding: 20px;
 }
 
 #join_box img,
 #join_box div,
 #join_box p,
-#join_box ul{
-    margin-top:20px;
+#join_box ul {
+    margin-top: 20px;
 }
 
-#join_box select{
-    font-size:16px;
-    height:30px;
+#join_box select {
+    font-size: 16px;
+    height: 30px;
 }
 
-#join_box ul li{
-    float:left;
-    width:33.3333%;
+#join_box ul li {
+    float: left;
+    width: 33.3333%;
 }
 
-#join_box ul li img{
-    width:100px;
+#join_box ul li img {
+    width: 100px;
 }
 
 #join_box span,
-#join_box select{
-    border:0px solid red;
-    display:inline-block;
-    width:140px;
+#join_box select {
+    border: 0px solid red;
+    display: inline-block;
+    width: 140px;
 }
 
-#join_box span{
-    border:0px solid red;
-    display:inline-block;
-    width:80px;
+#join_box span {
+    border: 0px solid red;
+    display: inline-block;
+    width: 100px;
 }
 
-#join_box span{
+#join_box span {
     text-align: right;
-    padding-right:10px;
+    padding-right: 10px;
 }
 
-#join_box select{
+#join_box select {
     text-align: left;
 }
 
-#join_box h1{
-    margin-bottom:20px;
+#join_box h1 {
+    margin-bottom: 20px;
 }
 
-#join_box hr{
-    width:94%;
+#join_box hr {
+    width: 94%;
     border: 0;
     height: 1px;
     background-image: linear-gradient(to right, #ccc, #333, #ccc);
-    margin:0 auto;    
+    margin: 0 auto;
+}
+
+#join_box table {
+    border-top: 1px dotted rgba(255, 145, 0, 0.5);
+    border-bottom: 1px dotted rgba(255, 145, 0, 0.514);
+    width: 100%;
+}
+
+#join_box table td {
+    border: 0px solid #999;
+    padding: 7px 7px;
+}
+
+#join_box table td:nth-of-type(1) {
+    width: 40%;
+    padding-right: 10px;
+    text-align: right;
+}
+
+#join_box table td:nth-of-type(2) {
+    width: 59%;
+}
+
+#join_box table td:nth-of-type(2) input[type=text],
+#join_box table td:nth-of-type(2) input[type=password],
+#join_box table td:nth-of-type(2) span {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 16px;
+    border-radius:5px;
+    text-align: left;
+}
+#join_box table td:nth-of-type(2) input[type=text],
+#join_box table td:nth-of-type(2) input[type=password]{
+    border:1px solid #999;
+    padding:3px;
+}
+
+#lang_div{
+    margin-bottom: 30px;
+}
+#join_div{
+    height:19px;
+    line-height:19px;
+    vertical-align: middle;
+}
+#join_div p:nth-of-type(1){
+    width: 100%;
+    text-align:center;
+}
+#join_div p:nth-of-type(1) input[type=checkbox]{
+    vertical-align: middle;
+    margin-top:-1px;
+}
+#join_div p:nth-of-type(2){
+    width: 100%;
+    text-align:right;
+}
+#join_div p:nth-of-type(2) input[type=button]{
+    width: 100px;
+    text-align:right;
+    background-color: rgb(255, 174, 0);
+    color:#fff;
+    text-align: center;
+    font-size:20px;
+    padding:10px;
+    border-radius: 5px;
+    border:0;
+    margin-right:10px;
+}
+#join_div p:nth-of-type(2) input[type=button]:hover{
+    opacity: 0.8;
 }
