@@ -21,7 +21,7 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
                         FROM `marocat v1.1`.translation_memory tm 
                         JOIN ( users_tmlist ut, users u ) 
                         ON ( ut.tm_id = tm.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
-                        WHERE ( origin_text LIKE '%or There is%' OR origin_text LIKE '%a gentle breeze%' )
+                        WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
                         AND origin_lang = :ol AND trans_lang = :tl AND tm.is_deleted = FALSE) sm
                 GROUP BY username
                 ORDER BY score DESC 
