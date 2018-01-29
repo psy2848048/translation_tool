@@ -189,7 +189,7 @@ var PageScript = function () {
                     var is_newword = true;
                     $('#tran2section table td div span.boldWord').each(function (idx, res) {
                         //alert($(this).text());
-                        if (keyword.toUpperCase() == $(this).text().toUpperCase()) {
+                        if (keyword.trim().toUpperCase() == $(this).text().trim().toUpperCase()) {
                             is_newword = false;
                             alert('아래 목록에 존재하는 단어입니다.');
                         }
@@ -202,9 +202,9 @@ var PageScript = function () {
                             if (!is_word) {
                                 for (var i = 0; i < data.tb.length; i++) {
                                     result = '<div>';
-                                    result += '    <input data-id="' + data.tb[i].term_id + '" type="button" value="수정"> ';
+                                    result += '    <input data-id="' + data.tb[i].term_id + '" type="button" value="수정 (' + data.tb[i].username + ')"> ';
                                     result += '    <span class="boldWord">' + $('#txtPublicSearch').val() + '</span> ';
-                                    result += '    <input type="text" class="miniWord" value="[' + data.tb[i].username + '] ' + data.tb[i].trans_text + '">';
+                                    result += '    <input type="text" class="miniWord" value="' + data.tb[i].trans_text + '">';
                                     result += '</div>';
                                 }
                                 $('#tran2section table tr:nth-of-type(2) td').prepend(result);
@@ -589,8 +589,8 @@ var PageScript = function () {
                 if (data.tb != undefined && data.tb.length > 0) {
                     for (var j = 0; j < data.tb.length; j++) {
                         tb_html += '<div>';
-                        tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정"> ';
-                        tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + ' (' + data.tb[j].username + ')</span> ';
+                        tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정 (' +  data.tb[j].username + ')"> ';
+                        tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span>';
                         tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
                         tb_html += '</div>';
                     }
