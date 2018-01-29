@@ -24,14 +24,14 @@ def select_doc(did):
     return doc_sentences
 
 
-def export_doc_as_csv(did):
+def export_doc(output_type, did):
     conn = db.engine.connect()
 
     #: 번역 상태 100%인지 확인
     res = conn.execute(text("""SELECT d.title, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
                         FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
                         WHERE d.id = :did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
-    print(res)
+
     doc_title = res[0]
     progress_percent = int(res[1])
 
@@ -44,12 +44,30 @@ def export_doc_as_csv(did):
                                                                               LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
                                   WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
 
-        output = io.StringIO()
-        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-        writer.writerows(res)
-        csv_file = output.getvalue()
+        #: CSV 파일로 출력하기
+        if output_type == 'csv':
+            output = io.StringIO()
+            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+            writer.writerows(res)
+            file = output.getvalue().encode('utf-8')
+            file_title = doc_title + '.csv'
 
-        return (csv_file, doc_title), True
+        #: TXT 파일로 출력하기
+        elif output_type == 'txt':
+            with open('output.txt', 'w') as f:
+                f.write('원문언어: ' + res[0]['origin_lang'].upper() + '\n')
+                f.write('번역언어: ' + res[0]['trans_lang'].upper() + '\n\n')
+
+                for r in res:
+                    f.write(r['origin_text'])
+                    f.write('\n')
+                    f.write(r['trans_text'])
+                    f.write('\n\n')
+
+            file = open('output.txt', 'rb').read()
+            file_title = doc_title + '.txt'
+
+        return (file, file_title), True
     else:
         return (None, None), False
 

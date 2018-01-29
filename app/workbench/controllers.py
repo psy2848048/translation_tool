@@ -1,4 +1,4 @@
-from flask import request, make_response, json, session, send_file
+from flask import request, make_response, json, session, send_file, send_from_directory
 import app.workbench.models as model
 import io
 
@@ -14,13 +14,16 @@ def get_trans_comments(did, sid):
 
 
 def output_doc_to_file(did):
-    file, is_done = model.export_doc_as_csv(did)
+    output_type = request.values.get('output_type', None)
+
+    if output_type is None:
+        return make_response(json.jsonify('Something Not Entered'), 460)
+
+    file, is_done = model.export_doc(output_type, did)
 
     if is_done is True:
-        # file_name = file[1][:10] + '.csv'
-        file_name = file[1] + '.csv'
-        print(file_name)
-        return send_file(io.BytesIO(file[0].encode('utf-8')), attachment_filename=file_name)
+        return send_file(io.BytesIO(file[0]), attachment_filename=file[1])
+        # return send_file(io.BytesIO(file[0].encode('utf-8')), attachment_filename=file[1])
     else:
         return make_response(json.jsonify(result='Something Wrong! Is this document really complete?'), 461)
 
