@@ -125,8 +125,12 @@ def update_term(tid, origin_lang, trans_lang, origin_text, trans_text):
     tb = Table('termbase', meta, autoload=True)
 
     try:
-        res = conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang
-                           , origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
+        if None in [origin_lang, trans_lang, origin_text]:
+            res = conn.execute(tb.update(tb.c.id == tid), trans_text=trans_text, update_time=datetime.utcnow())
+        else:
+            res = conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang
+                               , origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
+
         if res.rowcount != 1:
             trans.rollback()
             return False

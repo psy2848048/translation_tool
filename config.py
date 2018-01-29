@@ -27,10 +27,10 @@ else:
 
 
 #: Session
-SESSION_TYPE='redis'
-SESSION_COOKIE_NAME="CiceronCookie"
-PERMANENT_SESSION_LIFETIME=timedelta(days=15)
-SECRET_KEY=os.urandom(24)
+SESSION_TYPE = 'redis'
+SESSION_COOKIE_NAME = "MarocatCiceronCookie"
+PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+SECRET_KEY = os.urandom(24)
 
 #: Swagger
 SWAGGER = {
@@ -40,19 +40,19 @@ SWAGGER = {
 
 #: SQLAlchemy, DB
 #SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ciceron01!@ciceron.xyz/marocat'
-SQLALCHEMY_DATABASE_URI='mysql+pymysql://root:ciceron01!@ciceronservice2.cng6yzqtxqhh.ap-northeast-1.rds.amazonaws.com/marocat v1.1'
-SQLALCHEMY_TRACK_MODIFICATIONS=True
+SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:ciceron01!@ciceronservice2.cng6yzqtxqhh.ap-northeast-1.rds.amazonaws.com/marocat v1.1'
+SQLALCHEMY_TRACK_MODIFICATIONS = True
 
 
 #: JSON으로 들어온 데이터들을 정렬해준다
 JSON_SORT_KEYS=False
 MAX_CONTENT_LENGTH=5 * 1024 * 1024
-UPLOAD_FOLDER_RESULT="translate_result"
+UPLOAD_FOLDER_RESULT="results"
 
 
 #: Facebook
-FACEBOOK_APP_ID='number'
-FACEBOOK_APP_SECRET=''
+FACEBOOK_APP_ID = '1830327450614969'
+FACEBOOK_APP_SECRET = '7c1a7dd0f73ce5e1e11a805630da8830'
 
 
 # Application threads. A common general assumption is

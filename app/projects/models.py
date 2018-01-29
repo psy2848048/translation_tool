@@ -26,7 +26,7 @@ def select_projects(uid, page, rows):
                                                                               WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE AND d.is_deleted = FALSE
                                                                               GROUP BY d.project_id ) t1 ON ( t1.pid = p.id ) 
                                     WHERE pm.user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE
-                                    ORDER BY p.create_time DESC 
+                                    ORDER BY p.id DESC 
                                     LIMIT :row_count OFFSET :offset;"""), uid=uid, row_count=rows, offset=rows * (page - 1))
     projects = [dict(res) for res in results]
 
@@ -38,11 +38,11 @@ def select_project_info(pid):
     result = conn.execute(text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date,
                                           GROUP_CONCAT(u.name) as project_members,
                                           origin_langs, trans_langs
-                                    FROM `marocat v1.1`.projects p JOIN ( project_members pm, users u ) ON ( pm.project_id = p.id AND u.id = pm.user_id )
-                                                                   JOIN ( SELECT project_id as pid, group_concat( DISTINCT origin_lang) as origin_langs, group_concat( DISTINCT trans_lang) as trans_langs
-                                                                          FROM `marocat v1.1`.docs WHERE is_deleted = FALSE
-                                                                          GROUP BY pid ) t1 ON ( t1.pid = p.id )
-                                    WHERE p.id = :pid AND p.is_deleted = FALSE AND pm.is_deleted = FALSE AND u.is_deleted = FALSE;"""), pid=pid).fetchone()
+                                  FROM `marocat v1.1`.projects p JOIN ( project_members pm, users u ) ON ( pm.project_id = p.id AND u.id = pm.user_id )
+                                                                 LEFT JOIN ( SELECT project_id as pid, group_concat( DISTINCT origin_lang) as origin_langs, group_concat( DISTINCT trans_lang) as trans_langs
+                                                                             FROM `marocat v1.1`.docs WHERE is_deleted = FALSE
+                                                                             GROUP BY pid ) t1 ON ( t1.pid = p.id )
+                                  WHERE p.id = :pid AND p.is_deleted = FALSE AND pm.is_deleted = FALSE AND u.is_deleted = FALSE;"""), pid=pid).fetchone()
 
     project_info = dict(result)
     return project_info
@@ -125,6 +125,7 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
     os = Table('doc_origin_sentences', meta, autoload=True)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
 
     try:
         #: 문서 추가
@@ -139,6 +140,13 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
         #: 문서의 문장들 저장
         for sentence in sentences:
             res = conn.execute(os.insert(), doc_id=did, text=sentence)
+
+            if res.rowcount != 1:
+                trans.rollback()
+                return False
+
+            osid = res.lastrowid
+            res = conn.execute(ts.insert(), origin_id=osid)
 
             if res.rowcount != 1:
                 trans.rollback()
@@ -251,15 +259,26 @@ def delete_project(pid):
 
     try:
         #: 번역문댓글 - 번역문 - 원문순으로 삭제
-        conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
-                             SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP 
-                             WHERE project_id = :pid;
-                             UPDATE `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
-                             SET ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP 
-                             WHERE project_id = :pid;
-                             UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
-                             SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
-                             WHERE project_id = :pid;"""), pid=pid)
+        conn.execute(
+            text("""UPDATE `marocat v1.1`.trans_comments tc 
+                    JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
+                    SET tc.is_deleted=False, tc.update_time=CURRENT_TIMESTAMP 
+                    WHERE project_id = :pid;""")
+            , pid=pid)
+
+        conn.execute(
+            text("""UPDATE `marocat v1.1`.doc_trans_sentences ts 
+                    JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
+                    SET ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP 
+                    WHERE project_id = :pid;""")
+            , pid=pid)
+
+        conn.execute(
+            text("""UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
+                    SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
+                    WHERE project_id = :pid;""")
+            , pid=pid)
+
 
         #: 프로젝트의 문서 삭제
         conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())

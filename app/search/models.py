@@ -1,6 +1,7 @@
 from app import db
 from sqlalchemy import Table, MetaData
 from sqlalchemy import text
+import re
 
 
 def select_similarity_trans_memory(query, origin_lang, trans_lang):
@@ -11,13 +12,21 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
     first = "%" + ' '.join(split_sentence[:3]) + "%"
     second = "%" + ' '.join(split_sentence[-3:]) + "%"
 
-    res = conn.execute(text("""SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score, tm_id, sm.origin_text, sm.trans_text
-                                    FROM ( SELECT id as tm_id, origin_text, trans_text FROM `marocat v1.1`.translation_memory
-                                           WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
-                                           AND origin_lang = :ol AND trans_lang = :tl) sm
-                                    ORDER BY score DESC 
-                                    LIMIT 3;""")
-                       , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
+    res = conn.execute(
+        text("""SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score
+                     , tm_id, sm.origin_text, sm.trans_text
+                     , username, user_id
+                FROM ( SELECT tm.id as tm_id, origin_text, trans_text 
+                            , u.name as username, u.id as user_id
+                        FROM `marocat v1.1`.translation_memory tm 
+                        JOIN ( users_tmlist ut, users u ) 
+                        ON ( ut.tm_id = tm.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
+                        WHERE ( origin_text LIKE '%or There is%' OR origin_text LIKE '%a gentle breeze%' )
+                        AND origin_lang = :ol AND trans_lang = :tl AND tm.is_deleted = FALSE) sm
+                GROUP BY username
+                ORDER BY score DESC 
+                LIMIT 3;""")
+        , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
 
     results = [dict(r) for r in res]
     return results
@@ -25,17 +34,22 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
 
 def select_termbase(query, origin_lang, trans_lang):
     conn = db.engine.connect()
-    nouns = query.split()
+    nouns = query[:-1].split()
+    print(nouns)
 
     temp = []
     for noun in nouns:
         # 추후 수정사항: 나중에 검색대상 구분하자
         if len(noun) > 2:
-            res = conn.execute(text("""SELECT id as term_id, origin_text, trans_text FROM `marocat v1.1`.termbase
-                                       WHERE origin_text LIKE :noun 
-                                       AND origin_lang = :ol AND trans_lang = :tl
-                                       """)
-                               , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang).fetchall()
+            res = conn.execute(
+                text("""SELECT tb.id as term_id, origin_text, trans_text, u.name as username, u.id as user_id
+                        FROM `marocat v1.1`.termbase tb 
+                        JOIN ( users_tblist ut, users u ) 
+                        ON ( ut.tb_id = tb.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
+                        WHERE origin_text LIKE :noun 
+                        AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
+                        GROUP BY u.name, trans_text;""")
+                , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang).fetchall()
         else:
             continue
 

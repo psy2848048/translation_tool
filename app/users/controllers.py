@@ -2,7 +2,8 @@ from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.users.models as model
 
-def sign_up():
+
+def signup():
     name = request.form.get('name', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
