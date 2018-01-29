@@ -99,7 +99,7 @@ def add_project_member(uid, pid):
     if is_done is 1:
         return make_response(json.jsonify(result='OK'), 200)
     elif is_done is 2:
-        return make_response(json.jsonify(result='Duplicate! Already Exist'), 462)
+        return make_response(json.jsonify(result='Duplicate! Already Exist'), 260)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
