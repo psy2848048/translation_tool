@@ -55,7 +55,7 @@ var PageScript = function () {
                         //     var dt1 = new Date(res.create_time);
                         //     ko_res_time = GetStringDate(dt1);
                         // }
-                        ko_res_time = GetDateText(res.create_time, '0', '0');
+                        ko_res_time = GetDateText(res.create_time, '0', '1');
 
                         // if (res.due_date == null || res.due_date == '' || res.due_date == '1970-01-01 9:0') {
                         //     ko_duration_date = '제한없음';
@@ -63,7 +63,7 @@ var PageScript = function () {
                         //     var dt2 = new Date(res.due_date);
                         //     ko_duration_date = GetStringDate(dt2);
                         // }
-                        ko_duration_date = GetDateText(res.due_date, '1', '0');
+                        ko_duration_date = GetDateText(res.due_date, '1', '1');
 
                         list += '   <td>' + ko_res_time + '</td>';
                         list += '   <td>' + ko_duration_date + '</td>';
