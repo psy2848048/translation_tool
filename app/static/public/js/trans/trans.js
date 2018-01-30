@@ -24,7 +24,13 @@ var PageScript = function () {
                         html += '<tr>';
                         html += '    <td>' + res.sentence_id + '</td>';
                         html += '    <td>' + res.origin_text + '</td>';
-                        html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
+
+                        if(IsValidStr(res.trans_text)){
+                            html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
+                        }else{
+                            html += '    <td><textarea rows=1 placeholder="해석을 모두 지우고 포커스를 옮기면 현재 행이 리셋됩니다."></textarea></td>';
+                        }
+
                         html += '    <td>';
                         if (res.trans_status == '0') {
                             html += '    <i class="fa fa-times" aria-hidden="true" style="color:gray; cursor:pointer;"></i>';
@@ -498,12 +504,15 @@ var PageScript = function () {
                 } else {
                     // 번역상태 미완료로 초기화
                     local.saveTranStatus(thisObj, '0');
-                    if (trans_type == 'X') thisObj.closest('tr').find('td:eq(4)').css({
-                        'background-color': 'transparent'
-                    }).text('');
-                    else if (trans_type == 'T') thisObj.closest('tr').find('td:eq(4)').css({
-                        'background-color': '#E3D19C'
-                    }).text('T');
+
+                    if (trans_type == 'X') thisObj.closest('tr').find('td:eq(4)').removeClass().text('');
+                    else if (trans_type == 'T') thisObj.closest('tr').find('td:eq(4)').removeClass().addClass('tColor').text('T');
+                    // else if (trans_type == 'TM') thisObj.closest('tr').find('td:eq(4)').css({
+                    //     'background-color': '#FF6FE6'
+                    // }).text('TM');
+                    // else if (trans_type == 'MT') thisObj.closest('tr').find('td:eq(4)').css({
+                    //     'background-color': '#FCFCFC'
+                    // }).text('MT');
                 }
             },
             error: function (e) {
@@ -703,7 +712,7 @@ var PageScript = function () {
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
-                    $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).html(transType);
+                    $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).text(transType);
 
                     local.saveTrans($('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea'));
                 });

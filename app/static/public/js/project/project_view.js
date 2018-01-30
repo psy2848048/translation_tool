@@ -1,6 +1,6 @@
 var PageScript = function () {
     var local = this,
-        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '15',
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '20',
         page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
         project_id = getUrlParameter('project'),
         cur_path = $(location).attr('pathname');
@@ -24,7 +24,7 @@ var PageScript = function () {
                         console.log('[4563 res] : ', res);
                         if (res.result == 'OK') {
                             alert('프로젝트가 삭제되었습니다.');
-                            location.href = 'projects.html';
+                            location.href = 'projects.html?rows=' + rows + '&page=' + page;
                         }
                     },
                     error: function (e) {
@@ -48,10 +48,11 @@ var PageScript = function () {
                             async: true,
                             success: function (res) {
                                 //console.log('[6578 res] : ', res);
-                                //if(res.result == 'OK') {
-                                //    alert('프로젝트가 삭제되었습니다.');
-                                //    location.href='projects.html';
-                                //}
+                                if(res.result == 'OK') {
+                                    alert('문서가 삭제되었습니다.');
+                                    //location.href='projects.html';
+                                    //console.log(res);
+                                }
                                 //location.href = location.href;
                                 //location.href = 'project_view.html?project=' + project_id;
                             },

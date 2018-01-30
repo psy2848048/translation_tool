@@ -435,16 +435,15 @@ input[type=button] {
 /* 회원단 우측상위 전역 회원사진 */
 
 .circle {
-  border: 1px solid green;
   border-radius: 50%;
   display: inline-block;
   width: 30px;
   height: 30px;
   vertical-align: middle;
   text-align: center;
-  background: url(/static/public/img/kjh.jpg);
+  background: url(/static/public/img/noman.png);
   background-size: 100%;
-  border: 1px solid #9b9aa6;
+  /* border: 1px solid #9b9aa6; */
   background-repeat: no-repeat;
   background-position-y: center;
   background-color: #fff;
