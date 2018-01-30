@@ -178,12 +178,17 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
     pm = Table('project_members', meta, autoload=True)
 
     try:
-        conn.execute(text("""INSERT INTO project_members (user_id, project_id, can_read, can_modify, can_delete, can_create_doc)
-                            VALUES (:uid, :pid, :can_read, :can_modify, :can_delete, :can_create_doc)
-                            ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
-                                                  , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete, can_create_doc=:can_create_doc;""")
-                     , uid=uid, pid=pid, is_founder=False
-                     , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
+        res = conn.execute(
+            text("""INSERT INTO project_members (user_id, project_id, can_read, can_modify, can_delete, can_create_doc)
+                    VALUES (:uid, :pid, :can_read, :can_modify, :can_delete, :can_create_doc)
+                    ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
+                                          , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete, can_create_doc=:can_create_doc;""")
+            , uid=uid, pid=pid, is_founder=False
+            , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
+
+        if res.rowcount == 2:
+            trans.rollback()
+            return 2
 
         trans.commit()
         return 1
