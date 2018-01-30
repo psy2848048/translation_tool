@@ -1,6 +1,6 @@
 var PageScript = function () {
     var local = this,
-        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '10',
+        rows = IsValidStr(getUrlParameter('rows')) ? getUrlParameter('rows') : '20',
         page = IsValidStr(getUrlParameter('page')) ? getUrlParameter('page') : '1',
         project_id = getUrlParameter('project'),
         cur_path = $(location).attr('pathname');
@@ -31,8 +31,8 @@ var PageScript = function () {
             .always(function () {});
         jqxhr_l.always(function () {});
         var jqxhr = $.get('/api/v1/7/projects?rows=' + rows + '&page=' + page, function (data) {
-                console.log('[/api/v1/7/projects?rows=rows&page=page] : ', data);
-                console.log('[/api/v1/7/projects?rows=rows&page=page data.results[0]] : ', data.results[0]);
+                console.log('[/api/v1/7/projects?rows=' + rows + '&page=' + page + '] : ', data);
+                console.log('[/api/v1/7/projects?rows=' + rows + '&page=' + page + ' data.results[0]] : ', data.results[0]);
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {
@@ -71,7 +71,7 @@ var PageScript = function () {
                     });
                     $('#listContents table tbody tr').after(list);
                     var param_path = cur_path + '?rows=' + rows + '&';
-                    SetPagebar(parseInt(data.total_cnt), rows, page, param_path, 10);
+                    SetPagebar(parseInt(data.total_cnt), rows, page, param_path, rows);
                 }
             })
             .done(function () {
