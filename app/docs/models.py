@@ -86,11 +86,11 @@ def delete_doc(did):
         #: 번역문댓글 - 번역문 - 원문순으로 삭제
         conn.execute(text("""UPDATE `marocat v1.1`.trans_comments tc JOIN ( doc_trans_sentences ts, doc_origin_sentences os, docs d ) ON ( ts.id = tc.trans_id AND ts.origin_id = os.id AND os.doc_id = d.id)
                             SET tc.is_deleted=TRUE, tc.update_time=CURRENT_TIMESTAMP
-                            WHERE doc_id = :did;
-                            UPDATE `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
+                            WHERE tc.doc_id = :did;"""), did=did)
+        conn.execute(text("""UPDATE `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( ts.origin_id = os.id AND os.doc_id = d.id)
                             SET ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP
-                            WHERE doc_id = :did;
-                            UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
+                            WHERE doc_id = :did;"""), did=did)
+        conn.execute(text("""UPDATE `marocat v1.1`.doc_origin_sentences os JOIN docs d ON os.doc_id = d.id
                             SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP
                             WHERE doc_id = :did;"""), did=did)
 
