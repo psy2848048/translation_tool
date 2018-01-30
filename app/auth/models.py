@@ -19,7 +19,6 @@ def select_user_by_email(email):
     conn = db.engine.connect()
 
     res = conn.execute(text("""SELECT id, name, email FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
-    res = dict(res)
     if res is None:
         return None
     else:

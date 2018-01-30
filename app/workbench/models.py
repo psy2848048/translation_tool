@@ -104,7 +104,7 @@ def update_sentence_status(sid, status):
         res = conn.execute(ts.update(ts.c.origin_id == sid), status=status, update_time=datetime.utcnow())
         if res.rowcount != 1:
             trans.rollback()
-            return 0
+            return False
 
         trans.commit()
         return True

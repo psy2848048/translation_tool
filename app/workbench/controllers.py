@@ -56,7 +56,7 @@ def add_trans_comment(did, sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def save_sentence_status(sid, status):
+def modify_sentence_status(sid, status):
     is_done = model.update_sentence_status(sid, status)
 
     if is_done is True:
