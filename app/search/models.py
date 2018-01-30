@@ -35,7 +35,6 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
 def select_termbase(query, origin_lang, trans_lang):
     conn = db.engine.connect()
     nouns = query[:-1].split()
-    print(nouns)
 
     temp = []
     for noun in nouns:

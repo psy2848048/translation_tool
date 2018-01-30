@@ -57,10 +57,10 @@ def select_project_docs(pid, page, rows):
 
     results = conn.execute(text("""SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
                                           , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
-                                   FROM `marocat v1.1`.docs d LEFT JOIN ( SELECT d.id as did, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
-                                                                          FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
-                                                                          WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE
-                                                                          GROUP BY d.id ) t1 ON ( t1.did = d.id )
+                                   FROM `marocat v1.1`.docs d LEFT JOIN ( SELECT os.doc_id as did,  CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                                                                          FROM `marocat v1.1`.doc_trans_sentences ts
+                                                                          JOIN doc_origin_sentences os ON os.id = ts.origin_id
+                                                                          GROUP BY os.doc_id ) t1 ON ( t1.did = d.id )
                                    WHERE d.project_id = :pid AND d.is_deleted = FALSE
                                    GROUP BY d.id
                                    ORDER BY d.create_time DESC 

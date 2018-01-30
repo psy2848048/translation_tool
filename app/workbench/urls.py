@@ -15,7 +15,7 @@ workbench.add_url_rule('/docs/<int:did>/output', view_func=ctrl.output_doc_to_fi
 workbench.add_url_rule('/docs/sentences/<int:sid>/trans', view_func=ctrl.save_trans_sentence, methods=['PUT'])
 
 # 번역문 상태 수정
-workbench.add_url_rule('/docs/sentences/<int:sid>/status/<int:status>', view_func=ctrl.save_sentence_status, methods=['PUT'])
+workbench.add_url_rule('/docs/sentences/<int:sid>/status/<int:status>', view_func=ctrl.modify_sentence_status, methods=['PUT'])
 
 
 # 번역문 댓글 조회
