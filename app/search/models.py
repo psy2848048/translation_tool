@@ -28,7 +28,7 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
                 LIMIT 3;""")
         , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
 
-    results = [dict(r) for r in res]
+    results = [dict(r) for r in res if r['score'] > 50]
     return results
 
 

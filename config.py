@@ -51,8 +51,8 @@ UPLOAD_FOLDER_RESULT="results"
 
 
 #: Facebook
-FACEBOOK_APP_ID = '1830327450614969'
-FACEBOOK_APP_SECRET = '7c1a7dd0f73ce5e1e11a805630da8830'
+FACEBOOK_APP_ID = '931700420316779'
+FACEBOOK_APP_SECRET = '6fd8848bc9df865446ddcab34b098e26'
 
 
 # Application threads. A common general assumption is
