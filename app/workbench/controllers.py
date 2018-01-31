@@ -22,10 +22,18 @@ def output_doc_to_file(did):
     file, is_done = model.export_doc(output_type, did)
 
     if is_done is True:
-        return send_file(io.BytesIO(file[0]), attachment_filename=file[1])
-        # return send_file(io.BytesIO(file[0].encode('utf-8')), attachment_filename=file[1])
+        # return send_file(io.BytesIO(file[0]), attachment_filename=file[1])
+
+        response = make_response(file[0])
+        cd = 'attachment; filename={}'.format(file[1])
+        response.headers['Content-Disposition'] = cd
+
+        #: mimetype 설정
+        if output_type == 'csv':
+            response.mimetype = 'text/csv'
+        return response
     else:
-        return make_response(json.jsonify(result='Something Wrong! Is this document really complete?'), 461)
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
 def save_trans_sentence(sid):
