@@ -14,7 +14,7 @@ def get_trans_comments(did, sid):
 
 
 def output_doc_to_file(did):
-    output_type = request.values.get('output_type', None)
+    output_type = request.values.get('type', None)
 
     if output_type is None:
         return make_response(json.jsonify('Something Not Entered'), 460)
