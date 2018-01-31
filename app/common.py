@@ -46,7 +46,7 @@ def create_token(sth, size=13):
     return token
 
 
-def send_mail(mail_to, title, content, mail_from='no-reply@ciceron.me'):
+def send_mail(mail_to, title, content, mail_from='no-reply@ciceron.me', name='CICERON', password='ciceron3388!'):
     """
     :param mail_to: 받는 사람
     :param title: 이메일 제목
@@ -61,14 +61,14 @@ def send_mail(mail_to, title, content, mail_from='no-reply@ciceron.me'):
         content = MIMEText(content, 'html', _charset='utf-8')
         msg = MIMEMultipart('alternative')
         msg['Subject'] = title
-        msg['From'] = 'CICERON team <%s>' % mail_from
+        msg['From'] = '{} team <{}>'.format(name, mail_from)
         msg['To'] = str(mail_to)
         msg.attach(content)
 
         a = smtplib.SMTP('smtp.gmail.com:587')
         a.ehlo()
         a.starttls()
-        a.login('no-reply@ciceron.me', 'ciceron3388!')
+        a.login(mail_from, password)
         a.sendmail('no-reply@ciceron.me', str(mail_to), msg.as_string())
         a.quit()
         return True

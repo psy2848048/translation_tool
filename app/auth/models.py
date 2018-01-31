@@ -1,4 +1,5 @@
-from sqlalchemy import Table, MetaData, func, text
+from flask import render_template, url_for
+from sqlalchemy import Table, MetaData, func, text, exc
 from app import db, common
 import traceback
 from flask_login import UserMixin
@@ -13,6 +14,80 @@ class User(UserMixin):
             return True
         else:
             return False
+
+
+def insert_user(name, email, password):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
+
+    hashpwd = common.encrypt_pwd(password)
+
+    try:
+        res = conn.execute(u.insert(), name=name, email=email, password=hashpwd)
+
+        if res.rowcount != 1:
+            print('DUP! (user is already exist)')
+            trans.rollback()
+            return 2
+
+        #: 사용자에게 인증코드 이메일 보내기
+        is_done = send_cert_email_for_local_signup(email)
+        if is_done is True:
+            trans.commit()
+            return True
+        else:
+            trans.rollback()
+            return False
+    except exc.IntegrityError:
+        print('DUP! (user is already exist)')
+        trans.rollback()
+        return 2
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False
+    finally:
+        conn.close()
+
+
+def send_cert_email_for_local_signup(email):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    t = Table('token', meta, autoload=True)
+
+    try:
+        #: 16자리 인증코드 생성
+        cert_token = common.create_token(email, size=16)
+        res = conn.execute(t.insert(), token=cert_token, issue_to=email
+                           , memo=email+'에게 로컬 회원가입 인증코드 전송')
+
+        if res.rowcount != 1:
+            print('Wrong! (create_token or insert_token)')
+            trans.rollback()
+            return False
+
+        #: 인증코드 이메일 보내기
+        title = 'MaroCat 인증 코드입니다.'
+        with open('app/static/front/user/email_form.html', 'r') as f:
+            file = f.read()
+
+        content = file.format(cert_token=cert_token, email=email)
+        is_done = common.send_mail(email, title, content)
+
+        if is_done is True:
+            return True
+        else:
+            print('Wrong! (send_mail)')
+            trans.rollback()
+            False
+    except:
+        print('Wrong! (create_cert_token)')
+        traceback.print_exc()
+        trans.rollback()
+        return False
 
 
 def select_user_by_email(email):
@@ -33,7 +108,7 @@ def select_user_by_email(email):
 
 def select_user_by_uid(uid):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email, profile_photo FROM `marocat v1.1`.users WHERE id = :uid;"""), uid=uid).fetchone()
+    res = conn.execute(text("""SELECT id, name, email FROM `marocat v1.1`.users WHERE id = :uid;"""), uid=uid).fetchone()
     res = dict(res)
     if res is None:
         return None
@@ -46,33 +121,3 @@ def select_user_by_uid(uid):
         user.profile_photo = res['profile_photo']
 
         return user
-
-
-def create_auth_code(email):
-    conn = db.engine.connect()
-    meta = MetaData(bind=db.engine)
-    t = Table('token', meta, autoload=True)
-
-    # 입력된 이메일이 가입된 회원인지 확인
-    res = conn.execute(text("""SELECT email FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
-
-    if res is None:
-        msg = email + 'is not exist'
-        return None, False, msg
-
-    # 가입된 회원이라면 인증코드 만들고 DB에 저장
-    try:
-        authcode = common.create_token(email)
-        issue = email + '님이 비밀번호 복구 요청'
-        res = conn.execute(t.insert(), token=authcode, issue=issue)
-
-        if res.rowcount != 1:
-            msg = 'Something Wrong!'
-            return None, False, msg
-    except:
-        traceback.print_exc()
-        msg = 'Something Wrong!'
-        return None, False, msg
-
-    msg = 'OK'
-    return authcode, True, msg

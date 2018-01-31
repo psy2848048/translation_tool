@@ -3,6 +3,9 @@ import app.auth.controllers as ctrl
 
 auth = Blueprint('auth', __name__)
 
+# 로컬 회원가입
+auth.add_url_rule('/local/signup', view_func=ctrl.local_signup, methods=['POST'])
+
 # 로컬 로그인
 auth.add_url_rule('/local/signin', view_func=ctrl.local_signin, methods=['POST'])
 

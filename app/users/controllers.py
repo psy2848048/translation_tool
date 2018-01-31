@@ -3,20 +3,6 @@ from flask_login import login_required, current_user
 import app.users.models as model
 
 
-def signup():
-    name = request.form.get('name', None)
-    email = request.form.get('email', None)
-    password = request.form.get('password', None)
-
-    is_done, http_code = model.insert_user(name, email, password)
-
-    if is_done is True:
-        return make_response(json.jsonify(result='OK'), http_code)
-    elif http_code == 461:
-        return make_response(json.jsonify(result='Something Wrong!'), http_code)
-    elif http_code == 462:
-        return make_response(json.jsonify(result='Duplicate!'), http_code)
-
 @login_required
 def get_user_info():
     user = current_user
