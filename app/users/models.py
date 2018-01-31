@@ -5,34 +5,6 @@ import hashlib
 from datetime import datetime
 
 
-def insert_user(name, email, password):
-    conn = db.engine.connect()
-    trans = conn.begin()
-    meta = MetaData(bind=db.engine)
-    u = Table('users', meta, autoload=True)
-
-    hashpwd = common.encrypt_pwd(password)
-
-    try:
-        res = conn.execute(u.insert(), name=name, email=email, password=hashpwd)
-
-        if res.rowcount != 1:
-            trans.rollback()
-            return False, 461
-
-        trans.commit()
-        return True, 200
-    except exc.IntegrityError:
-        trans.rollback()
-        return False, 462
-    except:
-        traceback.print_exc()
-        trans.rollback()
-        return False, 461
-    finally:
-        conn.close()
-
-
 def update_password(uid, old_pwd, new_pwd):
     conn = db.engine.connect()
     trans = conn.begin()

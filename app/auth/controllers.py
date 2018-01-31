@@ -2,15 +2,53 @@ from flask import request, make_response, json, url_for, session, redirect, json
 import app.auth.models as model
 from app import app, common
 from pprint import pprint
-import requests
 
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
 login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-#: 로컬 로그인
+def local_signup():
+    """
+    로컬 회원가입
+    """
+    name = request.form.get('name', None)
+    email = request.form.get('email', None)
+    password = request.form.get('password', None)
+
+    #: 사용자 DB에 저장 + 인증 이메일 보내기
+    is_done = model.insert_user(name, email, password)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    elif is_done is 2:
+        return make_response(json.jsonify(result='DUP'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
+def cert_local_signup():
+    """
+    로컬 회원가입 인증
+    """
+    email = request.values.get('email', None)
+    cert_token = request.values.get('cert_token', None)
+
+    if None in [email, cert_token]:
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
+
+    is_done = model.update_user_local_info(email, cert_token)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
 def local_signin():
+    """
+    로컬 로그인
+    """
     email = request.form.get('email', None)
     password = request.form.get('password', None)
 
@@ -134,7 +172,7 @@ def facebook_callback():
     if email is None:
         return make_response(json.jsonify(message="Facebook currently works abnormally. Please wait a few hours."), 403)
 
-    user_id = model.select_user_by_email(email)
+    # user_id = model.select_user_by_email(email)
     # if user_id == -1:
     #     return redirect('/evaluation2/joinus?email={}'.format(email))
     #
@@ -146,6 +184,7 @@ def facebook_callback():
     #         session[key] = value
     #
     #     return redirect('/evaluation2')
+    return make_response(json.jsonify(message='Done!'), 200)
 
 
 @facebook.tokengetter
@@ -158,38 +197,4 @@ def local_signout():
     uid = current_user.id
     logout_user()
     return make_response(json.jsonify(result="User '{}' signed out!".format(uid)), 200)
-
-
-def send_password_recovery_email():
-    email = request.form.get('email', None)
-
-    if not email:
-        return make_response(json.jsonify(result='Email Not Entered'), 460)
-
-    #: 인증코드 만들기
-    authcode, is_done, msg = model.create_auth_code(email)
-    print(authcode, is_done, msg)
-
-    if is_done is False:
-        return make_response(json.jsonify(result=msg), 461)
-
-    #: 인증코드 이메일 보내기
-    # 인증코드, 비밀번호 변경할 수 있는 링크 포함해서 보내기
-    title = '비밀번호 복구 인증코드입니다.'
-    content = ''
-    is_done = common.send_mail(email, title, content)
-
-    if is_done is True:
-        return make_response(json.jsonify(result=msg), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-
-def recover_password():
-    email = request.form.get('email', None)
-    authcode = request.form.get('authcode', None)
-    new_pwd = request.form.get('new_pwd', None)
-
-    if None in [email, authcode, new_pwd]:
-        return make_response(json.jsonify(result='Email Not Entered'), 460)
 
