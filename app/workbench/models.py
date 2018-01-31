@@ -28,12 +28,16 @@ def export_doc(output_type, did):
     conn = db.engine.connect()
 
     #: 번역 상태 100%인지 확인
-    res = conn.execute(text("""SELECT d.title, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
-                        FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
-                        WHERE d.id = :did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
+    res = conn.execute(text("""SELECT d.title, d.origin_lang
+                                    , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                                FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
+                                WHERE d.id = :did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
 
-    doc_title = res[0]
-    progress_percent = int(res[1])
+    if res[1].upper() == 'ZH':
+        doc_title = 'output'
+    else:
+        doc_title = res[0]
+    progress_percent = int(res[2])
 
     #: 100%라면 csv 파일로 만들기
     if progress_percent == 100:
