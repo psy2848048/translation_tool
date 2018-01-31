@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>마로캣 - 이메일 인증</title>
+</head>
+
+<body style="background-color:#fff;">
+    <div style="width:700px;margin:0 auto;margin-top:200px;background-color:#fff;">
+        <div style="width:100%;min-height:200px;padding:10px;box-sizing:border-box;text-align:center;border:1px solid #999;border-radius:10px;box-sizing:border-box;">
+            <p style="font-size:16px;margin-bottom:30px;line-height:180%;">이메일과 인증코드를 입력해주세요.
+                <p style="font-size:16px;margin-bottom:30px;">
+                    <input type="text" name="" id="confirm_email" placeholder="이메일을 입력해주세요" style="font-size:16px;padding:10px;width:190px;border:1px solid rgb(209, 202, 202);border-radius:5px;">
+                    <input type="text" name="" id="confirm_code" placeholder="인증코드를 입력해주세요" style="font-size:16px;padding:10px;width:170px;border:1px solid rgb(209, 202, 202);border-radius:5px;">
+                    <inputt type="button" id="confirm_btn" style="font-size:16px;padding:10px;background-color:rgb(255, 187, 0);border-radius:8px;color:#fff;cursor:pointer;">
+                        인 증 하 기 </inputt>
+                </p>
+
+                <hr size=1>
+
+                <p style="font-size:13px;line-height:170%;">
+                    주식회사 씨세론 | 대표이사 : 윤영선 | 개인정보관리책임자 : 이준행
+                    <br> 사업자등록번호 : 367-81-00182 | 통신판매업신고번호 : 제 2016-서울중구-0676 | 대표번호 : (+82)2-6441-3838
+                </p>
+        </div>
+    </div>
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script>
+        $(function () {
+            $('#confirm_email').val(getUrlParameter('email'));
+            $('#confirm_code').focus();
+            $('#confirm_btn').on('click', function () {
+                var email = $('#confirm_email');
+                var code = $('#confirm_code');
+                if(email.val().trim() == ''){
+                    alert('이메일을 입력해주세요');
+                    email.focus();
+                    return false;
+                }
+                if(code.val().trim() == ''){
+                    alert('코드를 입력해주세요');
+                    code.focus();
+                    return false;
+                }
+                var data = {
+                    email: email.val().trim(),
+                    code: code.val().trim()
+                }
+                console.log(data);
+                $.ajax({
+                    url: '이메일인증URL',
+                    type: 'POST',
+                    async: true,
+                    success: function (res) {
+                        alert('인증되었습니다!');
+                        location.href = "/static/front/user/login.html";
+                    },
+                    error: function (e) {
+                        alert('인증이 되지 않았습니다.\n\n이메일과 코드를 정확히 입력했는지 확인해주세요.');
+                        console.log('[fail : 6548]');
+                        console.log(e.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

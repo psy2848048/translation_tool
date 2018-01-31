@@ -193,9 +193,7 @@ function GetDateText(o, purpose, format) {
 function CheckEmail(email) {
     var is_ok = false;
 
-    var regExp =
-        /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
-
+    var regExp = /^[0-9a-zA-Z]([\-.\w]*[0-9a-zA-Z\-_+])*@([0-9a-zA-Z][\-\w]*[0-9a-zA-Z]\.)+[a-zA-Z]{2,9}$/;
     if (email.match(regExp) != null) is_ok = true;
 
     return is_ok;
