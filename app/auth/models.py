@@ -1,8 +1,8 @@
-from flask import render_template, url_for
-from sqlalchemy import Table, MetaData, func, text, exc
+from sqlalchemy import Table, MetaData, text, exc
 from app import db, common
 import traceback
 from flask_login import UserMixin
+from datetime import datetime
 
 
 class User(UserMixin):
@@ -33,7 +33,8 @@ def insert_user(name, email, password):
             return 2
 
         #: 사용자에게 인증코드 이메일 보내기
-        is_done = send_cert_email_for_local_signup(email)
+        is_done = send_email_for_local_signup(email)
+
         if is_done is True:
             trans.commit()
             return True
@@ -52,7 +53,7 @@ def insert_user(name, email, password):
         conn.close()
 
 
-def send_cert_email_for_local_signup(email):
+def send_email_for_local_signup(email):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -78,13 +79,50 @@ def send_cert_email_for_local_signup(email):
         is_done = common.send_mail(email, title, content)
 
         if is_done is True:
+            trans.commit()
             return True
         else:
             print('Wrong! (send_mail)')
             trans.rollback()
             False
     except:
-        print('Wrong! (create_cert_token)')
+        print('Wrong! (send_email_for_local_signup)')
+        traceback.print_exc()
+        trans.rollback()
+        return False
+
+
+def update_user_local_info(email, cert_token):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
+
+    try:
+        #: 인증코드 확인
+        res = conn.execute(text("""UPDATE `marocat v1.1`.token
+                                  SET is_used = TRUE, update_time = CURRENT_TIMESTAMP()
+                                  WHERE issue_to=:email AND token=:token""")
+                           , email=email, token=cert_token)
+
+        if res.rowcount != 1:
+            print('Wrong! (update token, {})'.format(res.rowcount))
+            trans.rollback()
+            return False
+
+        #: 사용자 인증 정보 수정
+        res = conn.execute(u.update(u.c.email == email), cert_local=True, conn_local=True
+                           , conn_local_time=datetime.utcnow(), update_time=datetime.utcnow())
+
+        if res.rowcount != 1:
+            print('Wrong! (update users, {})'.format(res.rowcount))
+            trans.rollback()
+            return False
+
+        trans.commit()
+        return True
+    except:
+        print('Wrong! (update_user_local_info)')
         traceback.print_exc()
         trans.rollback()
         return False

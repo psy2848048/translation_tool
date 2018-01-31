@@ -8,8 +8,10 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 
-#: 로컬 회원가입
 def local_signup():
+    """
+    로컬 회원가입
+    """
     name = request.form.get('name', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
@@ -25,8 +27,28 @@ def local_signup():
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-#: 로컬 로그인
+def cert_local_signup():
+    """
+    로컬 회원가입 인증
+    """
+    email = request.values.get('email', None)
+    cert_token = request.values.get('cert_token', None)
+
+    if None in [email, cert_token]:
+        return make_response(json.jsonify(result='Something Not Entered'), 460)
+
+    is_done = model.update_user_local_info(email, cert_token)
+
+    if is_done is True:
+        return make_response(json.jsonify(result='OK'), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
 def local_signin():
+    """
+    로컬 로그인
+    """
     email = request.form.get('email', None)
     password = request.form.get('password', None)
 
@@ -175,38 +197,4 @@ def local_signout():
     uid = current_user.id
     logout_user()
     return make_response(json.jsonify(result="User '{}' signed out!".format(uid)), 200)
-
-
-def send_password_recovery_email():
-    email = request.form.get('email', None)
-
-    if not email:
-        return make_response(json.jsonify(result='Email Not Entered'), 460)
-
-    #: 인증코드 만들기
-    authcode, is_done, msg = model.create_authcode(email)
-    print(authcode, is_done, msg)
-
-    if is_done is False:
-        return make_response(json.jsonify(result=msg), 461)
-
-    #: 인증코드 이메일 보내기
-    # 인증코드, 비밀번호 변경할 수 있는 링크 포함해서 보내기
-    title = '비밀번호 복구 인증코드입니다.'
-    content = ''
-    is_done = common.send_mail(email, title, content)
-
-    if is_done is True:
-        return make_response(json.jsonify(result=msg), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-
-def recover_password():
-    email = request.form.get('email', None)
-    authcode = request.form.get('authcode', None)
-    new_pwd = request.form.get('new_pwd', None)
-
-    if None in [email, authcode, new_pwd]:
-        return make_response(json.jsonify(result='Email Not Entered'), 460)
 
