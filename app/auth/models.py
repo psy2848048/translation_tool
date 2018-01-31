@@ -131,9 +131,12 @@ def update_user_local_info(email, cert_token):
 def select_user_by_email(email):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
+    res = conn.execute(text("""SELECT id, name, email, cert_local FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
+
     if res is None:
-        return None
+        return None, 0
+    elif res['cert_local'] == 0:
+        return None, 2
     else:
         user = User()
 
@@ -141,7 +144,7 @@ def select_user_by_email(email):
         user.name = res['name']
         user.email = res['email']
 
-        return user
+        return user, 1
 
 
 def select_user_by_uid(uid):
