@@ -171,7 +171,7 @@ var PageScript = function () {
                         row += '    <td><input type="checkbox" data-id="' + res.id + '"></td>';
                         row += '    <td>' + parseInt(idx + 1) + '</td>';
 
-                        if(res.progress_percent == 100) row += '    <td><a href="/api/v1/toolkit/workbench/docs/' + res.id + '/output">다운로드</a></td>';
+                        if(res.progress_percent == 100) row += '    <td><a href="/api/v1/toolkit/workbench/docs/' + res.id + '/output?type=txt" download>다운로드</a></td>';
                         else row += '    <td>' + res.progress_percent + '%</td>';
 
                         row += '    <td class="oneline_wrap"><a target="_blank" title="' + res.title + '" href="/static/front/trans/trans.html?project=' + project_id + '&doc_id=' + res.id + '">' + res.title + '</a></td>';

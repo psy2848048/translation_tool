@@ -159,7 +159,12 @@ a:hover{
     border-radius: 5px;
     border:0;
     margin-right:10px;
+    margin-top:15px;
 }
 #join_div p:nth-of-type(2) input[type=button]:hover{
     opacity: 0.8;
+}
+.join_desc{
+    font-style: italic;
+    /* margin-top:220px !important; */
 }

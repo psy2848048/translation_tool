@@ -28,7 +28,7 @@ var PageScript = function () {
                         if(IsValidStr(res.trans_text)){
                             html += '    <td><textarea rows=1>' + res.trans_text + '</textarea></td>';
                         }else{
-                            html += '    <td><textarea rows=1 placeholder="해석을 모두 지우고 포커스를 옮기면 현재 행이 리셋됩니다."></textarea></td>';
+                            html += '    <td><textarea rows=1 placeholder="해석을 지우고 포커스를 옮기면 현재 행이 리셋됩니다."></textarea></td>';
                         }
 
                         html += '    <td>';

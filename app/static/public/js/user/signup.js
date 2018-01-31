@@ -17,7 +17,12 @@ var pageScript = function () {
         nick = $('#nick'),
         social_type = type;
         
-        // 공백
+        // 공백        
+        if(nick.val().trim() == ''){
+            alert('닉네임을 입력해주세요');
+            nick.focus();
+            return false;
+        }
         if(email.val().trim() == ''){
             alert('이메일을 입력해주세요');
             email.focus();
@@ -33,21 +38,15 @@ var pageScript = function () {
             pass_confirm.focus();
             return false;
         }
-        if(nick.val().trim() == ''){
-            alert('이름(닉네임)을 입력해주세요');
+        // 글자수 체크
+        if(nick.val().trim().length < 2){
+            alert('닉네임은 2자이상 입니다.');
             nick.focus();
             return false;
         }
-
-        // 글자수 체크
         if(pass.val().trim().length < 4){
             alert('비밀번호는 4자이상 입니다.');
             pass.focus();
-            return false;
-        }
-        if(nick.val().trim().length < 2){
-            alert('이름(닉네임)은 2자이상 입니다.');
-            nick.focus();
             return false;
         }
 
@@ -59,7 +58,7 @@ var pageScript = function () {
         }
 
         // 이메일 정규식
-        if(!CheckEmail){
+        if(!CheckEmail($('#email').val())){
             alert('이메일 형식이 올바르지 않습니다');
             email.focus();
             return false;
@@ -76,6 +75,19 @@ var pageScript = function () {
             $('#chk_policy').focus();
             return false;
         }
+
+        $.ajax({
+            url: '회원가입URL',
+            type: 'POST',
+            async: true,
+            success: function (res) {
+                // 성공할 경우 서버에서 프로젝트 목록으로 라다이렉팅
+            },
+            error: function (e) {
+                console.log('[fail : 6542]');
+                console.log(e.responseText);
+            }        
+        });
     };
     this.social_text = function () {
         if (type != undefined && type.trim() != '') {

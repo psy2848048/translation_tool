@@ -87,3 +87,6 @@ body {
 #loginBox p:nth-last-of-type(1) a {
     color: rgb(241, 235, 235);
 }
+.join_desc{
+    font-style: italic;
+}
