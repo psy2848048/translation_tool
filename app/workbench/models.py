@@ -33,15 +33,17 @@ def export_doc(output_type, did):
                                 FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
                                 WHERE d.id = :did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
 
-    if res[1].upper() == 'ZH':
-        doc_title = 'output'
-    else:
-        doc_title = res[0]
     progress_percent = int(res[2])
+    doc_title = res[0]
+    if res[1].upper() == 'ZH':
+        file_title = 'output.{}'.format(output_type)
+    else:
+        file_title = res[0] + '.' + output_type
 
     #: 100%라면 csv 파일로 만들기
     if progress_percent == 100:
-        res = conn.execute(text("""SELECT origin_lang, trans_lang
+        res = conn.execute(text("""SELECT os.id as osid
+                                          , origin_lang, trans_lang
                                           , os.text as origin_text
                                           , IF(ts.text is not NULL, ts.text, '') as trans_text
                                   FROM `marocat v1.1`.doc_origin_sentences os JOIN docs d ON d.id = os.doc_id
@@ -54,22 +56,35 @@ def export_doc(output_type, did):
             writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
             writer.writerows(res)
             file = output.getvalue().encode('utf-8')
-            file_title = doc_title + '.csv'
 
         #: TXT 파일로 출력하기
         elif output_type == 'txt':
             with open('output.txt', 'w') as f:
+                f.write('제목: ' + doc_title + '\n')
                 f.write('원문언어: ' + res[0]['origin_lang'].upper() + '\n')
                 f.write('번역언어: ' + res[0]['trans_lang'].upper() + '\n\n')
 
                 for r in res:
-                    f.write(r['origin_text'])
-                    f.write('\n')
-                    f.write(r['trans_text'])
-                    f.write('\n\n')
+                    f.write(r['origin_text'] + '\n')
+
+                f.write('\n\n')
+
+                for r in res:
+                    f.write(r['trans_text'] + '\n')
+
+                f.write('\n\n')
+                f.write('-'*2*len(res[0]['trans_text']) + '\n\n')
+
+                for r in res:
+                    a = '{}-{}: '.format(r['osid'], r['origin_lang'].upper())
+                    f.write(a)
+                    f.write(r['origin_text'] + '\n')
+
+                    b = '{}-{}: '.format(r['osid'], r['trans_lang'].upper())
+                    f.write(b)
+                    f.write(r['trans_text'] + '\n\n')
 
             file = open('output.txt', 'rb').read()
-            file_title = doc_title + '.txt'
 
         return (file, file_title), True
     else:
