@@ -1,6 +1,6 @@
 from flask import request, make_response, json, url_for, session, redirect, jsonify
 import app.auth.models as model
-from app import app, common
+from app import app
 from pprint import pprint
 
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
@@ -56,10 +56,12 @@ def local_signin():
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
     #: 입력된 email의 사용자 찾기
-    user = model.select_user_by_email(email)
+    user, cert_local = model.select_user_by_email(email)
 
-    if not user:
+    if cert_local == 0:
         return make_response(json.jsonify(result='User does not exist'), 401)
+    elif cert_local == 2:
+        return make_response(json.jsonify(result='Unauthenticated User!'), 403)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
         is_ok = user.can_login(password)
