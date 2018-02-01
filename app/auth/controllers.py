@@ -178,7 +178,6 @@ def facebook_tokengetter(token=None):
 
 @login_required
 def local_signout():
-    uid = current_user.id
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!"
                                       , result_ko='로그아웃 성공!'
