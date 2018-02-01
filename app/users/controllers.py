@@ -5,15 +5,7 @@ import app.users.models as model
 
 @login_required
 def get_user_info():
-    user = current_user
-
-    user = {
-        'id': user.id,
-        'name': user.name,
-        'email': user.email,
-        'profile_photo': user.profile_photo
-    }
-    return make_response(json.jsonify(result=user), 200)
+    return make_response(json.jsonify(result='ok'), 200)
 
 @login_required
 def change_password():

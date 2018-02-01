@@ -8,9 +8,9 @@ from datetime import datetime
 class User(UserMixin):
     def can_login(self, password):
         conn = db.engine.connect()
-        res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as res FROM users WHERE id = :uid"""), pwd=password, uid=self.get_id()).fetchone()
+        res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as res FROM users WHERE email = :uid"""), pwd=password, uid=self.get_id()).fetchone()
 
-        if dict(res)['res'] == 1:
+        if res['res'] == 1:
             return True
         else:
             return False
@@ -108,7 +108,7 @@ def update_user_local_info(email, cert_token):
         if res.rowcount != 1:
             print('Wrong! (update token, {})'.format(res.rowcount))
             trans.rollback()
-            return False
+            return 2
 
         #: 사용자 인증 정보 수정
         res = conn.execute(u.update(u.c.email == email), cert_local=True, conn_local=True
@@ -131,7 +131,8 @@ def update_user_local_info(email, cert_token):
 def select_user_by_email(email):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, cert_local FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
+    res = conn.execute(text("""SELECT id, name, email, cert_local FROM `marocat v1.1`.users 
+                              WHERE email = :email AND is_deleted=FALSE ;"""), email=email).fetchone()
 
     if res is None:
         return None, 0
@@ -139,26 +140,42 @@ def select_user_by_email(email):
         return None, 2
     else:
         user = User()
-
-        user.id = res['id']
-        user.name = res['name']
-        user.email = res['email']
-
+        user.id = res['email']
         return user, 1
 
 
-def select_user_by_uid(uid):
+def select_user_info_by_email(email):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email FROM `marocat v1.1`.users WHERE id = :uid;"""), uid=uid).fetchone()
+    res = conn.execute(text("""SELECT id, name, email
+                                    , conn_local, conn_facebook, conn_google
+                                    , conn_local_time, conn_facebook_time, conn_google_time
+                              FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
     res = dict(res)
     if res is None:
         return None
     else:
         user = User()
 
-        user.id = res['id']
+        user.id = res['email']
         user.name = res['name']
-        user.email = res['email']
-        user.profile_photo = res['profile_photo']
+        user.idx = res['id']
+        user.conn_local = res['conn_local']
+        user.conn_facebook = res['conn_facebook']
+        user.conn_google = res['conn_google']
+        user.conn_local_time = res['conn_local_time']
+        user.conn_facebook_time = res['conn_facebook_time']
+        user.conn_google_time = res['conn_google_time']
+
+        # r = {
+        #     'id': res['id'],
+        #     'email': res['email'],
+        #     'name': res['name'],
+        #     'conn_local': res['conn_local'],
+        #     'conn_facebook': res['conn_facebook'],
+        #     'conn_google': res['conn_google'],
+        #     'conn_local_time': res['conn_local_time'],
+        #     'conn_facebook_time': res['conn_facebook_time'],
+        #     'conn_google_time': res['conn_google_time']
+        # }
 
         return user
