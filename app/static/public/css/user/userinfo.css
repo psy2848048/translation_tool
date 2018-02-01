@@ -116,7 +116,7 @@ body {
     background-color: #1797E4;
     color: #fff;
     font-size: 14px;
-    padding: 10px;
+    padding: 5px;
 }
 
 #mainArea article li li input[type=button]:disabled {
@@ -314,8 +314,145 @@ li p {
     font-size: 13px;
 }
 
-#delete_account{
+#delete_account {
     background-color: rgb(118, 123, 126) !important;
     font-size: 12px !important;
     padding: 4px !important;
+}
+
+#txt_name {
+    width: 230px !important;
+    border-radius: 5px;
+    border: 1px solid #999;
+}
+
+#profile_tbl {
+    margin-top: 5px;
+    width: 100%;
+    border-top: 1px solid rgb(139, 146, 153);
+    border-bottom: 1px solid rgb(139, 146, 153);
+}
+
+#profile_tbl td {
+    border-bottom: 1px dotted rgb(167, 167, 175);
+    padding: 5px;
+    font-size: 14px;
+}
+
+#profile_tbl td:nth-of-type(1) {
+    width: 180px;
+}
+
+#profile_tbl td:nth-of-type(2) {
+    width: 100px;
+}
+
+#profile_tbl td:nth-of-type(3) {
+    text-align: right;
+}
+
+#profile_tbl td input[type=button],
+#profile_tbl td input[type=text] {
+    font-size: 16px;
+}
+
+#profile_tbl td input[type=button] {
+    border: 0 solid red;
+    background-color: rgb(247, 114, 6);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px;
+    padding: 3px;
+}
+
+.dummy {
+    height: 60px;
+}
+
+#account_tbl {
+    margin-top: 5px;
+    width: 100%;
+    border-top: 1px solid rgb(139, 146, 153);
+    border-bottom: 1px solid rgb(139, 146, 153);
+}
+
+#account_tbl td {
+    border-bottom: 1px dotted rgb(167, 167, 175);
+    padding: 5px;
+    font-size: 14px;
+}
+
+#account_tbl td:nth-of-type(1) {
+    width: 180px;
+}
+
+#account_tbl td:nth-of-type(2) {
+    width: 100px;
+}
+
+#account_tbl td:nth-of-type(2) {
+    text-align: right;
+}
+
+#account_tbl td input[type=button],
+#account_tbl td input[type=text] {
+    font-size: 16px;
+}
+
+.myinfo_btn {
+    width: 100px;
+    border: 0 solid red;
+    background-color: rgb(247, 82, 6);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 3px;
+}
+
+.connect_before {
+    width: 100px;
+    border: 0 solid red;
+    background-color: rgb(6, 159, 247);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 3px;
+}
+
+.connect_after {
+    width: 100px;
+    border: 0 solid red;
+    background-color: rgb(169, 175, 179);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 3px;
+    cursor: text !important;
+}
+
+.remove_btn {
+    width: 100px;
+    border: 0 solid red;
+    background-color: gray;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 3px;
+}
+
+#email_v {
+    height: 10px;
+}
+
+.fa-google,
+.fa-facebook {
+    height: 25px;
+}
+
+.fa-google {
+    color: rgb(255, 72, 0);
+}
+
+.fa-facebook-official {
+    color: rgb(12, 61, 124);
 }
