@@ -12,19 +12,30 @@ def local_signup():
     """
     로컬 회원가입
     """
-    name = request.form.get('name', None)
+    name = request.form.get('nickname', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
+
+    if None in [email, password, name]:
+        return make_response(json.jsonify(result_en='Something Not Entered'
+                                          , result_ko='입력되지 않은 값이 있습니다'
+                                          , result=460), 460)
 
     #: 사용자 DB에 저장 + 인증 이메일 보내기
     is_done = model.insert_user(name, email, password)
 
     if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
+        return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
+                                          , result_ko='축하합니다! 회원가입에 성공했습니다!'
+                                          , result=200), 200)
     elif is_done is 2:
-        return make_response(json.jsonify(result='DUP'), 200)
+        return make_response(json.jsonify(result_en='This email already exists'
+                                          , result_ko='이미 가입된 이메일입니다'
+                                          , result=260), 260)
     else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
+        return make_response(json.jsonify(result_en='Something Wrong'
+                                          , result_ko='서버 작업 중에 오류 발생'
+                                          , result=461), 461)
 
 
 def cert_local_signup():
@@ -40,9 +51,17 @@ def cert_local_signup():
     is_done = model.update_user_local_info(email, cert_token)
 
     if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
+        return make_response(json.jsonify(result_en='OK'
+                                          , result_ko='성공'
+                                          , result=200), 200)
+    elif is_done is 2:
+        return make_response(json.jsonify(result_en='You entered an incorrect value'
+                                          , result_ko='잘못된 이메일 또는 인증코드를 입력했습니다'
+                                          , result=401), 401)
     else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
+        return make_response(json.jsonify(result_en='Something Wrong'
+                                          , result_ko='서버 작업 중에 오류 발생'
+                                          , result=461), 461)
 
 
 def local_signin():
@@ -53,15 +72,21 @@ def local_signin():
     password = request.form.get('password', None)
 
     if None in [email, password]:
-        return make_response(json.jsonify(result='Something Not Entered'), 460)
+        return make_response(json.jsonify(result_en='Something Not Entered'
+                                          , result_ko='입력되지 않은 값이 있습니다'
+                                          , result=460), 460)
 
     #: 입력된 email의 사용자 찾기
     user, cert_local = model.select_user_by_email(email)
 
     if cert_local == 0:
-        return make_response(json.jsonify(result='User does not exist'), 401)
+        return make_response(json.jsonify(result_en='User does not exist'
+                                          , result_ko='존재하지 않는 사용자입니다'
+                                          , result=401), 401)
     elif cert_local == 2:
-        return make_response(json.jsonify(result='Unauthenticated User!'), 403)
+        return make_response(json.jsonify(result_en='Unauthenticated User'
+                                          , result_ko='인증되지 않은 사용자입니다'
+                                          , result=403), 403)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
         is_ok = user.can_login(password)
@@ -70,14 +95,20 @@ def local_signin():
         if is_ok is True:
             login_user(user, remember=True)
             pprint(session)
-            return make_response(json.jsonify(result="User '{}' signed in!".format(user.get_id())), 200)
+            print(current_user.is_authenticated)
+            return make_response(json.jsonify(result_en="Successfully sign-in!"
+                                          , result_ko="로그인 성공!"
+                                          , result=200), 200)
         else:
-            return make_response(json.jsonify(result="Password is wrong"), 401)
+            return make_response(json.jsonify(result_en="Password is wrong"
+                                          , result_ko='잘못된 비밀번호를 입력했습니다'
+                                          , result=401), 401)
 
 
 @login_manager.user_loader
 def user_loader(uid):
-    user = model.select_user_by_uid(uid)
+    user = model.select_user_info_by_email(uid)
+    # print(222)
     return user
 
 
@@ -198,5 +229,7 @@ def facebook_tokengetter(token=None):
 def local_signout():
     uid = current_user.id
     logout_user()
-    return make_response(json.jsonify(result="User '{}' signed out!".format(uid)), 200)
+    return make_response(json.jsonify(result_en="Successfully sign-out!"
+                                      , result_ko='로그아웃 성공!'
+                                      , result=200), 200)
 
