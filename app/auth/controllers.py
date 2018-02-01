@@ -7,6 +7,19 @@ from flask_login import LoginManager, login_user, login_required, current_user, 
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+from flask_oauthlib.client import OAuth
+oauth = OAuth()
+facebook = oauth.remote_app(
+    'facebook',
+    base_url='https://graph.facebook.com/',
+    request_token_url=None,
+    access_token_url='/oauth/access_token',
+    authorize_url='https://www.facebook.com/dialog/oauth',
+    consumer_key=app.config['FACEBOOK_APP_ID'],
+    consumer_secret=app.config['FACEBOOK_APP_SECRET'],
+    request_token_params={'scope': 'email'}
+)
+
 
 def local_signup():
     """
@@ -95,7 +108,7 @@ def local_signin():
         if is_ok is True:
             login_user(user, remember=True)
             pprint(session)
-            print(current_user.is_authenticated)
+
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                           , result_ko="로그인 성공!"
                                           , result=200), 200)
@@ -108,94 +121,29 @@ def local_signin():
 @login_manager.user_loader
 def user_loader(uid):
     user = model.select_user_info_by_email(uid)
-    # print(222)
     return user
 
 
-#: 구글 로그인
-
-
-#: 페이스북 로그인
-# from flask_oauthlib.client import OAuth
-# oauth = OAuth()
-#
-#
-# facebook = oauth.remote_app(
-#     'facebook',
-#     base_url='https://graph.facebook.com/',
-#     request_token_url=None,
-#     access_token_url='/oauth/access_token',
-#     authorize_url='https://www.facebook.com/dialog/oauth',
-#     consumer_key=app.config['FACEBOOK_APP_ID'],
-#     consumer_secret=app.config['FACEBOOK_APP_SECRET'],
-#     request_token_params={'scope': 'email'}
-# )
-#
-#
-# @facebook.tokengetter
-# def get_facebook_token():
-#     if 'facebook_oauth' in session:
-#         resp = session['facebook_oauth']
-#         return resp['oauth_token'], resp['oauth_token_secret']
-#
-#
-# def faceobook_signin():
-#     return facebook.authorize(callback=url_for('auth.facebook_authorized'
-#                                                # , next = request.args.get('next') or request.referrer or None))
-#                                                , _external=True))
-#
-#
-# def facebook_authorized():
-#     res = facebook.authorized_response()
-#     pprint(dict(res))
-#     if res is None or 'access_token' not in res:
-#         return make_response(json.jsonify(message="No access token from Facebook"), 403)
-#
-#     session['facebook_token'] = (res['access_token'], '')
-#     data = facebook.get('/me?fields=email').data
-#
-#     email = data.get('email')
-#     if email is None:
-#         return "Facebook currently works abnormally. Please wait a few hours."
-#
-#     user = model.select_user_by_email(email)
-#     print(user)
-#
-#     # 존재하지 않는 사용자인 경우 회원가입 페이지로 넘긴다
-#     if not user:
-#         return redirect('/static/front/user/signup.html?type=f&email={}&name={}'.format(user['email'], user['name']))
-#
-#     # 이미 존재하지만 페이스북으로 가입한 적 없는 사용자에게 페이스북도 연동할지 확인하는 페이지로 넘어간다
-#     elif user or (user['joined_google'] is True):
-#         return make_response(json.jsonify(result='Already exist user'), 200)
-#
-#     # 페이스북으로 이미 가입한 사용자면 그냥 로그인?
-#     elif user['joined_facebook'] is True:
-#         return make_response(json.jsonify(result='Already joined Facebook'), 200)
-
-from flask_oauthlib.client import OAuth
-oauth = OAuth()
-facebook = oauth.remote_app('facebook',
-                            base_url='https://graph.facebook.com/',
-                            request_token_url=None,
-                            access_token_url='/oauth/access_token',
-                            authorize_url='https://www.facebook.com/dialog/oauth',
-                            consumer_key=app.config['FACEBOOK_APP_ID'],
-                            consumer_secret=app.config['FACEBOOK_APP_SECRET'],
-                            request_token_params={'scope': ['email']}
-                            )
-
-
 def facebook_signin():
-    return facebook.authorize(callback=url_for('auth.facebook_callback', _external=True))
+    return facebook.authorize(callback=url_for('auth.facebook_authorized'
+                                               , _external=True
+                                               # , next=request.args.get('next') or request.referrer or None
+                                               )
+                              )
 
 
-def facebook_callback():
+def facebook_authorized():
     resp = facebook.authorized_response()
     pprint(resp)
 
-    if resp is None or 'access_token' not in resp:
-        return make_response(json.jsonify(message="No access token from facebook"), 403)
+    if resp is None:
+        return 'Access denied: reason=%s error=%s' % (
+            request.args['error_reason'],
+            request.args['error_description']
+        )
+
+    # if resp is None or 'access_token' not in resp:
+    #     return make_response(json.jsonify(message="No access token from facebook"), 403)
 
     session['facebook_token'] = (resp['access_token'], '')
     user_data = facebook.get('/me?fields=email,name,picture').data
@@ -223,13 +171,18 @@ def facebook_callback():
 @facebook.tokengetter
 def facebook_tokengetter(token=None):
     return session.get('facebook_token')
+    # if 'facebook_oauth' in session:
+    #     resp = session['facebook_oauth']
+    #     return resp['oauth_token'], resp['oauth_token_secret']
 
 
 @login_required
 def local_signout():
-    uid = current_user.id
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!"
                                       , result_ko='로그아웃 성공!'
                                       , result=200), 200)
 
+
+def get_session():
+    return make_response(jsonify(session=dict(session)), 200)

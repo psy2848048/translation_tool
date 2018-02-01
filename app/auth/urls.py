@@ -19,8 +19,10 @@ auth.add_url_rule('/local/signin', view_func=ctrl.local_signin, methods=['POST']
 
 # 페이스북 로그인
 auth.add_url_rule('/facebook/signin', view_func=ctrl.facebook_signin, methods=['GET'])
-auth.add_url_rule('/facebook/callback', view_func=ctrl.facebook_callback, methods=['GET'])
+auth.add_url_rule('/facebook/authorized', view_func=ctrl.facebook_authorized, methods=['GET', 'POST'])
 auth.add_url_rule('/facebook/tokengetter', view_func=ctrl.facebook_tokengetter, methods=['GET'])
 
 # 로그아웃
 auth.add_url_rule('/local/signout', view_func=ctrl.local_signout, methods=['GET'])
+
+auth.add_url_rule('/check', view_func=ctrl.get_session, methods=['GET'])

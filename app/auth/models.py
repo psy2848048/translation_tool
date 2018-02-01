@@ -150,32 +150,22 @@ def select_user_info_by_email(email):
                                     , conn_local, conn_facebook, conn_google
                                     , conn_local_time, conn_facebook_time, conn_google_time
                               FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
-    res = dict(res)
+    r = dict(res)
+
     if res is None:
         return None
     else:
         user = User()
 
-        user.id = res['email']
-        user.name = res['name']
-        user.idx = res['id']
-        user.conn_local = res['conn_local']
-        user.conn_facebook = res['conn_facebook']
-        user.conn_google = res['conn_google']
-        user.conn_local_time = res['conn_local_time']
-        user.conn_facebook_time = res['conn_facebook_time']
-        user.conn_google_time = res['conn_google_time']
+        # user.id = res['email']
+        # user.name = res['name']
+        # user.idx = res['id']
+        # user.conn_local = res['conn_local']
+        # user.conn_facebook = res['conn_facebook']
+        # user.conn_google = res['conn_google']
+        # user.conn_local_time = res['conn_local_time']
+        # user.conn_facebook_time = res['conn_facebook_time']
+        # user.conn_google_time = res['conn_google_time']
 
-        # r = {
-        #     'id': res['id'],
-        #     'email': res['email'],
-        #     'name': res['name'],
-        #     'conn_local': res['conn_local'],
-        #     'conn_facebook': res['conn_facebook'],
-        #     'conn_google': res['conn_google'],
-        #     'conn_local_time': res['conn_local_time'],
-        #     'conn_facebook_time': res['conn_facebook_time'],
-        #     'conn_google_time': res['conn_google_time']
-        # }
-
+        user.info = r
         return user
