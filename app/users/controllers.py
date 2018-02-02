@@ -7,6 +7,7 @@ import app.users.models as model
 def get_user_info():
     return make_response(json.jsonify(current_user.info), 200)
 
+
 @login_required
 def change_password():
     old_pwd = request.form.get('old_pwd', None)

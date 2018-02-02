@@ -135,14 +135,15 @@ def local_signin():
 
 
 #: 페이스북
+@login_required
 def facebook_signin():
-    #: 세션 비우기용
-    signout()
-
-    return facebook.authorize(callback=url_for('auth.facebook_authorized', _external=True))
+    email = current_user.id
+    return facebook.authorize(callback=url_for('auth.facebook_authorized', email=email, _external=True))
 
 
 def facebook_authorized():
+    email = request.values.get('email', None)
+
     try:
         resp = facebook.authorized_response()
     except:
@@ -173,26 +174,22 @@ def facebook_authorized():
     #: 존재하는 사용자인지 확인
     user = model.select_user_by_facebook_id(data.get('id'))
     if not user:
-        # is_done = model.upsert_user('facebook', data.get('name'), data.get('email'), facebook_id=data.get('id'))
-        # if is_done is False:
-        #     return make_response(json.jsonify(result_en='Something Wrong'
-        #                                       , result_ko='일시적인 오류로 실패했습니다'
-        #                                       , result=461), 461)
-        return make_response(json.jsonify(result_en='No linked accounts. Please sign up email first'
-                                          , result_ko='연동된 계정이 없습니다. 이메일로 먼저 회원가입을 해주세요'
-                                          , result=401), 401)
+        is_done = model.upsert_user('facebook', data.get('name'), email, facebook_id=data.get('id'))
+        if is_done is False:
+            return make_response(json.jsonify(result_en='Something Wrong'
+                                              , result_ko='일시적인 오류로 실패했습니다'
+                                              , result=461), 461)
+        # return make_response(json.jsonify(result_en='No linked accounts. Please sign up email first'
+        #                                   , result_ko='연동된 계정이 없습니다. 이메일로 먼저 회원가입을 해주세요'
+        #                                   , result=401), 401)
 
-    login_user(user, remember=True)
-    session['user_nickname'] = current_user.nickname
+    # login_user(user, remember=True)
+    # session['user_nickname'] = current_user.nickname
     session['user_picture'] = data['picture']['data']['url']
 
     return make_response(json.jsonify(result_en="Successfully sign-in!"
                                       , result_ko="로그인 성공!"
                                       , result=200), 200)
-
-    # return make_response(json.jsonify(result_en='Something Wrong'
-    #                                   , result_ko='일시적인 오류로 실패했습니다'
-    #                                   , result=461), 461)
 
 
 @facebook.tokengetter

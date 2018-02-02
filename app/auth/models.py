@@ -189,5 +189,6 @@ def select_user_info_by_email(email):
         return None
     else:
         user = User()
+        user.id = r['email']
         user.info = r
         return user
