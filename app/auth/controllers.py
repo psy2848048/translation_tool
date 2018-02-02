@@ -47,7 +47,7 @@ def local_signup():
                                           , result=260), 260)
     else:
         return make_response(json.jsonify(result_en='Something Wrong'
-                                          , result_ko='서버 작업 중에 오류 발생'
+                                          , result_ko='일시적인 오류로 실패했습니다'
                                           , result=461), 461)
 
 
@@ -64,8 +64,8 @@ def cert_local_signup():
     is_done = model.update_user_local_info(email, cert_token)
 
     if is_done is True:
-        return make_response(json.jsonify(result_en='OK'
-                                          , result_ko='성공'
+        return make_response(json.jsonify(result_en='Certification is complete!'
+                                          , result_ko='인증이 완료되었습니다!'
                                           , result=200), 200)
     elif is_done is 2:
         return make_response(json.jsonify(result_en='You entered an incorrect value'
@@ -73,7 +73,7 @@ def cert_local_signup():
                                           , result=401), 401)
     else:
         return make_response(json.jsonify(result_en='Something Wrong'
-                                          , result_ko='서버 작업 중에 오류 발생'
+                                          , result_ko='일시적인 오류로 실패했습니다'
                                           , result=461), 461)
 
 
@@ -95,7 +95,7 @@ def local_signin():
     if cert_local == 0:
         return make_response(json.jsonify(result_en='User does not exist'
                                           , result_ko='존재하지 않는 사용자입니다'
-                                          , result=401), 401)
+                                          , result=464), 464)
     elif cert_local == 2:
         return make_response(json.jsonify(result_en='Unauthenticated User'
                                           , result_ko='인증되지 않은 사용자입니다'
@@ -115,7 +115,7 @@ def local_signin():
         else:
             return make_response(json.jsonify(result_en="Password is wrong"
                                           , result_ko='잘못된 비밀번호를 입력했습니다'
-                                          , result=401), 401)
+                                          , result=465), 465)
 
 
 @login_manager.user_loader
@@ -185,4 +185,4 @@ def local_signout():
 
 
 def get_session():
-    return make_response(jsonify(session=dict(session)), 200)
+    return make_response(jsonify(**session), 200)
