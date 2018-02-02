@@ -178,6 +178,7 @@ def user_loader(uid):
     return user
 
 
+#: 로그아웃
 @login_required
 def local_signout():
     session.pop('user_nickname')
@@ -187,5 +188,6 @@ def local_signout():
                                       , result=200), 200)
 
 
+#: (테스트용) 세션 확인
 def get_session():
     return make_response(jsonify(**session), 200)
