@@ -1,8 +1,9 @@
 from flask import request, make_response, json, url_for, session, redirect, jsonify
 import app.auth.models as model
 from app import app
-from pprint import pprint
 import traceback
+import requests
+from pprint import pprint
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 login_manager = LoginManager()
@@ -21,15 +22,27 @@ facebook = oauth.remote_app(
     request_token_params={'scope': 'email'}
 )
 
+import google.oauth2.credentials
+import google_auth_oauthlib.flow
+import googleapiclient.discovery
+CLIENT_SECRETS_FILE = "google_client_secret.json"
+SCOPES = ['https://www.googleapis.com/auth/plus.login'
+    , 'https://www.googleapis.com/auth/plus.me'
+    , 'https://www.googleapis.com/auth/userinfo.profile'
+    , 'https://www.googleapis.com/auth/userinfo.email']
+
+
+@login_manager.user_loader
+def user_loader(uid):
+    user = model.select_user_info_by_email(uid)
+    return user
+
 
 #: 로컬
 def local_signup():
     """
     로컬 회원가입
     """
-    #: 세션 비우기용
-    signout()
-
     name = request.form.get('nickname', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
@@ -48,7 +61,7 @@ def local_signup():
                                           , result=260), 260)
 
     #: 사용자 DB에 저장 + 인증 이메일 보내기
-    is_done = model.upsert_user('local', name, email, password=password)
+    is_done = model.insert_user(name, email, password)
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
@@ -138,7 +151,9 @@ def local_signin():
 @login_required
 def facebook_signin():
     email = current_user.id
-    return facebook.authorize(callback=url_for('auth.facebook_authorized', email=email, _external=True))
+    return facebook.authorize(callback=url_for('auth.facebook_authorized', email=email
+                                               , next=request.args.get('next') or None
+                                               , _external=True))
 
 
 def facebook_authorized():
@@ -174,7 +189,7 @@ def facebook_authorized():
     #: 존재하는 사용자인지 확인
     user = model.select_user_by_facebook_id(data.get('id'))
     if not user:
-        is_done = model.upsert_user('facebook', data.get('name'), email, facebook_id=data.get('id'))
+        is_done = model.update_user_social_info('facebook', email, facebook_id=data.get('id'))
         if is_done is False:
             return make_response(json.jsonify(result_en='Something Wrong'
                                               , result_ko='일시적인 오류로 실패했습니다'
@@ -187,8 +202,8 @@ def facebook_authorized():
     # session['user_nickname'] = current_user.nickname
     session['user_picture'] = data['picture']['data']['url']
 
-    return make_response(json.jsonify(result_en="Successfully sign-in!"
-                                      , result_ko="로그인 성공!"
+    return make_response(json.jsonify(result_en="Connection complete"
+                                      , result_ko="페이스북 연동 완료"
                                       , result=200), 200)
 
 
@@ -197,10 +212,110 @@ def facebook_tokengetter(token=None):
     return session.get('facebook_token')
 
 
-@login_manager.user_loader
-def user_loader(uid):
-    user = model.select_user_info_by_email(uid)
-    return user
+#: 구글
+@login_required
+def google_signin():
+    if 'google_credentials' not in session:
+        return redirect(url_for('auth.google_authorized'))
+
+    # Load credentials from the session.
+    credentials = google.oauth2.credentials.Credentials(**session['google_credentials'])
+
+    # drive = googleapiclient.discovery.build('oauth2', 'v1', credentials=credentials)
+    # files = drive.files().list().execute()
+
+    session['google_credentials'] = google_credentials_to_dict(credentials)
+
+    authorization_header = {"Authorization": "OAuth %s" % session['google_credentials']['token']}
+    res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
+    userinfo = json.loads(res.text)
+    pprint(userinfo)
+
+    #: 존재하는 사용자인지 확인
+    user = model.select_user_by_facebook_id(userinfo['id'])
+    if not user:
+        is_done = model.update_user_social_info('google', userinfo['email'], google_id=userinfo['id'])
+        if is_done is False:
+            return make_response(json.jsonify(result_en='Something Wrong'
+                                              , result_ko='일시적인 오류로 실패했습니다'
+                                              , result=461), 461)
+
+    # login_user(user, remember=True)
+    # session['user_nickname'] = current_user.nickname
+    session['user_picture'] = userinfo['picture']
+
+    # Save credentials back to session in case access token was refreshed.
+    # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
+    session['google_credentials'] = google_credentials_to_dict(credentials)
+
+    return make_response(json.jsonify(result_en="Connection complete"
+                                      , result_ko="구글 연동 완료"
+                                      , result=200), 200)
+
+
+def google_authorized():
+    # Create flow instance to manage the OAuth 2.0 Authorization Grant Flow steps.
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES)
+
+    flow.redirect_uri = url_for('auth.google_oauth2callback', _external=True)
+
+    authorization_url, state = flow.authorization_url(
+        # Enable offline access so that you can refresh an access token without
+        # re-prompting the user for permission. Recommended for web server apps.
+        access_type='offline',
+        # Enable incremental authorization. Recommended as a best practice.
+        include_granted_scopes='true')
+
+    # Store the state so the callback can verify the auth server response.
+    session['google_state'] = state
+
+    return redirect(authorization_url)
+
+
+def google_oauth2callback():
+    # Specify the state when creating the flow in the callback so that it can
+    # verified in the authorization server response.
+    state = session['google_state']
+
+    flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(CLIENT_SECRETS_FILE, scopes=SCOPES, state=state)
+    flow.redirect_uri = url_for('auth.google_oauth2callback', _external=True)
+
+    # Use the authorization server's response to fetch the OAuth 2.0 tokens.
+    authorization_response = request.url
+    flow.fetch_token(authorization_response=authorization_response)
+
+    # Store credentials in the session.
+    # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
+    session['google_credentials'] = google_credentials_to_dict(flow.credentials)
+
+    return redirect(url_for('auth.google_signin'))
+
+
+def google_revoke():
+    if 'google_credentials' not in session:
+        return ('You need to <a href="/authorize">authorize</a> before ' +
+                'testing the code to revoke credentials.')
+
+    credentials = google.oauth2.credentials.Credentials(**session['google_credentials'])
+
+    revoke = requests.post('https://accounts.google.com/o/oauth2/revoke',
+                           params={'token': credentials.token},
+                           headers={'content-type': 'application/x-www-form-urlencoded'})
+
+    status_code = getattr(revoke, 'status_code')
+    if status_code == 200:
+        return make_response(jsonify(result='Credentials successfully revoked.'))
+    else:
+        return make_response(jsonify(result='An error occurred.'))
+
+
+def google_credentials_to_dict(credentials):
+  return {'token': credentials.token,
+          'refresh_token': credentials.refresh_token,
+          'token_uri': credentials.token_uri,
+          'client_id': credentials.client_id,
+          'client_secret': credentials.client_secret,
+          'scopes': credentials.scopes}
 
 
 #: 로그아웃

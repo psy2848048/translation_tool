@@ -16,46 +16,64 @@ class User(UserMixin):
             return False
 
 
-def upsert_user(signup_type, name, email, password=None, facebook_id=None):
+def insert_user(name, email, password):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     u = Table('users', meta, autoload=True)
 
-    if password:
-        hashpwd = common.encrypt_pwd(password)
+    hashpwd = common.encrypt_pwd(password)
 
     try:
-        if signup_type is 'local':
-            res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
+        res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
 
-            if res.rowcount != 1:
-                print('DUP! (user is already exist, local)')
-                trans.rollback()
-                return 2
+        if res.rowcount != 1:
+            print('DUP! (user is already exist, local)')
+            trans.rollback()
+            return 2
 
-            #: 사용자에게 인증코드 이메일 보내기
-            is_done = send_email_for_local_signup(email)
-            if is_done is True:
-                trans.commit()
-                return True
-            else:
-                trans.rollback()
-                return False
-
-        elif signup_type is 'facebook':
-            res = conn.execute(text("""INSERT INTO `marocat v1.1`.users (email, name, facebook_id, conn_facebook_time)
-                                      VALUES (:email, :name, :facebook_id, CURRENT_TIMESTAMP())
-                                      ON DUPLICATE KEY UPDATE facebook_id=:facebook_id
-                                                            , conn_facebook_time=CURRENT_TIMESTAMP();""")
-                               , email=email, name=name, facebook_id=facebook_id)
-
-            if res.rowcount not in [1, 2]:
-                trans.rollback()
-                return False
-
+        #: 사용자에게 인증코드 이메일 보내기
+        is_done = send_email_for_local_signup(email)
+        if is_done is True:
             trans.commit()
             return True
+        else:
+            trans.rollback()
+            return False
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False
+    finally:
+        conn.close()
+
+
+def update_user_social_info(social_type, email, facebook_id=None, google_id=None):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
+
+    try:
+        if social_type is 'facebook':
+            # res = conn.execute(text("""INSERT INTO `marocat v1.1`.users (email, name, facebook_id, conn_facebook_time)
+            #                           VALUES (:email, :name, :facebook_id, CURRENT_TIMESTAMP())
+            #                           ON DUPLICATE KEY UPDATE facebook_id=:facebook_id
+            #                                                 , conn_facebook_time=CURRENT_TIMESTAMP();""")
+            #                    , email=email, name=name, facebook_id=facebook_id)
+            res = conn.execute(u.update(u.c.email == email)
+                               , facebook_id=facebook_id, conn_facebook_time=datetime.utcnow())
+
+        elif social_type is 'google':
+            res = conn.execute(u.update(u.c.email == email)
+                               , google_id=google_id, conn_google_time=datetime.utcnow())
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        trans.commit()
+        return True
     except:
         traceback.print_exc()
         trans.rollback()
@@ -160,7 +178,6 @@ def select_user_by_email(email):
 
 
 def select_user_by_facebook_id(facebook_id):
-
     conn = db.engine.connect()
 
     res = conn.execute(text("""SELECT id, name, email, facebook_id
@@ -178,17 +195,34 @@ def select_user_by_facebook_id(facebook_id):
         return user
 
 
-def select_user_info_by_email(email):
+def select_user_by_google_id(google_id):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email
-                                    , conn_local_time, conn_facebook_time, conn_google_time
-                              FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
-    r = dict(res)
+
+    res = conn.execute(text("""SELECT id, name, email, google_id
+                              FROM `marocat v1.1`.users 
+                              WHERE google_id=:google_id AND is_deleted=FALSE ;""")
+                       , google_id=google_id).fetchone()
 
     if res is None:
         return None
     else:
         user = User()
-        user.id = r['email']
-        user.info = r
+        user.id = res['email']
+        user.nickname = res['name']
+        user.google_id = res['google_id']
+        return user
+
+
+def select_user_info_by_email(email):
+    conn = db.engine.connect()
+    res = conn.execute(text("""SELECT id, name, email
+                                    , conn_local_time, conn_facebook_time, conn_google_time
+                              FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
+
+    if res is None:
+        return None
+    else:
+        user = User()
+        user.id = res['email']
+        user.info = dict(res)
         return user
