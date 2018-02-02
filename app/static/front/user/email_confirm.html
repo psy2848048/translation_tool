@@ -48,19 +48,22 @@
                 }
                 var data = {
                     email: email.val().trim(),
-                    code: code.val().trim()
+                    cert_token: code.val().trim()
                 }
+                console.log('########### 5684 #############');
                 console.log(data);
                 $.ajax({
-                    url: '이메일인증URL',
+                    url: '/api/v1/auth/local/cert',
+                    data:data,
                     type: 'POST',
                     async: true,
                     success: function (res) {
-                        alert('인증되었습니다!');
-                        location.href = "/static/front/user/login.html";
+                        alert(res.result_ko);
+                        if(res.result == 200) location.href = "/static/front/user/login.html";
+                        else console.log(res.result + ' : ' + res.result_ko);
                     },
                     error: function (e) {
-                        alert('인증이 되지 않았습니다.\n\n이메일과 코드를 정확히 입력했는지 확인해주세요.');
+                        alert('인증이 되지 않았습니다.');
                         console.log('[fail : 6548]');
                         console.log(e.responseText);
                     }

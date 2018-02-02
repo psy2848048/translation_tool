@@ -77,33 +77,29 @@ var pageScript = function () {
         }
 
         var data = {
-            nick: nick.val(),
-            password: pass.val(),
-            email: email.val()
+            nickname: nick.val().trim(),
+            password: pass.val().trim(),
+            email: email.val().trim()
         };
-        var url = '/api/v1/auth/local/signup';
-
+        
         console.log('######### 4596 ###########');
         console.log(data);
-        console.log('######### 8565 ###########');
-        console.log(url);
 
         $.ajax({
-            url: url,
+            url: '/api/v1/auth/local/signup',
             data: data,
             type: 'POST',
             async: true,
             success: function (res) {
+                alert(res.result_ko);
                 if (res.result == 200) {
-                    alert(res.result_ko);
                     location.href='/static/front/user/login.html';
-                } else if (res.result == 260 || res.result == 461) {
-                    alert(res.result_ko);
-                }
+                } else console.log(res);
             },
             error: function (e) {
-                console.log('[fail : 6542]');
-                console.log(e.responseText);
+                alert(e.responseJSON.result_ko);
+                console.log('[fail : 1658]');
+                console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
             }
         });
     };

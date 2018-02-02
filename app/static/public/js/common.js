@@ -1,4 +1,6 @@
 var _OFFSET = new Date().getTimezoneOffset();
+var _USER_ID = '',
+    _USER_NICK = '';
 
 // 특정 파라미터값 추출
 function getUrlParameter(sParam) {
@@ -199,13 +201,29 @@ function CheckEmail(email) {
     return is_ok;
 }
 
-$(function () {
-    $('#mainHeader').load('/static/front/common_html/main_header.html ul');
-    $('#rightMenuArticle').load('/static/front/common_html/right_top_menu.html ul');
-    $('#menuArea').load('/static/front/common_html/left_menu.html ul');
-    $('#mainFooter').load('/static/front/common_html/main_footer.html ul, br');
+// 로그아웃
+function logout() {
+    alert(0);
+}
 
-    $(document).on('click', '#topSearch li img', function () {
-        location.href = '/static/front/project/total_search.html?text=' + $(this).closest('li').find('input[type=text]').val();
+// 세션값 가져오기
+function getSession() {
+    $.ajax({
+        url: '/api/v1/auth/check',
+        type: 'GET',
+        async: true,
+        success: function (res) {
+            console.log(res);
+            _USER_ID = res.session.user_id;
+            _USER_NICK = res.session.user_nick;
+        },
+        error: function (e) {
+            console.log('############ 5496 ############');
+            console.log(e);
+        }
     });
+}
+
+$(function () {
+    getSession();
 });
