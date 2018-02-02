@@ -23,6 +23,6 @@ auth.add_url_rule('/facebook/authorized', view_func=ctrl.facebook_authorized, me
 auth.add_url_rule('/facebook/tokengetter', view_func=ctrl.facebook_tokengetter, methods=['GET'])
 
 # 로그아웃
-auth.add_url_rule('/local/signout', view_func=ctrl.local_signout, methods=['GET'])
+auth.add_url_rule('/local/signout', view_func=ctrl.signout, methods=['GET'])
 
 auth.add_url_rule('/check', view_func=ctrl.get_session, methods=['GET'])

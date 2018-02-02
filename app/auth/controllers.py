@@ -2,6 +2,7 @@ from flask import request, make_response, json, url_for, session, redirect, json
 import app.auth.models as model
 from app import app
 from pprint import pprint
+import traceback
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 login_manager = LoginManager()
@@ -26,6 +27,9 @@ def local_signup():
     """
     로컬 회원가입
     """
+    #: 세션 비우기용
+    signout()
+
     name = request.form.get('nickname', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
@@ -35,8 +39,16 @@ def local_signup():
                                           , result_ko='입력되지 않은 값이 있습니다'
                                           , result=460), 460)
 
+    #: 존재하는 사용자인지 확인하기
+    user, is_ok = model.select_user_by_email(email)
+
+    if is_ok in [1, 2]:
+        return make_response(json.jsonify(result_en='This email already exists'
+                                          , result_ko='이미 가입된 이메일입니다'
+                                          , result=260), 260)
+
     #: 사용자 DB에 저장 + 인증 이메일 보내기
-    is_done = model.insert_user(name, email, password)
+    is_done = model.upsert_user('local', name, email, password=password)
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
@@ -82,6 +94,9 @@ def local_signin():
     """
     로컬 로그인
     """
+    #: 세션 비우기용
+    signout()
+
     email = request.form.get('email', None)
     password = request.form.get('password', None)
 
@@ -91,13 +106,13 @@ def local_signin():
                                           , result=460), 460)
 
     #: 입력된 email의 사용자 찾기
-    user, cert_local = model.select_user_by_email(email)
+    user, is_ok = model.select_user_by_email(email)
 
-    if cert_local == 0:
+    if is_ok == 0:
         return make_response(json.jsonify(result_en='User does not exist'
                                           , result_ko='존재하지 않는 사용자입니다'
                                           , result=464), 464)
-    elif cert_local == 2:
+    elif is_ok == 2:
         return make_response(json.jsonify(result_en='Unauthenticated User'
                                           , result_ko='인증되지 않은 사용자입니다'
                                           , result=403), 403)
@@ -111,65 +126,78 @@ def local_signin():
             session['user_nickname'] = current_user.nickname
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
-                                          , result_ko="로그인 성공!"
-                                          , result=200), 200)
+                                              , result_ko="로그인 성공!"
+                                              , result=200), 200)
         else:
             return make_response(json.jsonify(result_en="Password is wrong"
-                                          , result_ko='잘못된 비밀번호를 입력했습니다'
-                                          , result=465), 465)
+                                              , result_ko='잘못된 비밀번호를 입력했습니다'
+                                              , result=465), 465)
 
 
 #: 페이스북
 def facebook_signin():
-    return facebook.authorize(callback=url_for('auth.facebook_authorized'
-                                               , _external=True
-                                               # , next=request.args.get('next') or request.referrer or None
-                                               )
-                              )
+    #: 세션 비우기용
+    signout()
+
+    return facebook.authorize(callback=url_for('auth.facebook_authorized', _external=True))
 
 
 def facebook_authorized():
-    resp = facebook.authorized_response()
-    pprint(resp)
+    try:
+        resp = facebook.authorized_response()
+    except:
+        traceback.print_exc()
+        return make_response(json.jsonify(result_en='Facebook currently works abnormally'
+                                          , result_ko='페이스북의 일시적인 오류입니다'
+                                          , result=466), 466)
 
     if resp is None:
-        return 'Access denied: reason=%s error=%s' % (
-            request.args['error_reason'],
-            request.args['error_description']
-        )
+        return make_response(jsonify(message='Access denied'
+                                     , error_reason=request.args['error_reason']
+                                     , error_description=request.args['error_description']))
+    elif 'access_token' not in resp:
+        return make_response(json.jsonify(result_en='No access token from facebook'
+                                          , result_ko='페이스북이 Access Token을 보내지 않았습니다'
+                                          , result=403), 403)
 
-    # if resp is None or 'access_token' not in resp:
-    #     return make_response(json.jsonify(message="No access token from facebook"), 403)
-
+    #: 페이스북에서 사용자의 데이터 가져오기 - 이메일, 이름, 프로필사진
     session['facebook_token'] = (resp['access_token'], '')
-    user_data = facebook.get('/me?fields=email,name,picture').data
-    pprint(user_data)
+    data = facebook.get('/me?fields=email,name,picture').data
 
-    email = user_data.get('email')
-    if email is None:
-        return make_response(json.jsonify(message="Facebook currently works abnormally. Please wait a few hours."), 403)
+    ### 이메일이 없는 경우도 있으니까 일단 이건 보류
+    # if None in data:
+    #     return make_response(json.jsonify(result_en='Facebook has not sent any data'
+    #                                       , result_ko='페이스북에서 정보를 제대로 보내지 않았습니다'
+    #                                       , result=467), 467)
 
-    # user_id = model.select_user_by_email(email)
-    # if user_id == -1:
-    #     return redirect('/evaluation2/joinus?email={}'.format(email))
-    #
-    # else:
-    #     data = model.getUserInfo(email)
-    #     session['logged_in'] = True
-    #     session['email'] = email
-    #     for key, value in data.items():
-    #         session[key] = value
-    #
-    #     return redirect('/evaluation2')
-    return make_response(json.jsonify(message='Done!'), 200)
+    #: 존재하는 사용자인지 확인
+    user = model.select_user_by_facebook_id(data.get('id'))
+    if not user:
+        # is_done = model.upsert_user('facebook', data.get('name'), data.get('email'), facebook_id=data.get('id'))
+        # if is_done is False:
+        #     return make_response(json.jsonify(result_en='Something Wrong'
+        #                                       , result_ko='일시적인 오류로 실패했습니다'
+        #                                       , result=461), 461)
+        return make_response(json.jsonify(result_en='No linked accounts. Please sign up email first'
+                                          , result_ko='연동된 계정이 없습니다. 이메일로 먼저 회원가입을 해주세요'
+                                          , result=401), 401)
+
+    login_user(user, remember=True)
+    session['user_nickname'] = current_user.nickname
+    session['user_picture'] = data['picture']['data']['url']
+
+    return make_response(json.jsonify(result_en="Successfully sign-in!"
+                                      , result_ko="로그인 성공!"
+                                      , result=200), 200)
+
+    # return make_response(json.jsonify(result_en='Something Wrong'
+    #                                   , result_ko='일시적인 오류로 실패했습니다'
+    #                                   , result=461), 461)
 
 
 @facebook.tokengetter
 def facebook_tokengetter(token=None):
     return session.get('facebook_token')
-    # if 'facebook_oauth' in session:
-    #     resp = session['facebook_oauth']
-    #     return resp['oauth_token'], resp['oauth_token_secret']
 
 
 @login_manager.user_loader
@@ -179,9 +207,9 @@ def user_loader(uid):
 
 
 #: 로그아웃
-@login_required
-def local_signout():
-    session.pop('user_nickname')
+def signout():
+    for key in list(session.keys()):
+        session.pop(key)
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!"
                                       , result_ko='로그아웃 성공!'
