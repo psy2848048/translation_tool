@@ -141,6 +141,7 @@ def select_user_by_email(email):
     else:
         user = User()
         user.id = res['email']
+        user.nickname = res['name']
         return user, 1
 
 

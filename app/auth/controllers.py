@@ -3,7 +3,7 @@ import app.auth.models as model
 from app import app
 from pprint import pprint
 
-from flask_login import LoginManager, login_user, login_required, current_user, logout_user
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -21,6 +21,7 @@ facebook = oauth.remote_app(
 )
 
 
+#: 로컬
 def local_signup():
     """
     로컬 회원가입
@@ -107,7 +108,7 @@ def local_signin():
         #: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
         if is_ok is True:
             login_user(user, remember=True)
-            pprint(session)
+            session['user_nickname'] = current_user.nickname
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                           , result_ko="로그인 성공!"
@@ -118,12 +119,7 @@ def local_signin():
                                           , result=465), 465)
 
 
-@login_manager.user_loader
-def user_loader(uid):
-    user = model.select_user_info_by_email(uid)
-    return user
-
-
+#: 페이스북
 def facebook_signin():
     return facebook.authorize(callback=url_for('auth.facebook_authorized'
                                                , _external=True
@@ -176,8 +172,15 @@ def facebook_tokengetter(token=None):
     #     return resp['oauth_token'], resp['oauth_token_secret']
 
 
+@login_manager.user_loader
+def user_loader(uid):
+    user = model.select_user_info_by_email(uid)
+    return user
+
+
 @login_required
 def local_signout():
+    session.pop('user_nickname')
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!"
                                       , result_ko='로그아웃 성공!'
