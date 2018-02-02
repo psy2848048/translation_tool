@@ -544,3 +544,13 @@ input[type=button] {
 }
 
 /*******************************************************/
+
+#spUser a{
+  color:rgb(63, 97, 148);
+  text-decoration: none;
+}
+
+#spUser a:hover{
+  opacity:0.8;
+}
+

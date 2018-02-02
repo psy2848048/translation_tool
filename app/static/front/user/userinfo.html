@@ -30,18 +30,15 @@
             <article>
                 <ul>
                     <li>
-                        <h2>나의정보</h2>
-                        <div class="dummy"></div>
-
                         <h3>정보변경</h3>
-                        <table id="profile_tbl">
-                            <tr>
+                        <table class="account_tbl">
+                                <tr>
                                 <td>닉네임 변경</td>
                                 <td>
                                     <input type="text" name="" id="txt_name">
                                 </td>
                                 <td>
-                                    <input type="button" name="" id="name_btn" value=" 변경 " class="myinfo_btn">
+                                    <input type="button" name="" id="nick_btn" value=" 변경 " class="myinfo_btn">
                                 </td>
                             </tr>
                             <tr>
@@ -59,24 +56,36 @@
                     </li>
                     <li>
                         <h3>연결된 계정</h3>
-                        <table id="account_tbl">
+                        <table class="account_tbl">
                             <tr>
                                 <td>
-                                    <img src="/static/public/img/email2.png" id="email_v"> 자체계정</td>
+                                    <img src="/static/public/img/email2.png" id="email_v"> 자체계정
+                                </td>
+                                <td>
+                                    비밀번호를 설정하면 연동됩니다.
+                                </td>
                                 <td>
                                     <input type="button" name="" id="email_btn" value="연동하기" class="connect_before">
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <i class="fa fa-google" aria-hidden="true"></i> 구글</td>
+                                    <i class="fa fa-google" aria-hidden="true"></i> 구글
+                                </td>
+                                <td>
+                                    구글과 연동되지 않은 상태입니다.
+                                </td>
                                 <td>
                                     <input type="button" name="" id="google_btn" value="연동하기" class="connect_before">
                                 </td>
                             </tr>
                             <tr>
                                 <td>
-                                    <i class="fa fa-facebook" aria-hidden="true"></i> 페이스북</td>
+                                    <i class="fa fa-facebook" aria-hidden="true"></i> 페이스북
+                                </td>
+                                <td>
+                                    페이스북과 연동되어 있습니다.
+                                </td>
                                 <td>
                                     <input type="button" name="" id="facebook_btn" value="연동완료" class="connect_after">
                                 </td>
@@ -86,11 +95,12 @@
                     </li>
                     <li>
                         <h3>회원탈퇴</h3>
-                        <table id="account_tbl">
+                        <table class="account_tbl">
                             <tr>
                                 <td>탈퇴하기</td>
+                                <td></td>
                                 <td>
-                                    <input type="button" name="" value="탈퇴하기" class="remove_btn">
+                                    <input type="button" name="" id="remove_btn" value="탈퇴하기" class="remove_btn">
                                 </td>
                             </tr>
                         </table>
@@ -103,6 +113,7 @@
     </div>
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
     <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/common_mem.js"></script>
     <script src="/static/public/js/user/userinfo.js"></script>
 </body>
 

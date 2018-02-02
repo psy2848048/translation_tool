@@ -366,36 +366,40 @@ li p {
 }
 
 .dummy {
-    height: 60px;
+    height: 40px;
 }
 
-#account_tbl {
+.account_tbl {
     margin-top: 5px;
     width: 100%;
-    border-top: 1px solid rgb(139, 146, 153);
-    border-bottom: 1px solid rgb(139, 146, 153);
+    border-top: 1px solid rgb(203, 207, 211);
+    border-bottom: 1px solid rgb(203, 207, 211);
 }
 
-#account_tbl td {
-    border-bottom: 1px dotted rgb(167, 167, 175);
-    padding: 5px;
+.account_tbl td {
+    border-bottom: 1px dotted rgb(208, 208, 216);
+    padding: 3px;
     font-size: 14px;
+    height: 40px;
+    line-height: 40px;
+    box-sizing: border-box;
+    vertical-align: middle;
 }
 
-#account_tbl td:nth-of-type(1) {
+.account_tbl td:nth-of-type(1) {
     width: 180px;
 }
 
-#account_tbl td:nth-of-type(2) {
+.account_tbl td:nth-of-type(3) {
     width: 100px;
 }
 
-#account_tbl td:nth-of-type(2) {
+.account_tbl td:nth-of-type(3) {
     text-align: right;
 }
 
-#account_tbl td input[type=button],
-#account_tbl td input[type=text] {
+.account_tbl td input[type=button],
+.account_tbl td input[type=text] {
     font-size: 16px;
 }
 
@@ -441,18 +445,18 @@ li p {
 }
 
 #email_v {
-    height: 10px;
+    height: 12px;
 }
 
 .fa-google,
 .fa-facebook {
-    height: 25px;
+    height: 40px;
 }
 
 .fa-google {
     color: rgb(255, 72, 0);
 }
 
-.fa-facebook-official {
+.fa-facebook {
     color: rgb(12, 61, 124);
 }
