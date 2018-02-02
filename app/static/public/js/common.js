@@ -226,4 +226,6 @@ function getSession() {
 
 $(function () {
     getSession();
+    
+    $('#mainHeader').load('/static/front/common_html/main_header.html ul');
 });
