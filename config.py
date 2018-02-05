@@ -55,6 +55,12 @@ FACEBOOK_APP_ID = '931700420316779'
 FACEBOOK_APP_SECRET = '6fd8848bc9df865446ddcab34b098e26'
 
 
+#: AWS
+AWS_ACCESS_KEY_ID = 'AKIAIPUIPGMGOME2HTNQ'
+AWS_SECRET_ACCESS_KEY = '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'
+REGION = 'ap-northeast-1'
+
+
 # Application threads. A common general assumption is
 # using 2 per available processor cores - to handle
 # incoming requests using one and performing background

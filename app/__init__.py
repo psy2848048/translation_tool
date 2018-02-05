@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, g, redirect, abort
+from flask import Flask, g, redirect, abort, make_response, jsonify
 from flask_session import Session
 from flask_cors import CORS
 from flask_caching import Cache
@@ -75,12 +75,14 @@ print(app.url_map)
 
 #####################################################################################
 
+
 @app.before_request
 def before_request():
     """
     모든 API 실행 전 실행하는 부분
     """
     pass
+
 
 @app.teardown_request
 def teardown_request(exception):
@@ -91,14 +93,29 @@ def teardown_request(exception):
     if db is not None:
         db.close()
 
+
 # Sample HTTP error handling
 @app.errorhandler(404)
 def not_found(error):
-    return 'Not Found!!!!!'
+    return make_response(jsonify(result_ko='존재하지 않는 페이지입니다'
+                                 , result_en='Not Found!'
+                                 , result=404), 404)
+
+
+@app.errorhandler(401)
+def not_unauthorized(error):
+    return make_response(jsonify(result_ko='로그인을 해주세요'
+                                 , result_en='Sign-in required'
+                                 , result=401), 401)
+
 
 @app.errorhandler(403)
-def not_loggedIn(error):
-    return abort(403)
+def forbidden(error):
+    # return abort(403)
+    return make_response(jsonify(result_ko='접근 금지!'
+                                 , result_en='Forbidden!'
+                                 , result=403), 403)
+
 
 @app.route('/')
 def hello_world():
