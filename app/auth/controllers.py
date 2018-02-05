@@ -229,18 +229,8 @@ def facebook_authorized():
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
-            user_data = {
-                'signup_type': 'facebook',
-                'hd_social_id': data.get('id'),
-                'email': data.get('email'),
-                'nick': data.get('name'),
-                'hd_picture': data['picture']['data']['url']
-            }
-            # return make_response(json.jsonify(result_en="Please proceed to sign-up"
-            #                                   , result_ko="회원가입을 진행해주세요"
-            #                                   , user_data=user_data
-            #                                   , result=261), 261)
-            return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
+            return render_template('user/signup.html', name=data.get('name'), email=data.get('email')
+                                   , social_id=data.get('id'), picture=data['picture']['data']['url'])
 
     #: 존재한다면 로그인
     else:
@@ -294,25 +284,8 @@ def google_signin():
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
-            user_data = {
-                'signup_type': 'google',
-                'hd_social_id': userinfo['id'],
-                'email': userinfo['email'],
-                'nick': userinfo['name'],
-                'hd_picture': userinfo['picture']
-            }
-            # return redirect('/static/front/user/signup.html?'+urlencode(user_data))
-
-            # return make_response(json.jsonify(result_en="Please proceed to sign-up"
-            #                                   , result_ko="회원가입을 진행해주세요"
-            #                                   , user_data=user_data
-            #                                   , result=261), 261)
-            # return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
-            # return redirect(url_for('/static/front/user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture']))
-            with open('app/static/front/user/signup.html', 'r') as f:
-                file = f.read()
-            content = file.format(**user_data)
-            return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
+            return render_template('user/signup.html', name=userinfo['name'], email=userinfo['email']
+                                   , social_id=userinfo['id'], picture=userinfo['picture'])
 
 
     #: 존재함 + 로그아웃 상태 --> 차단!짤라!
