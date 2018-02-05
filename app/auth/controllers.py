@@ -1,8 +1,9 @@
-from flask import request, make_response, json, url_for, session, redirect, jsonify
+from flask import request, make_response, json, url_for, session, redirect, jsonify, render_template
 import app.auth.models as model
 from app import app
 import traceback
 import requests
+from urllib.parse import urlencode
 from pprint import pprint
 
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
@@ -58,9 +59,14 @@ def signup(signup_type):
                                           , result_ko='입력되지 않은 값이 있습니다'
                                           , result=460), 460)
 
+    #: 비밀번호 검사
+    if len(password) < 4:
+        return make_response(json.jsonify(result_en='Password must be at least 4 digits'
+                                          , result_ko='비밀번호는 4자리 이상이어야 합니다.'
+                                          , result=467), 467)
+
     #: 존재하는 이메일 사용자인지 확인하기
     user, is_ok = model.select_user_by_email(email)
-
     if is_ok in [1, 2]:
         return make_response(json.jsonify(result_en='You are already signed up for an email'
                                           , result_ko='이미 가입한 사용자입니다'
@@ -225,15 +231,16 @@ def facebook_authorized():
         else:
             user_data = {
                 'signup_type': 'facebook',
-                'social_id': data.get('id'),
+                'hd_social_id': data.get('id'),
                 'email': data.get('email'),
-                'name': data.get('name'),
-                'picture': data['picture']['data']['url']
+                'nick': data.get('name'),
+                'hd_picture': data['picture']['data']['url']
             }
-            return make_response(json.jsonify(result_en="Please proceed to sign-up"
-                                              , result_ko="회원가입을 진행해주세요"
-                                              , user_data=user_data
-                                              , result=261), 261)
+            # return make_response(json.jsonify(result_en="Please proceed to sign-up"
+            #                                   , result_ko="회원가입을 진행해주세요"
+            #                                   , user_data=user_data
+            #                                   , result=261), 261)
+            return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
 
     #: 존재한다면 로그인
     else:
@@ -289,15 +296,24 @@ def google_signin():
         else:
             user_data = {
                 'signup_type': 'google',
-                'social_id': userinfo['id'],
+                'hd_social_id': userinfo['id'],
                 'email': userinfo['email'],
-                'name': userinfo['name'],
-                'picture': userinfo['picture']
+                'nick': userinfo['name'],
+                'hd_picture': userinfo['picture']
             }
-            return make_response(json.jsonify(result_en="Please proceed to sign-up"
-                                              , result_ko="회원가입을 진행해주세요"
-                                              , user_data=user_data
-                                              , result=261), 261)
+            # return redirect('/static/front/user/signup.html?'+urlencode(user_data))
+
+            # return make_response(json.jsonify(result_en="Please proceed to sign-up"
+            #                                   , result_ko="회원가입을 진행해주세요"
+            #                                   , user_data=user_data
+            #                                   , result=261), 261)
+            # return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
+            # return redirect(url_for('/static/front/user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture']))
+            with open('app/static/front/user/signup.html', 'r') as f:
+                file = f.read()
+            content = file.format(**user_data)
+            return render_template('user/signup.html', nick=userinfo['name'], email=userinfo['email'], hd_social_id=userinfo['id'], hd_picture=userinfo['picture'])
+
 
     #: 존재함 + 로그아웃 상태 --> 차단!짤라!
     elif user and current_user.is_authenticated is False:

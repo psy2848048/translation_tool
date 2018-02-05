@@ -179,7 +179,7 @@ def select_user_by_email(email):
 def select_user_by_social_id(social_type, social_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, facebook_id
+    res = conn.execute(text("""SELECT id, name, email, picture, facebook_id, google_id
                               FROM `marocat v1.1`.users 
                               WHERE facebook_id=:facebook_id AND is_deleted=FALSE ;""")
                        , facebook_id=social_id).fetchone()
@@ -190,6 +190,7 @@ def select_user_by_social_id(social_type, social_id):
     user = User()
     user.id = res['email']
     user.nickname = res['name']
+    user.picture = res['picture']
 
     if social_type == 'facebook':
         user.facebook_id = res['facebook_id']
