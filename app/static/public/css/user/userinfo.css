@@ -321,9 +321,10 @@ li p {
 }
 
 #txt_name {
-    width: 230px !important;
+    /* width: 230px !important; */
     border-radius: 5px;
     border: 1px solid #999;
+    padding-left:5px;
 }
 
 #profile_tbl {
@@ -422,6 +423,15 @@ li p {
     font-size: 13px !important;
     padding: 3px;
 }
+.local_connect_after {
+    width: 100px;
+    border: 0 solid red;
+    background-color: rgb(247, 143, 6);
+    border-radius: 5px;
+    color: #fff;
+    font-size: 13px !important;
+    padding: 3px;
+}
 
 .connect_after {
     width: 100px;
@@ -447,11 +457,11 @@ li p {
 #email_v {
     height: 12px;
 }
-
+/* 
 .fa-google,
 .fa-facebook {
     height: 40px;
-}
+} */
 
 .fa-google {
     color: rgb(255, 72, 0);
@@ -459,4 +469,16 @@ li p {
 
 .fa-facebook {
     color: rgb(12, 61, 124);
+}
+
+#local_connect_area{
+    display: none;
+    margin-top:20px;
+}
+#local_pass,
+#local_pass_confirm{
+    border:1px solid #999;
+    border-radius:5px;
+    font-size:12px;   
+    padding-left:5px;
 }
