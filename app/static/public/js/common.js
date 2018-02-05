@@ -203,7 +203,22 @@ function CheckEmail(email) {
 
 // 로그아웃
 function logout() {
-    alert(0);
+    $.ajax({
+        url: '/api/v1/auth/local/signout',
+        type: 'GET',
+        async: true,
+        success: function (res) {
+            if (res.result == 200) {
+                alert(res.result_ko);
+                location.href = '/';
+            }
+        },
+        error: function (e) {
+            alert('로그아웃에 실패했습니다.\n\n급할경우 브라우저를 모두 닫아도 로그아웃 됩니다.');
+            console.log('############ 8549 ############');
+            console.log(e);
+        }
+    });
 }
 
 // 세션값 가져오기
@@ -214,8 +229,8 @@ function getSession() {
         async: true,
         success: function (res) {
             console.log(res);
-            _USER_ID = res.session.user_id;
-            _USER_NICK = res.session.user_nick;
+            _USER_ID = res.user_id;
+            _USER_NICK = res.user_nickname;
         },
         error: function (e) {
             console.log('############ 5496 ############');
@@ -224,8 +239,39 @@ function getSession() {
     });
 }
 
+// 공통 ajax
+// url = 실행할 url
+// method = POST, GET, PUT, DELETE...
+// data : 넘길 데이타
+// success_msg : 성공메시지
+// success_url : 성공시 이동할 url
+// err_msg : 에러메시지
+var AjaxExecute = function (url, method, data, success_msg, success_url, err_msg) {
+    $.ajax({
+        url: url,
+        type: method,
+        data: data,
+        async: true,
+        success: function (res) {
+            if (success_msg != '') alert(success_msg);
+            if (success_url != '') location.href = success_url;
+
+            console.log('##### AjaxExecute Success #####');
+            console.log(res);
+        },
+        error: function (err) {
+            if (err_msg != '') alert(err_msg);
+
+            console.log('##### AjaxExecute Error #####');
+            console.log('[xhr.status] : ', xhr.status);
+            console.log('[thrownError] : ', thrownError);
+            console.log('[xhr.responseText] : ', xhr.responseText);
+        }
+    });
+};
+
 $(function () {
     getSession();
-    
+
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
 });
