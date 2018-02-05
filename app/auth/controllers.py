@@ -38,14 +38,16 @@ def user_loader(uid):
     return user
 
 
-#: 로컬
-def local_signup():
+def signup(signup_type):
     """
-    로컬 회원가입
+    회원가입
     """
+    # signup_type = request.form.get('signup_type', None)
     name = request.form.get('nickname', None)
     email = request.form.get('email', None)
     password = request.form.get('password', None)
+    social_id = request.form.get('social_id', None)
+    photo_url = request.form.get('photo', None)
 
     if None in [email, password, name]:
         return make_response(json.jsonify(result_en='Something Not Entered'
@@ -61,7 +63,7 @@ def local_signup():
                                           , result=260), 260)
 
     #: 사용자 DB에 저장 + 인증 이메일 보내기
-    is_done = model.insert_user(name, email, password)
+    is_done = model.insert_user(signup_type, name, email, password, social_id, photo_url)
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
@@ -87,7 +89,7 @@ def cert_local_signup():
     if None in [email, cert_token]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.update_user_local_info(email, cert_token)
+    is_done = model.cert_local_user(email, cert_token)
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Certification is complete!'

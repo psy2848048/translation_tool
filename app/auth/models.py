@@ -16,7 +16,7 @@ class User(UserMixin):
             return False
 
 
-def insert_user(name, email, password):
+def insert_user(signup_type, name, email, password, social_id, photo_url):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -25,21 +25,28 @@ def insert_user(name, email, password):
     hashpwd = common.encrypt_pwd(password)
 
     try:
-        res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
+        if signup_type == 'local':
+            res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
+        elif signup_type == 'facebook':
+            res = conn.execute(u.insert(), email=email, name=name, password=hashpwd, is_certified=True
+                               , facebook_id=social_id, photo=photo_url, conn_facebook_time=datetime.utcnow())
+        elif signup_type == 'google':
+            res = conn.execute(u.insert(), email=email, name=name, password=hashpwd, is_certified=True
+                               , google_id=social_id, photo=photo_url, conn_google_time=datetime.utcnow())
 
         if res.rowcount != 1:
             print('DUP! (user is already exist, local)')
             trans.rollback()
             return 2
 
-        #: 사용자에게 인증코드 이메일 보내기
-        is_done = send_email_for_local_signup(email)
-        if is_done is True:
-            trans.commit()
-            return True
-        else:
-            trans.rollback()
-            return False
+        if signup_type == 'local':  #: 사용자에게 인증코드 이메일 보내기
+            is_done = send_email_for_local_signup(email)
+            if is_done is False:
+                trans.rollback()
+                return False
+
+        trans.commit()
+        return True
     except:
         traceback.print_exc()
         trans.rollback()
@@ -121,7 +128,7 @@ def send_email_for_local_signup(email):
         return False
 
 
-def update_user_local_info(email, cert_token):
+def cert_local_user(email, cert_token):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -140,8 +147,7 @@ def update_user_local_info(email, cert_token):
             return 2
 
         #: 사용자 인증 정보 수정
-        res = conn.execute(u.update(u.c.email == email), cert_local=True
-                           , conn_local_time=datetime.utcnow(), update_time=datetime.utcnow())
+        res = conn.execute(u.update(u.c.email == email), is_certified=True, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             print('Wrong! (update users, {})'.format(res.rowcount))
@@ -160,20 +166,19 @@ def update_user_local_info(email, cert_token):
 def select_user_by_email(email):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, facebook_id, cert_local, conn_local_time
+    res = conn.execute(text("""SELECT id, name, email, is_certified
                               FROM `marocat v1.1`.users 
                               WHERE email = :email AND is_deleted=FALSE ;"""), email=email).fetchone()
 
     if res is None:
         return None, 0
-
-    user = User()
-    user.id = res['email']
-    user.nickname = res['name']
-
-    if res['conn_local_time'] is None:
+    elif res['is_certified'] is 0:
         return None, 2
     else:
+        user = User()
+        user.id = res['email']
+        user.nickname = res['name']
+
         return user, 1
 
 
