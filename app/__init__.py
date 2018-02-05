@@ -7,8 +7,9 @@ from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 
 # Define the WSGI application object
-app = Flask(__name__, static_url_path='/static')
+app = Flask(__name__, static_url_path='/static', template_folder='/static/front')
 app.static_folder = 'static'
+app.template_folder = 'static/front'
 
 #: Configurations
 import config

@@ -1,7 +1,7 @@
 from flask import Blueprint
 import app.auth.controllers as ctrl
 
-auth = Blueprint('auth', __name__)
+auth = Blueprint('auth', __name__, template_folder='static/front/user')
 
 # 로컬 회원가입
 auth.add_url_rule('/signup/<signup_type>', view_func=ctrl.signup, methods=['POST'])
