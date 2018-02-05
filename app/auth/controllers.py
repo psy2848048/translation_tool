@@ -47,23 +47,36 @@ def signup(signup_type):
     email = request.form.get('email', None)
     password = request.form.get('password', None)
     social_id = request.form.get('social_id', None)
-    photo_url = request.form.get('photo', None)
+    picture = request.form.get('picture', None)
 
     if None in [email, password, name]:
         return make_response(json.jsonify(result_en='Something Not Entered'
                                           , result_ko='입력되지 않은 값이 있습니다'
                                           , result=460), 460)
+    elif (signup_type == 'facebook' or signup_type == 'google') and social_id is None:
+        return make_response(json.jsonify(result_en='Something Not Entered'
+                                          , result_ko='입력되지 않은 값이 있습니다'
+                                          , result=460), 460)
 
-    #: 존재하는 사용자인지 확인하기
+    #: 존재하는 이메일 사용자인지 확인하기
     user, is_ok = model.select_user_by_email(email)
 
     if is_ok in [1, 2]:
-        return make_response(json.jsonify(result_en='This email already exists'
-                                          , result_ko='이미 가입된 이메일입니다'
+        return make_response(json.jsonify(result_en='You are already signed up for an email'
+                                          , result_ko='이미 가입한 사용자입니다'
                                           , result=260), 260)
 
+    #: 존재하는 소셜 사용자인지 확인하기
+    if signup_type != 'local':
+        user = model.select_user_by_social_id(signup_type, social_id)
+
+        if user:
+            return make_response(json.jsonify(result_en='You are already signed up for {}'.format(signup_type)
+                                              , result_ko='이미 가입한 사용자입니다'
+                                              , result=260), 260)
+
     #: 사용자 DB에 저장 + 인증 이메일 보내기
-    is_done = model.insert_user(signup_type, name, email, password, social_id, photo_url)
+    is_done = model.insert_user(signup_type, name, email, password, social_id, picture)
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
@@ -105,6 +118,18 @@ def cert_local_signup():
                                           , result=461), 461)
 
 
+def signout():
+    """
+    로그아웃
+    """
+    for key in list(session.keys()):
+        session.pop(key)
+    logout_user()
+    return make_response(json.jsonify(result_en="Successfully sign-out!"
+                                      , result_ko='로그아웃 성공!'
+                                      , result=200), 200)
+
+
 def local_signin():
     """
     로컬 로그인
@@ -139,6 +164,7 @@ def local_signin():
         if is_ok is True:
             login_user(user, remember=True)
             session['user_nickname'] = current_user.nickname
+            session['user_picture'] = current_user.picture
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                               , result_ko="로그인 성공!"
@@ -150,17 +176,13 @@ def local_signin():
 
 
 #: 페이스북
-@login_required
 def facebook_signin():
-    email = current_user.id
-    return facebook.authorize(callback=url_for('auth.facebook_authorized', email=email
+    return facebook.authorize(callback=url_for('auth.facebook_authorized'
                                                , next=request.args.get('next') or None
                                                , _external=True))
 
 
 def facebook_authorized():
-    email = request.values.get('email', None)
-
     try:
         resp = facebook.authorized_response()
     except:
@@ -182,31 +204,46 @@ def facebook_authorized():
     session['facebook_token'] = (resp['access_token'], '')
     data = facebook.get('/me?fields=email,name,picture').data
 
-    ### 이메일이 없는 경우도 있으니까 일단 이건 보류
-    # if None in data:
-    #     return make_response(json.jsonify(result_en='Facebook has not sent any data'
-    #                                       , result_ko='페이스북에서 정보를 제대로 보내지 않았습니다'
-    #                                       , result=467), 467)
+    #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
+    user = model.select_user_by_social_id('facebook', data.get('id'))
 
-    #: 존재하는 사용자인지 확인
-    user = model.select_user_by_facebook_id(data.get('id'))
     if not user:
-        is_done = model.update_user_social_info('facebook', email, facebook_id=data.get('id'))
-        if is_done is False:
-            return make_response(json.jsonify(result_en='Something Wrong'
-                                              , result_ko='일시적인 오류로 실패했습니다'
-                                              , result=461), 461)
-        # return make_response(json.jsonify(result_en='No linked accounts. Please sign up email first'
-        #                                   , result_ko='연동된 계정이 없습니다. 이메일로 먼저 회원가입을 해주세요'
-        #                                   , result=401), 401)
+        #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
+        if current_user.is_authenticated is True:
+            email = current_user.id
+            is_done = model.update_user_social_info('facebook', email, data.get('id'))
+            if is_done is True:
+                return make_response(json.jsonify(result_en="Connection complete!"
+                                                  , result_ko="페이스북 연동 완료!"
+                                                  , result=262), 262)
+            else:
+                return make_response(json.jsonify(result_en='Something Wrong'
+                                                  , result_ko='일시적인 오류로 실패했습니다'
+                                                  , result=461), 461)
 
-    # login_user(user, remember=True)
-    # session['user_nickname'] = current_user.nickname
-    session['user_picture'] = data['picture']['data']['url']
+        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
+        else:
+            user_data = {
+                'signup_type': 'facebook',
+                'social_id': data.get('id'),
+                'email': data.get('email'),
+                'name': data.get('name'),
+                'picture': data['picture']['data']['url']
+            }
+            return make_response(json.jsonify(result_en="Please proceed to sign-up"
+                                              , result_ko="회원가입을 진행해주세요"
+                                              , user_data=user_data
+                                              , result=261), 261)
 
-    return make_response(json.jsonify(result_en="Connection complete"
-                                      , result_ko="페이스북 연동 완료"
-                                      , result=200), 200)
+    #: 존재한다면 로그인
+    else:
+        login_user(user, remember=True)
+        session['user_nickname'] = current_user.nickname
+        session['user_picture'] = current_user.picture
+
+        return make_response(json.jsonify(result_en="Successfully sign-in!"
+                                          , result_ko="로그인 성공!"
+                                          , result=200), 200)
 
 
 @facebook.tokengetter
@@ -215,7 +252,6 @@ def facebook_tokengetter(token=None):
 
 
 #: 구글
-@login_required
 def google_signin():
     if 'google_credentials' not in session:
         return redirect(url_for('auth.google_authorized'))
@@ -231,28 +267,57 @@ def google_signin():
     authorization_header = {"Authorization": "OAuth %s" % session['google_credentials']['token']}
     res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
     userinfo = json.loads(res.text)
-    pprint(userinfo)
 
-    #: 존재하는 사용자인지 확인
-    user = model.select_user_by_facebook_id(userinfo['id'])
+    #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
+    user = model.select_user_by_social_id('google', userinfo['id'])
+
     if not user:
-        is_done = model.update_user_social_info('google', userinfo['email'], google_id=userinfo['id'])
-        if is_done is False:
-            return make_response(json.jsonify(result_en='Something Wrong'
-                                              , result_ko='일시적인 오류로 실패했습니다'
-                                              , result=461), 461)
+        #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
+        if current_user.is_authenticated is True:
+            email = current_user.id
+            is_done = model.update_user_social_info('google', email, userinfo['id'])
+            if is_done is True:
+                return make_response(json.jsonify(result_en="Connection complete!"
+                                                  , result_ko="구글 연동 완료!"
+                                                  , result=262), 262)
+            else:
+                return make_response(json.jsonify(result_en='Something Wrong'
+                                                  , result_ko='일시적인 오류로 실패했습니다'
+                                                  , result=461), 461)
 
-    # login_user(user, remember=True)
-    # session['user_nickname'] = current_user.nickname
-    session['user_picture'] = userinfo['picture']
+        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
+        else:
+            user_data = {
+                'signup_type': 'google',
+                'social_id': userinfo['id'],
+                'email': userinfo['email'],
+                'name': userinfo['name'],
+                'picture': userinfo['picture']
+            }
+            return make_response(json.jsonify(result_en="Please proceed to sign-up"
+                                              , result_ko="회원가입을 진행해주세요"
+                                              , user_data=user_data
+                                              , result=261), 261)
 
-    # Save credentials back to session in case access token was refreshed.
-    # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
-    session['google_credentials'] = google_credentials_to_dict(credentials)
+    #: 존재함 + 로그아웃 상태 --> 차단!짤라!
+    elif user and current_user.is_authenticated is False:
+        return make_response(jsonify(result_ko='인증되지 않음'
+                                     , result_en='Unauthenticated'
+                                     , result=401), 401)
 
-    return make_response(json.jsonify(result_en="Connection complete"
-                                      , result_ko="구글 연동 완료"
-                                      , result=200), 200)
+    #: 존재함 + 로그인 상태 --> 로그인!
+    else:
+        login_user(user, remember=True)
+        session['user_nickname'] = current_user.nickname
+        session['user_picture'] = current_user.picture
+
+        # Save credentials back to session in case access token was refreshed.
+        # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
+        session['google_credentials'] = google_credentials_to_dict(credentials)
+
+        return make_response(json.jsonify(result_en="Successfully sign-in!"
+                                          , result_ko="로그인 성공!"
+                                          , result=200), 200)
 
 
 def google_authorized():
@@ -318,16 +383,6 @@ def google_credentials_to_dict(credentials):
           'client_id': credentials.client_id,
           'client_secret': credentials.client_secret,
           'scopes': credentials.scopes}
-
-
-#: 로그아웃
-def signout():
-    for key in list(session.keys()):
-        session.pop(key)
-    logout_user()
-    return make_response(json.jsonify(result_en="Successfully sign-out!"
-                                      , result_ko='로그아웃 성공!'
-                                      , result=200), 200)
 
 
 #: (테스트용) 세션 확인

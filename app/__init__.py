@@ -104,8 +104,8 @@ def not_found(error):
 
 @app.errorhandler(401)
 def not_unauthorized(error):
-    return make_response(jsonify(result_ko='로그인을 해주세요'
-                                 , result_en='Sign-in required'
+    return make_response(jsonify(result_ko='인증되지 않음'
+                                 , result_en='Unauthenticated'
                                  , result=401), 401)
 
 
