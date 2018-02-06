@@ -39,11 +39,10 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             trans.rollback()
             return 2
 
-        if signup_type == 'local':  #: 사용자에게 인증코드 이메일 보내기
-            is_done = send_email_for_local_signup(email)
-            if is_done is False:
-                trans.rollback()
-                return False
+        is_done = send_email_for_cert_signup(email)
+        if is_done is False:
+            trans.rollback()
+            return False
 
         trans.commit()
         return True
@@ -82,7 +81,7 @@ def update_user_social_info(social_type, email, social_id):
         conn.close()
 
 
-def send_email_for_local_signup(email):
+def send_email_for_cert_signup(email):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -181,8 +180,8 @@ def select_user_by_social_id(social_type, social_id):
 
     res = conn.execute(text("""SELECT id, name, email, picture, facebook_id, google_id
                               FROM `marocat v1.1`.users 
-                              WHERE facebook_id=:facebook_id AND is_deleted=FALSE ;""")
-                       , facebook_id=social_id).fetchone()
+                              WHERE (facebook_id=:fid OR google_id=:gid)AND is_deleted=FALSE ;""")
+                       , fid=social_id, gid=social_id).fetchone()
 
     if res is None:
         return None

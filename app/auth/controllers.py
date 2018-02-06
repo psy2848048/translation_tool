@@ -1,4 +1,4 @@
-from flask import request, make_response, json, url_for, session, redirect, jsonify, render_template
+from flask import request, make_response, json, url_for, session, redirect, jsonify, render_template, flash
 import app.auth.models as model
 from app import app
 import traceback
@@ -25,7 +25,6 @@ facebook = oauth.remote_app(
 
 import google.oauth2.credentials
 import google_auth_oauthlib.flow
-import googleapiclient.discovery
 CLIENT_SECRETS_FILE = "google_client_secret.json"
 SCOPES = ['https://www.googleapis.com/auth/plus.login'
     , 'https://www.googleapis.com/auth/plus.me'
@@ -86,7 +85,7 @@ def signup(signup_type):
 
     if is_done is True:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
-                                          , result_ko='축하합니다! 회원가입에 성공했습니다!'
+                                          , result_ko='축하합니다! 회원가입에 성공했습니다! \n이메일 인증 후 이용 가능합니다'
                                           , result=200), 200)
     elif is_done is 2:
         return make_response(json.jsonify(result_en='This email already exists'
@@ -219,28 +218,28 @@ def facebook_authorized():
             email = current_user.id
             is_done = model.update_user_social_info('facebook', email, data.get('id'))
             if is_done is True:
-                return make_response(json.jsonify(result_en="Connection complete!"
-                                                  , result_ko="페이스북 연동 완료!"
-                                                  , result=262), 262)
+                return render_template('user/userinfo.html'
+                                       , result_en="Connection complete!"
+                                       , result_ko="페이스북 연동 완료!"
+                                       , result=262)
             else:
-                return make_response(json.jsonify(result_en='Something Wrong'
-                                                  , result_ko='일시적인 오류로 실패했습니다'
-                                                  , result=461), 461)
+                return render_template('user/userinfo.html'
+                                       , result_en='Something Wrong'
+                                       , result_ko='일시적인 오류로 실패했습니다'
+                                       , result=461)
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
-            return render_template('user/signup.html', name=data.get('name'), email=data.get('email')
-                                   , social_id=data.get('id'), picture=data['picture']['data']['url'])
+            return render_template('user/signup.html', social_id=data.get('id'), signup_type='facebook'
+                                   , name=data.get('name'), email=data.get('email'), picture=data['picture']['data']['url'])
 
-    #: 존재한다면 로그인
-    else:
+    #: 존재함 + 로그아웃 상태 --> 로그인!
+    elif user and current_user.is_authenticated is False:
         login_user(user, remember=True)
         session['user_nickname'] = current_user.nickname
         session['user_picture'] = current_user.picture
 
-        return make_response(json.jsonify(result_en="Successfully sign-in!"
-                                          , result_ko="로그인 성공!"
-                                          , result=200), 200)
+    return render_template('project/projects.html')
 
 
 @facebook.tokengetter
@@ -265,7 +264,7 @@ def google_signin():
     res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
     userinfo = json.loads(res.text)
 
-    #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
+    #: 존재하는 구글 사용자인지 확인 = google_id 존재 유무 확인
     user = model.select_user_by_social_id('google', userinfo['id'])
 
     if not user:
@@ -274,28 +273,23 @@ def google_signin():
             email = current_user.id
             is_done = model.update_user_social_info('google', email, userinfo['id'])
             if is_done is True:
-                return make_response(json.jsonify(result_en="Connection complete!"
-                                                  , result_ko="구글 연동 완료!"
-                                                  , result=262), 262)
+                return render_template('user/userinfo.html'
+                                       , result_en="Connection complete!"
+                                       , result_ko="구글 연동 완료!"
+                                       , result=262)
             else:
-                return make_response(json.jsonify(result_en='Something Wrong'
-                                                  , result_ko='일시적인 오류로 실패했습니다'
-                                                  , result=461), 461)
+                return render_template('user/userinfo.html'
+                                       , result_en='Something Wrong'
+                                       , result_ko='일시적인 오류로 실패했습니다'
+                                       , result=461)
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
-            return render_template('user/signup.html', name=userinfo['name'], email=userinfo['email']
-                                   , social_id=userinfo['id'], picture=userinfo['picture'])
+            return render_template('user/signup.html', social_id=userinfo['id'], signup_type='google'
+                                   , name=userinfo['name'], email=userinfo['email'], picture=userinfo['picture'])
 
-
-    #: 존재함 + 로그아웃 상태 --> 차단!짤라!
+    #: 존재함 + 로그아웃 상태 --> 로그인!
     elif user and current_user.is_authenticated is False:
-        return make_response(jsonify(result_ko='인증되지 않음'
-                                     , result_en='Unauthenticated'
-                                     , result=401), 401)
-
-    #: 존재함 + 로그인 상태 --> 로그인!
-    else:
         login_user(user, remember=True)
         session['user_nickname'] = current_user.nickname
         session['user_picture'] = current_user.picture
@@ -304,9 +298,7 @@ def google_signin():
         # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
         session['google_credentials'] = google_credentials_to_dict(credentials)
 
-        return make_response(json.jsonify(result_en="Successfully sign-in!"
-                                          , result_ko="로그인 성공!"
-                                          , result=200), 200)
+    return render_template('project/projects.html')
 
 
 def google_authorized():
