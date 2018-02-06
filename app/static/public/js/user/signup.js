@@ -75,25 +75,27 @@ var pageScript = function () {
             $('#chk_policy').focus();
             return false;
         }
-
-        var data = {
-            nickname: nick.val().trim(),
-            password: pass.val().trim(),
-            email: email.val().trim()
-        };
         
+        var data = {
+            email: email.val().trim(),
+            password: pass.val().trim(),
+            nickname: nick.val().trim(),
+            social_id: $('#hd_social_id').val().trim(),
+            picture: $('#hd_picture').val().trim()
+        };
+
         console.log('######### 4596 ###########');
         console.log(data);
 
         $.ajax({
-            url: '/api/v1/auth/local/signup',
+            url: '/api/v1/auth/signup/local',
             data: data,
             type: 'POST',
             async: true,
             success: function (res) {
                 alert(res.result_ko);
                 if (res.result == 200) {
-                    location.href='/static/front/user/login.html';
+                    location.href = '/static/front/user/login.html';
                 } else console.log(res);
             },
             error: function (e) {

@@ -1,19 +1,72 @@
 var pageScript = function () {
-    var local = this;
+    var local = this,
+        userinfo = '';
     this.preInit = function () {
-        setTimeout(function () {
-            $('#txt_name').val(_USER_NICK);
-        }, 200);
+        local.memberInfo();
     };
-    this.selectEvent = function () {
-        $('#file_frm').on('change', function (e) {
+    this.selectEvent = function () {};
+    this.btnClickEvents = function () {
+        // 사진변경 버튼
+        $('#picture_btn').on('click', function (e) {
             e.preventDefault();
             var reg_ext = ['JPG', 'JPEG', 'GIF', 'PNG'];
             var msg = 'JPG, JPEG, GIF, PNG 이미지 파일 확장자만 허용합니다.';
-            onFileSelect($('#file_frm'), '업로드api-URL', 5, reg_ext, msg, 'upload_result');
+            var fileUpload = $('#file_frm').get(0);
+            var files = fileUpload.files;
+            var f_data = new FormData();
+            var is_allowed_ext = false;
+            for (var i = 0; i < files.length; i++) {
+                /* 사이즈 체크 */
+                var fileSize = files[i].size;
+                var mega = 5; // 메가
+                var maxFilesize = parseInt(mega) * 1025 * 1000;
+                if (fileSize > maxFilesize) {
+                    alert('파일당 최대용량은 ' + mega + '메가 입니다.');
+                    break;
+                }
+                /* 확장자 체크 */
+                var ext = getFileExtension(files[i].name);
+                //console.log('[1254] ext : ', ext);
+                if (ext == '') alert('파일 확장자에 문제가 있습니다!');
+                else {
+                    for (var j = 0; j < reg_ext.length; j++) {
+                        //alert(reg_ext[j].toUpperCase());
+                        if (reg_ext[j].toUpperCase() == ext) {
+                            //alert(0);
+                            is_allowed_ext = true;
+                            continue;
+                        }
+                    }
+                }
+                f_data.append('file', files[i]);
+            }
+            console.log('f_data : ', f_data);
+            if (is_allowed_ext) {
+                $.ajax({
+                    url: 'server_url',
+                    type: "POST",
+                    contentType: false,
+                    processData: false,
+                    data: f_data,
+                    // dataType: "json",
+                    success: function (res) {
+                        if (res.result == 'OK') {
+                            alert('업로드가 완료되었습니다.');
+                        } else alert('업로드에 문제가 있습니다.');
+                        console.log('[4576] res.result : ', res.result);
+                    },
+                    error: function (xhr, ajaxOptions, thrownError) {
+                        console.log('[9786] xhr.status : ', xhr.status);
+                        console.log('[6458] thrownError : ', thrownError);
+                        console.log('[3197] xhr.responseText : ', xhr.responseText);
+                    }
+                });
+            } else {
+                alert('JPG, JPEG, GIF, PNG 확장자만 업로드가 가능합니다.');
+                $('#file_frm').val('');
+                return false;
+            }
         });
-    };
-    this.btnClickEvents = function () {
         // 닉네임 수정 실행버튼
         $('#nick_btn').on('click', function (e) {
             e.preventDefault();
@@ -55,22 +108,22 @@ var pageScript = function () {
             var pass = $('#local_pass');
             var pass_confirm = $('#local_pass_confirm');
             // 공백 및 글자수 확인(4자이상)
-            if(pass.val().trim() == '' || pass.val().trim().length < 4){
+            if (pass.val().trim() == '' || pass.val().trim().length < 4) {
                 alert('비밀번호는 4자이상 입니다.');
                 pass.focus();
                 return false;
             }
-            if(pass_confirm.val().trim() == '' || pass_confirm.val().trim().length < 4){
+            if (pass_confirm.val().trim() == '' || pass_confirm.val().trim().length < 4) {
                 alert('비밀번호는 4자이상 입니다.');
                 pass_confirm.focus();
                 return false;
             }
             // 비밀번호 일치 확인   
-            if(pass.val().trim() !== pass_confirm.val().trim()){
+            if (pass.val().trim() !== pass_confirm.val().trim()) {
                 alert('비밀번호가 일치하지 않습니다.');
                 pass.focus();
                 return false;
-            }         
+            }
             $.ajax({
                 url: '로컬계정생성실행URL',
                 type: 'POST',
@@ -169,7 +222,7 @@ var pageScript = function () {
                 async: true,
                 success: function (res) {
                     alert('정상적으로 탈퇴되었습니다.\n\n굿바이 사요나라~');
-                    location.href='/';
+                    location.href = '/';
 
                     console.log('##### 5858 #####');
                     console.log(res);
@@ -182,6 +235,26 @@ var pageScript = function () {
                 }
             });
         });
+    };
+    this.memberInfo = function () {
+        userinfo = AjaxExecute('/api/v1/users/me', 'GET');
+        $('#sp_user_email').text(userinfo.email);
+        $('#txt_name').val(userinfo.name);
+        if (IsValidStr(userinfo.picture)) {
+            $('#sp_user_picture').css('background', 'url(' + userinfo.picture + ')');
+        }
+        var g_btn = $('#google_btn');            
+        var f_btn = $('#facebook_btn');
+        if(IsValidStr(userinfo.conn_google_time)){
+            g_btn.removeClass('connect_before').addClass('connect_after').val('연동완료');
+        }else{
+            g_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');
+        } 
+        if(IsValidStr(userinfo.conn_facebook_time)){
+            f_btn.removeClass('connect_before').addClass('connect_after').val('연동완료');
+        }else{
+            f_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');
+        }
     };
     this.bind = function () {
         local.preInit();

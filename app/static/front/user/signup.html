@@ -30,13 +30,13 @@
                 <tr>
                     <td>닉네임</td>
                     <td>
-                        <input type="text" name="" id="nick">
+                        <input type="text" name="" id="nick" value="{{name}}">
                     </td>
                 </tr>
                 <tr>
                     <td>로그인 이메일</td>
                     <td>
-                        <input type="text" name="" id="email">
+                        <input type="text" name="" id="email" value="{{email}}">
                     </td>
                 </tr>
                 <tr>
@@ -54,9 +54,11 @@
             </table>
             <div id="join_div">
                 <p>
-                    <input type="checkbox" id="chk_agree"><label for="chk_agree">
+                    <input type="checkbox" id="chk_agree">
+                    <label for="chk_agree">
                         <a target="_blank" href="../terms.html">이용약관</a> 동의</label>
-                    <input type="checkbox" name="" id="chk_policy"><label for="chk_policy">
+                    <input type="checkbox" name="" id="chk_policy">
+                    <label for="chk_policy">
                         <a target="_blank" href="../privacy.html">개인정보 보호정책</a> 동의</label>
                 </p>
                 <p>
@@ -65,6 +67,8 @@
             </div>
         </div>
     </div>
+    <input type="hidden" name="" id="hd_social_id" value="{{social_id}}">
+    <input type="hidden" name="" id="hd_picture" value="{{picture}}">
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
     <script src="/static/public/js/common.js"></script>
     <script src="/static/public/js/user/signup.js"></script>

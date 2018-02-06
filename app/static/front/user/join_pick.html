@@ -16,7 +16,6 @@
     <link href="/static/public/css/reset.css" rel="stylesheet" />
     <link href="/static/public/css/site.css" rel="stylesheet" />
     <link href="/static/public/css/user/join_pick.css" rel="stylesheet" />
-    <script src="/static/public/js/user/social.js"></script>
 </head>
 
 <body>
@@ -42,16 +41,17 @@
                     <!-- <option value="중국어">중국어</option> -->
                 </select>
             </div>
-            <p>가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은 <a href="login.html">이곳을 클릭</a>해서 로그인 하세요.</p>
+            <p>가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은
+                <a href="login.html">이곳을 클릭</a>해서 로그인 하세요.</p>
             <ul>
                 <li>
-                    <a href="javascript:JoinGoogle();">
+                    <a id="googleLink" href="/api/v1/auth/google/signin">
                         <img src="/static/public/img/google.jpg">
                     </a>
                     <p>소셜 구글</p>
                 </li>
                 <li>
-                        <a href="javascript:JoinFacebook();">
+                    <a id="facebookLink" href="javascript:;">
                         <img src="/static/public/img/facebook.png">
                     </a>
                     <p>소셜 페이스북</p>
@@ -63,9 +63,10 @@
                     <p>회원님 이메일</p>
                 </li>
             </ul>
-<hr>
+            <hr>
             <p class="join_desc">사용에는
-                <a target="_blank" href="/static/front/terms.html">이용약관</a>과 <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>이 적용됩니다.</p>
+                <a target="_blank" href="/static/front/terms.html">이용약관</a>과
+                <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>이 적용됩니다.</p>
         </div>
     </div>
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
