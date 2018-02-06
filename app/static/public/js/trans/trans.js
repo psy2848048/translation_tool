@@ -823,4 +823,15 @@ $(function () {
     setInterval(function () {
         $('#counter').text(interval_sec--);
     }, 1000);
+
+    // 로그아웃 체크
+    setTimeout(function () {
+        if (_USER_ID == undefined || _USER_ID.trim() == '') {
+            alert('로그아웃 상태입니다.');
+            location.href = '/static/front/user/login.html';
+            return false;
+        }else{
+            $('#sp_user').text(_USER_NICK + '님 접속중');
+        }
+    }, 100);    
 });

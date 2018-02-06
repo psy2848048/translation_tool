@@ -42,7 +42,19 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>닉네임 변경</td>
+                                <td>
+                                    로그인 비밀번호
+                                </td>
+                                <td>
+                                    <input type="password" name="" id="local_pass" placeholder="비밀번호">
+                                    <input type="password" name="" id="local_pass_confirm" placeholder="비밀번호 확인">
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="local_connect_btn" value="변경" class="myinfo_btn">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>닉네임</td>
                                 <td>
                                     <input type="text" name="" id="txt_name">
                                 </td>
@@ -53,12 +65,11 @@
                             <tr>
                                 <td>사진 변경</td>
                                 <td>
-                                    <span class="circle"></span>
+                                    <span id="sp_user_picture" class="circle"></span>
                                     <input type="file" name="" id="file_frm">
-                                    <p id="upload_result"></p>
                                 </td>
                                 <td>
-                                    <input type="button" name="" id="name_btn" value=" 업로드 " class="myinfo_btn">
+                                    <input type="button" name="" id="picture_btn" value=" 변경 " class="myinfo_btn">
                                 </td>
                             </tr>
                         </table>
@@ -69,30 +80,13 @@
                         <table class="account_tbl">
                             <tr>
                                 <td>
-                                    <img src="/static/public/img/email2.png" id="email_v"> 자체계정
-                                </td>
-                                <td>
-                                    <span id="sp_local_desc">우측 생성하기 버튼 클릭 후 비밀번호를 설정하면 로컬계정이 생성됩니다.</span>
-                                    <p id="local_connect_area">
-                                        <input type="password" name="" id="local_pass" placeholder="비밀번호">
-                                        <input type="password" name="" id="local_pass_confirm" placeholder="비밀번호 확인">
-                                        <input type="button" value="저장" id="local_connect_btn">
-                                        <input type="button" value="취소" id="local_connect_cancel_btn">
-                                    </p>
-                                </td>
-                                <td>
-                                    <input type="button" name="" id="email_btn" value="생성하기" class="connect_before">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
                                     <i class="fa fa-google" aria-hidden="true"></i> 구글
                                 </td>
                                 <td>
                                     <span id="sp_google_desc">구글 계정과 연동되지 않은 상태입니다.</span>
                                 </td>
                                 <td>
-                                    <input type="button" name="" id="google_btn" value="연동하기" class="connect_before">
+                                    <input type="button" name="" id="google_btn">
                                 </td>
                             </tr>
                             <tr>
@@ -103,7 +97,7 @@
                                     <span id="sp_facebook_desc">페이스북 계정과 연동되어 있습니다.</span>
                                 </td>
                                 <td>
-                                    <input type="button" name="" id="facebook_btn" value="연동완료" class="connect_after">
+                                    <input type="button" name="" id="facebook_btn">
                                 </td>
                             </tr>
                         </table>

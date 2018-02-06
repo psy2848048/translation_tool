@@ -320,7 +320,9 @@ li p {
     padding: 4px !important;
 }
 
-#txt_name {
+#txt_name,
+#local_pass, 
+#local_pass_confirm {
     /* width: 230px !important; */
     border-radius: 5px;
     border: 1px solid #999;
@@ -400,14 +402,15 @@ li p {
 }
 
 .account_tbl td input[type=button],
+.account_tbl td input[type=password],
 .account_tbl td input[type=text] {
-    font-size: 16px;
+    font-size: 13px;
 }
 
 .myinfo_btn {
     width: 100px;
     border: 0 solid red;
-    background-color: rgb(247, 82, 6);
+    background-color: rgba(247, 82, 6, 0.747);
     border-radius: 5px;
     color: #fff;
     font-size: 13px !important;
@@ -474,11 +477,4 @@ li p {
 #local_connect_area{
     display: none;
     margin-top:20px;
-}
-#local_pass,
-#local_pass_confirm{
-    border:1px solid #999;
-    border-radius:5px;
-    font-size:12px;   
-    padding-left:5px;
 }

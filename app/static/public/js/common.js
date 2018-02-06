@@ -1,6 +1,6 @@
 var _OFFSET = new Date().getTimezoneOffset();
 var _USER_ID = '',
-    _USER_NICK = '';
+    _USER_NICK = '';  
 
 // 특정 파라미터값 추출
 function getUrlParameter(sParam) {
@@ -204,7 +204,7 @@ function CheckEmail(email) {
 // 로그아웃
 function logout() {
     $.ajax({
-        url: '/api/v1/auth/local/signout',
+        url: '/api/v1/auth/signout',
         type: 'GET',
         async: true,
         success: function (res) {
@@ -213,10 +213,10 @@ function logout() {
                 location.href = '/';
             }
         },
-        error: function (e) {
+        error: function (err) {
             alert('로그아웃에 실패했습니다.\n\n급할경우 브라우저를 모두 닫아도 로그아웃 됩니다.');
             console.log('############ 8549 ############');
-            console.log(e);
+            console.log(err);
         }
     });
 }
@@ -243,31 +243,30 @@ function getSession() {
 // url = 실행할 url
 // method = POST, GET, PUT, DELETE...
 // data : 넘길 데이타
-// success_msg : 성공메시지
-// success_url : 성공시 이동할 url
-// err_msg : 에러메시지
-var AjaxExecute = function (url, method, data, success_msg, success_url, err_msg) {
+//var AjaxExecute = function (url, method, data, success_msg, success_url, err_msg) {
+var AjaxExecute = function (url, method, data) {
+    var result = '';
     $.ajax({
         url: url,
         type: method,
         data: data,
-        async: true,
+        async: false, // 변경 시 값이 넘어오지 않을 수 있음!!
         success: function (res) {
-            if (success_msg != '') alert(success_msg);
-            if (success_url != '') location.href = success_url;
+            result = res;  
 
             console.log('##### AjaxExecute Success #####');
             console.log(res);
         },
         error: function (err) {
-            if (err_msg != '') alert(err_msg);
+            result = 'err';
 
             console.log('##### AjaxExecute Error #####');
-            console.log('[xhr.status] : ', xhr.status);
+            console.log('[err.status] : ', err.status);
             console.log('[thrownError] : ', thrownError);
-            console.log('[xhr.responseText] : ', xhr.responseText);
+            console.log('[err.responseText] : ', err.responseText);
         }
     });
+    return result;
 };
 
 $(function () {
