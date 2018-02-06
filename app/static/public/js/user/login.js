@@ -35,9 +35,9 @@ var pageScript = function () {
                     } else console.log(res);
                 },
                 error: function (e) {
-                    alert(e.responseJSON.result_ko);
+                    //alert(e.responseJSON.result_ko);
                     console.log('[fail : 1658]');
-                    console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
+                    console.log(e);
                 }
             });
         });
