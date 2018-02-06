@@ -1,4 +1,4 @@
-from flask import request, make_response, json
+from flask import request, make_response, json, send_file
 from flask_login import login_required, current_user
 import app.users.models as model
 
@@ -59,10 +59,10 @@ def change_picture():
 
 
 import requests
-def check_picture():
+import io
+def test_picture():
     purl = request.values.get('picture', None)
     r = requests.get(purl)
-    picture = r.content
 
-    return
-
+    # return io.BytesIO(r.content)
+    return send_file(io.BytesIO(r.content), mimetype=r.headers['Content-Type'], as_attachment=True, attachment_filename='user_picture')
