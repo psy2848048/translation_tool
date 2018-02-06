@@ -160,7 +160,7 @@ def local_signin():
     elif is_ok == 2:
         return make_response(json.jsonify(result_en='Unauthenticated User'
                                           , result_ko='이메일 인증되지 않은 사용자입니다'
-                                          , result=403), 403)
+                                          , result=263), 263)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
         is_ok = user.can_login(password)
@@ -233,7 +233,7 @@ def facebook_authorized():
             return render_template('user/login.html'
                                    , result_en='Unauthenticated User'
                                    , result_ko='이메일 인증되지 않은 사용자입니다'
-                                   , result=403)
+                                   , result=263)
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지
         else:
@@ -296,7 +296,7 @@ def google_signin():
             return render_template('user/login.html'
                                    , result_en='Unauthenticated User'
                                    , result_ko='이메일 인증되지 않은 사용자입니다'
-                                   , result=403)
+                                   , result=263)
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
