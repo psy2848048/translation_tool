@@ -25,7 +25,7 @@ a:hover{
     background-color: #fff;
     position: absolute;
     width: 400px;
-    height: 580px;
+    height: 540px;
     top: -50px;
     /* 현재박스 높이 고려해서 적당히 - 적용 */
     bottom: 0;
