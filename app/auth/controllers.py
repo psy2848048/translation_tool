@@ -159,7 +159,7 @@ def local_signin():
                                           , result=464), 464)
     elif is_ok == 2:
         return make_response(json.jsonify(result_en='Unauthenticated User'
-                                          , result_ko='인증되지 않은 사용자입니다'
+                                          , result_ko='이메일 인증되지 않은 사용자입니다'
                                           , result=403), 403)
     else:
         #: 존재하는 사용자라면 입력된 password가 맞는지 확인
@@ -210,7 +210,7 @@ def facebook_authorized():
     data = facebook.get('/me?fields=email,name,picture').data
 
     #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
-    user = model.select_user_by_social_id('facebook', data.get('id'))
+    user, is_ok = model.select_user_by_social_id('facebook', data.get('id'))
 
     if not user:
         #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
@@ -228,7 +228,14 @@ def facebook_authorized():
                                        , result_ko='일시적인 오류로 실패했습니다'
                                        , result=461)
 
-        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
+        #: 존재함 + 인증되지 않음 --> 로그인 페이지
+        elif is_ok == 2:
+            return render_template('user/login.html'
+                                   , result_en='Unauthenticated User'
+                                   , result_ko='이메일 인증되지 않은 사용자입니다'
+                                   , result=403)
+
+        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지
         else:
             return render_template('user/signup.html', social_id=data.get('id'), signup_type='facebook'
                                    , name=data.get('name'), email=data.get('email'), picture=data['picture']['data']['url'])
@@ -263,9 +270,10 @@ def google_signin():
     authorization_header = {"Authorization": "OAuth %s" % session['google_credentials']['token']}
     res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
     userinfo = json.loads(res.text)
+    pprint(userinfo)
 
     #: 존재하는 구글 사용자인지 확인 = google_id 존재 유무 확인
-    user = model.select_user_by_social_id('google', userinfo['id'])
+    user, is_ok = model.select_user_by_social_id('google', userinfo['id'])
 
     if not user:
         #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
@@ -282,6 +290,13 @@ def google_signin():
                                        , result_en='Something Wrong'
                                        , result_ko='일시적인 오류로 실패했습니다'
                                        , result=461)
+
+        #: 존재함 + 인증되지 않음 --> 로그인 페이지
+        elif is_ok == 2:
+            return render_template('user/login.html'
+                                   , result_en='Unauthenticated User'
+                                   , result_ko='이메일 인증되지 않은 사용자입니다'
+                                   , result=403)
 
         #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
         else:
@@ -366,6 +381,8 @@ def google_credentials_to_dict(credentials):
           'scopes': credentials.scopes}
 
 
+def recovery_password():
+    email = request.form.get('')
 #: (테스트용) 세션 확인
 def get_session():
     return make_response(jsonify(**session), 200)
