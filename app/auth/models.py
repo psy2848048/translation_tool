@@ -1,9 +1,10 @@
 from sqlalchemy import Table, MetaData, text, exc
-from app import db, common
+from app import app, db, common
 import traceback
 from flask_login import UserMixin
 from datetime import datetime
-
+import boto3
+import requests
 
 class User(UserMixin):
     def can_login(self, password):
@@ -204,10 +205,36 @@ def select_user_info_by_email(email):
     res = conn.execute(text("""SELECT id, name, email, picture, conn_facebook_time, conn_google_time 
                               FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
 
+    ############################################################################################################
+
+    bucket_name = 'marocat'
+    ufilename = 'profile/home_oh3.png'  # DB에 저장할 s3key
+
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+        # aws_session_token=SESSION_TOKEN,
+    )
+
+    url = s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={
+            'Bucket': bucket_name,
+            'Key': ufilename
+        }
+    )
+
+    res = dict(res)
+    # rp = requests.get(url)
+    res['picture'] = url
+
+    ############################################################################################################
+
     if res is None:
         return None
     else:
         user = User()
         user.id = res['email']
-        user.info = dict(res)
+        user.info = res
         return user
