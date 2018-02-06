@@ -22,8 +22,7 @@ var pageScript = function () {
         var email = $('#email'),
             pass = $('#pass'),
             pass_confirm = $('#pass_confirm'),
-            nick = $('#nick'),
-            social_type = type;
+            nick = $('#nick');
 
         // 공백        
         if (nick.val().trim() == '') {
