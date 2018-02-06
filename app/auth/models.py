@@ -37,8 +37,8 @@ def insert_user(signup_type, name, email, password, social_id, picture):
     hashpwd = common.encrypt_pwd(password)
 
     #: 사진이 있는 경우 바이너리로 저장하기
-    if picture:
-        try:
+    try:
+        if len(picture) > 15:
             r = requests.get(picture)
 
             pmimetype = re.split('/', r.headers['Content-Type'])
@@ -55,10 +55,10 @@ def insert_user(signup_type, name, email, password, social_id, picture):
                 }
             )
             print(111)
-        except:
-            print('Wrong! (S3 upload_fileobj)')
-            traceback.print_exc()
-            return False
+    except:
+        print('Wrong! (S3 upload_fileobj)')
+        traceback.print_exc()
+        return False
 
     try:
         print(222111)
@@ -243,7 +243,8 @@ def select_user_by_social_id(social_type, social_id):
 
 def select_user_info_by_email(email):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email, conn_facebook_time, conn_google_time, picture_url 
+    res = conn.execute(text("""SELECT id, name, email, picture_s3key, picture_url 
+                                    , conn_facebook_time, conn_google_time
                               FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
 
     if res is None:

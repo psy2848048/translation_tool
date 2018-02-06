@@ -1,11 +1,30 @@
 from flask import request, make_response, json, send_file
 from flask_login import login_required, current_user
 import app.users.models as model
-
+import requests
+import io
 
 @login_required
 def get_user_info():
-    return make_response(json.jsonify(current_user.info), 200)
+    user_info = current_user.info
+
+    # r = requests.get(user_info['picture_url'])
+    # r = requests.get('https://lh4.googleusercontent.com/-v1oPGZT1bRw/AAAAAAAAAAI/AAAAAAAAAAc/j2WHAh6A1Cg/photo.jpg')
+    # picture = io.BytesIO(r.content)
+    # del user_info['picture_url']
+    # del user_info['picture_s3key']
+
+    # return make_response(json.jsonify(user_info)
+    #                      , send_file(io.BytesIO(r.content), mimetype=r.headers['Content-Type'], as_attachment=False, attachment_filename='user_picture.jpg'))
+
+    # response = make_response(json.jsonify(picture))
+    # cd = 'attachment; filename={}'.format('test.png')
+    # response.headers['Content-Disposition'] = cd
+    # del user_info['picture_url']
+    # del user_info['picture_s3key']
+    # return response
+
+    return make_response(json.jsonify(user_info), 200)
 
 
 @login_required
@@ -58,8 +77,6 @@ def change_picture():
     pass
 
 
-import requests
-import io
 def test_picture():
     purl = request.values.get('picture', None)
     r = requests.get(purl)
