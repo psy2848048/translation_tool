@@ -1,8 +1,16 @@
 var pageScript = function () {
-    var local = this,
-        type = getUrlParameter('type');
+    var local = this;
+        //type = getUrlParameter('type');
+    this.loginCheck = function () {
+        setTimeout(function () {
+            if (IsValidStr(_USER_ID)) {
+                alert('로그온 상태입니다.');
+                location.href = '/static/front/project/projects.html';
+            }
+        }, 500);
+    };
     this.preEvents = function () {
-        local.social_text();
+        local.social_init();
     };
     this.clickEvents = function () {
         $('.add').on('click', function (e) {
@@ -105,18 +113,25 @@ var pageScript = function () {
             }
         });
     };
-    this.social_text = function () {
-        if (type != undefined && type.trim() != '') {
-            $('#con_social').html('');
-            $(type.split(',')).each(function (idx, res) {
-                if (res.trim() == 'g') $('#con_social').append('구글');
-                else if (res.trim() == 'f') $('#con_social').append('페이스북');
-
-                if (type.split(',').length != parseInt(idx) + 1) $('#con_social').append(', ');
-            });
+    this.social_init = function(){
+        if($('#hd_social_id').val() != '{{social_id}}'){
+            $('#nick').val($('#hd_nick').val());
+            $('#email').val($('#hd_email').val());
         }
     };
+    // this.social_text = function () {
+    //     if (type != undefined && type.trim() != '') {
+    //         $('#con_social').html('');
+    //         $(type.split(',')).each(function (idx, res) {
+    //             if (res.trim() == 'g') $('#con_social').append('구글');
+    //             else if (res.trim() == 'f') $('#con_social').append('페이스북');
+
+    //             if (type.split(',').length != parseInt(idx) + 1) $('#con_social').append(', ');
+    //         });
+    //     }
+    // };
     this.bind = function () {
+        local.loginCheck();
         local.preEvents();
         local.clickEvents();
     };

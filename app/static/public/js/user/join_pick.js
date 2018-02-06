@@ -1,5 +1,13 @@
 var pageScript = function () {
     var local = this;
+    this.loginCheck = function () {
+        setTimeout(function () {
+            if (IsValidStr(_USER_ID)) {
+                alert('로그온 상태입니다.');
+                location.href = '/static/front/project/projects.html';
+            }
+        }, 500);
+    };
     this.preEvent = function () {
         //var ver = getUrlParameter('ver');
         //var lang = getUrlParameter('lang');
@@ -45,6 +53,7 @@ var pageScript = function () {
         });
     };
     this.bind = function () {
+        local.loginCheck();
         local.preEvent();
         local.clickEvents();
     };

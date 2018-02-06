@@ -257,13 +257,21 @@ var AjaxExecute = function (url, method, data) {
             console.log('##### AjaxExecute Success #####');
             console.log(res);
         },
-        error: function (err) {
-            result = 'err';
+        error: function (xhr, ajaxOptions, thrownError) {
+            if(IsValidStr(xhr.result_ko)) result = xhr.result_ko;
+            else result = 'err';
 
             console.log('##### AjaxExecute Error #####');
-            console.log('[err.status] : ', err.status);
-            console.log('[thrownError] : ', thrownError);
-            console.log('[err.responseText] : ', err.responseText);
+            console.log('### xhr ###');
+            console.log(xhr);
+            console.log('### xhr.status ###');
+            console.log(xhr.status);
+            console.log('### xhr.responseText ###');
+            console.log(xhr.responseText);
+            console.log('### thrownError ###');
+            console.log(thrownError);
+            console.log('### ajaxOptions ###');
+            console.log(ajaxOptions);
         }
     });
     return result;

@@ -70,19 +70,28 @@ var pageScript = function () {
         // 닉네임 수정 실행버튼
         $('#nick_btn').on('click', function (e) {
             e.preventDefault();
+            var nick = $('#txt_name').val().trim();
+            if(nick.length < 2){
+                alert('닉네임은 2자이상 입니다.');
+                $('#txt_name').focus();
+                return false;
+            }
             $.ajax({
-                url: '닉네임수정URL',
-                type: 'UPDATE',
+                url: '/api/v1/users/me/nickname',
+                type: 'PUT',
                 data: {
-                    닉네임수정: '데이타'
+                    nickname: nick
                 },
                 async: true,
                 success: function (res) {
+                    alert(res.result_ko);
+
                     console.log('##### 5214 #####');
                     console.log(res);
                 },
                 error: function (err) {
-                    alert('닉네임이 수정되지 않았습니다');
+                    alert(err.result_ko);
+
                     console.log('##### 9876 #####');
                     console.log(err.responseText);
                 }
@@ -102,7 +111,7 @@ var pageScript = function () {
                 $('#local_pass').focus();
             }
         });
-        // 로컬계정 생성 실행 버튼
+        // 비밀번호 변경 버튼
         $('#local_connect_btn').on('click', function (e) {
             e.preventDefault();
             var pass = $('#local_pass');
@@ -124,29 +133,12 @@ var pageScript = function () {
                 pass.focus();
                 return false;
             }
-            $.ajax({
-                url: '로컬계정생성실행URL',
-                type: 'POST',
-                data: {
-                    로컬계정생성: '데이타'
-                },
-                async: true,
-                success: function (res) {
-                    alert('로컬계정 비밀번호가 저장되었습니다.');
-                    $('#local_connect_area').hide();
-                    $('#sp_local_desc').text('로컬계정이 생성되어 있습니다.').show();
-                    $('#email_btn').val('비밀번호 변경').removeClass().addClass('local_connect_after');
-
-                    console.log('##### 6595 #####');
-                    console.log(res);
-                },
-                error: function (err) {
-                    alert('로컬계정이 생성되지 않았습니다');
-
-                    console.log('##### 4563 #####');
-                    console.log(err.responseText);
-                }
-            });
+            var data = {
+                new_pwd:pass.val().trim()
+            };
+            var res = AjaxExecute('/api/v1/users/me/pwd', 'PUT', data);
+            alert(res.result_ko);
+            console.log(res);
         });
         // 로컬계정 생성 취소 버튼
         $('#local_connect_cancel_btn').on('click', function (e) {
