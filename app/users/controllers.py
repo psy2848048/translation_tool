@@ -10,15 +10,19 @@ def get_user_info():
 
 @login_required
 def change_password():
-    old_pwd = request.form.get('old_pwd', None)
     new_pwd = request.form.get('new_pwd', None)
 
-    if None in [old_pwd, new_pwd]:
+    if None in [new_pwd]:
         return make_response(json.jsonify(result_en='Something Not Entered'
                                           , result_ko='입력되지 않은 값이 있습니다'
                                           , result=460), 460)
+    #: 비밀번호 검사
+    elif len(new_pwd) < 4:
+        return make_response(json.jsonify(result_en='Password must be at least 4 digits'
+                                          , result_ko='비밀번호는 4자리 이상이어야 합니다.'
+                                          , result=467), 467)
 
-    is_done = model.update_password(current_user.id, old_pwd, new_pwd)
+    is_done = model.update_password(current_user.id, new_pwd)
 
     if is_done == 1:
         return make_response(json.jsonify(result_en='OK'
@@ -52,3 +56,13 @@ def change_nickname():
 
 def change_picture():
     pass
+
+
+import requests
+def check_picture():
+    purl = request.values.get('picture', None)
+    r = requests.get(purl)
+    picture = r.content
+
+    return
+

@@ -1,9 +1,10 @@
 from sqlalchemy import Table, MetaData, text, exc
-from app import db, common
+from app import app, db, common
 import traceback
 from flask_login import UserMixin
 from datetime import datetime
-
+import boto3
+import requests
 
 class User(UserMixin):
     def can_login(self, password):
@@ -39,11 +40,10 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             trans.rollback()
             return 2
 
-        if signup_type == 'local':  #: 사용자에게 인증코드 이메일 보내기
-            is_done = send_email_for_local_signup(email)
-            if is_done is False:
-                trans.rollback()
-                return False
+        is_done = send_email_for_cert_signup(email)
+        if is_done is False:
+            trans.rollback()
+            return False
 
         trans.commit()
         return True
@@ -82,7 +82,7 @@ def update_user_social_info(social_type, email, social_id):
         conn.close()
 
 
-def send_email_for_local_signup(email):
+def send_email_for_cert_signup(email):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -181,8 +181,8 @@ def select_user_by_social_id(social_type, social_id):
 
     res = conn.execute(text("""SELECT id, name, email, picture, facebook_id, google_id
                               FROM `marocat v1.1`.users 
-                              WHERE facebook_id=:facebook_id AND is_deleted=FALSE ;""")
-                       , facebook_id=social_id).fetchone()
+                              WHERE (facebook_id=:fid OR google_id=:gid)AND is_deleted=FALSE ;""")
+                       , fid=social_id, gid=social_id).fetchone()
 
     if res is None:
         return None
@@ -205,10 +205,36 @@ def select_user_info_by_email(email):
     res = conn.execute(text("""SELECT id, name, email, picture, conn_facebook_time, conn_google_time 
                               FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
 
+    ############################################################################################################
+
+    bucket_name = 'marocat'
+    ufilename = 'profile/home_oh3.png'  # DB에 저장할 s3key
+
+    s3 = boto3.client(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+        # aws_session_token=SESSION_TOKEN,
+    )
+
+    url = s3.generate_presigned_url(
+        ClientMethod='get_object',
+        Params={
+            'Bucket': bucket_name,
+            'Key': ufilename
+        }
+    )
+
+    res = dict(res)
+    # rp = requests.get(url)
+    res['picture'] = url
+
+    ############################################################################################################
+
     if res is None:
         return None
     else:
         user = User()
         user.id = res['email']
-        user.info = dict(res)
+        user.info = res
         return user
