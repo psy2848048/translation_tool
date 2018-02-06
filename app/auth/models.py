@@ -62,6 +62,9 @@ def insert_user(signup_type, name, email, password, social_id, picture):
 
     try:
         print(222111)
+        print(pname)
+        print(purl)
+        print(signup_type)
 
         if signup_type == 'local':
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
@@ -220,13 +223,15 @@ def select_user_by_email(email):
 def select_user_by_social_id(social_type, social_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id
+    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified
                               FROM `marocat v1.1`.users 
                               WHERE (facebook_id=:fid OR google_id=:gid)AND is_deleted=FALSE ;""")
                        , fid=social_id, gid=social_id).fetchone()
 
     if res is None:
-        return None
+        return None, 0
+    elif res['is_certified'] is 0:
+        return None, 2
 
     user = User()
     user.id = res['email']
@@ -238,12 +243,12 @@ def select_user_by_social_id(social_type, social_id):
     elif social_type == 'google':
         user.google_id = res['google_id']
 
-    return user
+    return user, 1
 
 
 def select_user_info_by_email(email):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email, picture_s3key, picture_url 
+    res = conn.execute(text("""SELECT id, name, email, picture_url as picture
                                     , conn_facebook_time, conn_google_time
                               FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
 

@@ -29,4 +29,7 @@ auth.add_url_rule('/google/revoke', view_func=ctrl.google_revoke, methods=['GET'
 # 로그아웃
 auth.add_url_rule('/signout', view_func=ctrl.signout, methods=['GET'])
 
+# 비밀번호 찾기
+auth.add_url_rule('/recoverPwd', view_func=ctrl.recovery_password, methods=['POST'])
+
 auth.add_url_rule('/check', view_func=ctrl.get_session, methods=['GET'])
