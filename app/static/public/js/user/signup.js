@@ -1,6 +1,6 @@
 var pageScript = function () {
     var local = this;
-        //type = getUrlParameter('type');
+    //type = getUrlParameter('type');
     this.loginCheck = function () {
         setTimeout(function () {
             if (IsValidStr(_USER_ID)) {
@@ -8,6 +8,13 @@ var pageScript = function () {
                 location.href = '/static/front/project/projects.html';
             }
         }, 500);
+        setTimeout(function () {
+            if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
+            if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
+            if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
+            if ($('#hd_picture').val() == '{{picture}}') $('#hd_picture').val('');
+            if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('');
+        }, 1000);
     };
     this.preEvents = function () {
         local.social_init();
@@ -82,7 +89,7 @@ var pageScript = function () {
             $('#chk_policy').focus();
             return false;
         }
-        
+
         var data = {
             email: email.val().trim(),
             password: pass.val().trim(),
@@ -112,8 +119,8 @@ var pageScript = function () {
             }
         });
     };
-    this.social_init = function(){
-        if($('#hd_social_id').val() != '{{social_id}}'){
+    this.social_init = function () {
+        if ($('#hd_social_id').val() != '{{social_id}}') {
             $('#nick').val($('#hd_nick').val());
             $('#email').val($('#hd_email').val());
         }
