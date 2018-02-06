@@ -1,5 +1,13 @@
 var pageScript = function () {
     var local = this;
+    this.loginCheck = function () {
+        setTimeout(function () {
+            if (IsValidStr(_USER_ID)) {
+                alert('로그온 상태입니다.');
+                location.href = '/static/front/project/projects.html';
+            }
+        }, 500);
+    };
     this.clickEvent = function () {
         //$('#loginBtn').on('click', function(){
         //    if($('#txt_id').val() == 'ciceron' && $('#txt_pass').val() == 'ciceron8888') location.href='/static/front/project/projects.html';
@@ -35,6 +43,7 @@ var pageScript = function () {
         });
     };
     this.bind = function () {
+        local.loginCheck();
         local.clickEvent();
     };
 };
