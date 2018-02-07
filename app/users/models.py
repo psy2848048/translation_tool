@@ -3,6 +3,7 @@ from app import db, common
 import traceback
 import hashlib
 from datetime import datetime
+import re
 
 
 def update_password(email, new_pwd):
@@ -58,3 +59,30 @@ def update_nickname(email, nickname):
         traceback.print_exc()
         trans.rollback()
         return False
+
+
+def update_picture(email, picture):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    u = Table('users', meta, autoload=True)
+
+    try:
+        mimetype = re.split('/', picture.content_type)
+        pname, purl, is_done = common.upload_photo_to_bytes_on_s3(picture.read(), mimetype[1], email)
+        if is_done is False:
+            return 2
+
+        res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname, picture_url=purl)
+
+        if res.rowcount != 1:
+            print('update_nickname', res.rowcount)
+            trans.rollback()
+            return 0
+
+        trans.commit()
+        return 1
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return 0

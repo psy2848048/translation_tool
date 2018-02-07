@@ -4,6 +4,7 @@ import app.users.models as model
 import requests
 import io
 
+
 @login_required
 def get_user_info():
     return make_response(json.jsonify(current_user.info), 200)
@@ -56,7 +57,22 @@ def change_nickname():
 
 
 def change_picture():
-    pass
+    picture = request.files.get('picture', None)
+
+    is_done = model.update_picture(current_user.id, picture)
+
+    if is_done is 1:
+        return make_response(json.jsonify(result_en='OK'
+                                          , result_ko='완료'
+                                          , result=200), 200)
+    elif is_done is 2:
+        return make_response(json.jsonify(result_en='Picture upload failed'
+                                          , result_ko='프로필 사진 업로드에 실패했습니다'
+                                          , result=468), 468)
+    else:
+        return make_response(json.jsonify(result_en='Something Wrong'
+                                          , result_ko='일시적인 오류로 실패했습니다'
+                                          , result=461), 461)
 
 
 def test_picture():

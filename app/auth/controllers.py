@@ -48,6 +48,7 @@ def signup(signup_type):
     password = request.form.get('password', None)
     social_id = request.form.get('social_id', None)
     picture = request.form.get('picture', None)
+    print(signup_type)
 
     if None in [email, password, name]:
         return make_response(json.jsonify(result_en='Something Not Entered'
@@ -91,6 +92,10 @@ def signup(signup_type):
         return make_response(json.jsonify(result_en='This email already exists'
                                           , result_ko='이미 가입된 이메일입니다'
                                           , result=260), 260)
+    elif is_done is 3:
+        return make_response(json.jsonify(result_en='Picture upload failed'
+                                          , result_ko='프로필 사진 업로드에 실패했습니다'
+                                          , result=468), 468)
     else:
         return make_response(json.jsonify(result_en='Something Wrong'
                                           , result_ko='일시적인 오류로 실패했습니다'
@@ -168,8 +173,8 @@ def local_signin():
         #: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
         if is_ok is True:
             login_user(user, remember=True)
-            session['user_nickname'] = current_user.nickname
-            session['user_picture'] = current_user.picture
+            session['user_nickname'] = user.nickname
+            session['user_picture'] = user.picture
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                               , result_ko="로그인 성공!"
@@ -243,8 +248,8 @@ def facebook_authorized():
     #: 존재함 + 로그아웃 상태 --> 로그인!
     elif user and current_user.is_authenticated is False:
         login_user(user, remember=True)
-        session['user_nickname'] = current_user.nickname
-        session['user_picture'] = current_user.picture
+        session['user_nickname'] = user.nickname
+        session['user_picture'] = user.picture
 
     return render_template('project/projects.html')
 
@@ -306,8 +311,8 @@ def google_signin():
     #: 존재함 + 로그아웃 상태 --> 로그인!
     elif user and current_user.is_authenticated is False:
         login_user(user, remember=True)
-        session['user_nickname'] = current_user.nickname
-        session['user_picture'] = current_user.picture
+        session['user_nickname'] = user.nickname
+        session['user_picture'] = user.picture
 
         # Save credentials back to session in case access token was refreshed.
         # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
@@ -383,6 +388,8 @@ def google_credentials_to_dict(credentials):
 
 def recovery_password():
     email = request.form.get('')
+
+
 #: (테스트용) 세션 확인
 def get_session():
     return make_response(jsonify(**session), 200)

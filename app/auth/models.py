@@ -7,15 +7,6 @@ import requests
 import re
 import io
 
-import boto3
-S3 = boto3.client(
-        's3',
-        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
-        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
-        # aws_session_token=SESSION_TOKEN,
-    )
-BUCKET_NAME = 'marocat'
-
 
 class User(UserMixin):
     def can_login(self, password):
@@ -36,35 +27,14 @@ def insert_user(signup_type, name, email, password, social_id, picture):
 
     hashpwd = common.encrypt_pwd(password)
 
-    #: 사진이 있는 경우 바이너리로 저장하기
     try:
+        #: 사진이 있는 경우 바이너리로 저장하기
         if len(picture) > 15:
             r = requests.get(picture)
-
-            pmimetype = re.split('/', r.headers['Content-Type'])
-            t = common.create_token(name)
-            pname = 'profile/' + t + str(datetime.utcnow()) + '.' + pmimetype[1]
-
-            S3.upload_fileobj(io.BytesIO(r.content), BUCKET_NAME, pname)
-
-            purl = S3.generate_presigned_url(
-                ClientMethod='get_object',
-                Params={
-                    'Bucket': BUCKET_NAME,
-                    'Key': pname
-                }
-            )
-            print(111)
-    except:
-        print('Wrong! (S3 upload_fileobj)')
-        traceback.print_exc()
-        return False
-
-    try:
-        print(222111)
-        print(pname)
-        print(purl)
-        print(signup_type)
+            mimetype = re.split('/', r.headers['Content-Type'])
+            pname, purl, is_done = common.upload_photo_to_bytes_on_s3(r.content, mimetype[1], name)
+            if is_done is False:
+                return 3
 
         if signup_type == 'local':
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
@@ -76,7 +46,6 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd
                                , google_id=social_id, conn_google_time=datetime.utcnow()
                                , picture_s3key=pname, picture_url=purl)
-        print(333222111)
 
         if res.rowcount != 1:
             print('DUP! (user is already exist, local)')
@@ -84,7 +53,6 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             return 2
 
         is_done = send_email_for_cert_signup(email)
-        print(444333222111)
         if is_done is False:
             trans.rollback()
             return False
@@ -203,7 +171,7 @@ def cert_local_user(email, cert_token):
 def select_user_by_email(email):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, is_certified
+    res = conn.execute(text("""SELECT id, name, email, is_certified, picture_url
                               FROM `marocat v1.1`.users 
                               WHERE email = :email AND is_deleted=FALSE ;"""), email=email).fetchone()
 
@@ -215,7 +183,7 @@ def select_user_by_email(email):
         user = User()
         user.id = res['email']
         user.nickname = res['name']
-        user.picture = None
+        user.picture = res['picture_url']
 
         return user, 1
 
@@ -223,9 +191,9 @@ def select_user_by_email(email):
 def select_user_by_social_id(social_type, social_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified
+    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified, picture_url
                               FROM `marocat v1.1`.users 
-                              WHERE (facebook_id=:fid OR google_id=:gid)AND is_deleted=FALSE ;""")
+                              WHERE (facebook_id=:fid OR google_id=:gid) AND is_deleted=FALSE ;""")
                        , fid=social_id, gid=social_id).fetchone()
 
     if res is None:
@@ -236,7 +204,7 @@ def select_user_by_social_id(social_type, social_id):
     user = User()
     user.id = res['email']
     user.nickname = res['name']
-    user.picture = None
+    user.picture = res['picture_url']
 
     if social_type == 'facebook':
         user.facebook_id = res['facebook_id']
