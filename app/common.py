@@ -1,6 +1,9 @@
 #: 여기저기서 자꾸쓰는 함수 모음집
-from app import app
-from datetime import datetime
+from app import app, db
+from flask import request, session, make_response, jsonify
+from sqlalchemy import Table, MetaData, text, exc
+from flask_login import current_user
+from datetime import datetime, timedelta
 import hashlib
 import string
 import random
@@ -17,6 +20,77 @@ S3 = boto3.client(
         # aws_session_token=SESSION_TOKEN,
     )
 BUCKET_NAME = 'marocat'
+
+
+def ddos_check_and_write_log():
+    """
+    API 실행 전, 해당 IP에서 1초에 100번 이상 실행되면 30분동안 접속 차단한다.
+    그리고 차단하지 않은 IP는 임시 테이블에 로그를 남겨 나중에 분석 자료로 이용한다.
+
+    # 추후 변경 사항
+    현재는 임시테이블(temp_actions_log)에 로그를 쌓고 있다.
+    나중에 Agent가 30분에 한번씩 로그를 영구보관소로 옮길 예정
+
+    :return: 우리 서비스를 계속 사용할 수 있는 자격 유무(True/False)
+    """
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    tal = Table('temp_actions_log', meta, autoload=True)
+    bl = Table('blacklist', meta, autoload=True)
+    is_ok = True
+
+    method = request.method
+    api_endpoint = request.environ['PATH_INFO']
+    ip_address = request.remote_addr
+
+    #: 사용자 id 받아오기
+    if current_user.is_authenticated is True:
+        uid = current_user.info['id']
+    else:
+        uid = 0
+
+    try:
+        #: 1초동안 몇번 접속했는가?
+        res1 = conn.execute(text("""SELECT count(*) as cnt FROM `marocat v1.1`.temp_actions_log 
+                                    WHERE (user_id=:uid OR ip_address=:ip_address)
+                                    AND log_time BETWEEN CURRENT_TIMESTAMP AND (CURRENT_TIMESTAMP - INTERVAL 1 SECOND)""")
+                            , uid=uid, ip_address=ip_address).fetchone()
+        conn_cnt = res1['cnt']
+
+        #: 1초동안 100번이상 접속하면 블랙리스트 등록
+        if conn_cnt > 100:
+            for key in list(session.keys()):
+                session.pop(key)
+
+            conn.execute(bl.insert(), user_id=uid, ip_address=ip_address
+                         , time_from=datetime.utcnow(), time_to=datetime.utcnow() + timedelta(minutes=30))
+            is_ok = False
+
+        #: 블랙리스트인가?
+        res2 = conn.execute(text("""SELECT count(*) as cnt FROM `marocat v1.1`.blacklist 
+                                    WHERE user_id=:uid
+                                    AND CURRENT_TIMESTAMP BETWEEN time_from AND time_to""")
+                            , uid=uid).fetchone()
+        blacklist_cnt = res2['cnt']
+
+        #: 블랙리스트라면 차단시키기 위해 세션값 먼저 삭제하기
+        if blacklist_cnt > 0:
+            for key in list(session.keys()):
+                session.pop(key)
+            is_ok = False
+
+        #: 로그 저장 (temp_actions_log)
+        conn.execute(tal.insert(), user_id=uid, ip_address=ip_address, method=method, api=api_endpoint)
+
+        trans.commit()
+        return is_ok
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return make_response(jsonify(result_en='Something Wrong'
+                                     , result_ko='일시적인 오류로 실패했습니다'
+                                     , result=461), 461)
 
 
 def convert_datetime_4mysql(basedate):
@@ -117,78 +191,3 @@ def upload_photo_to_bytes_on_s3(picture, mimetype, name):
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
         return None, None, False
-
-
-# def ddos_check_and_write_log(conn):
-#     """
-#     API 실행 전, 해당 IP에서 1초에 100번 이상 실행되면 30분동안 접속 차단한다.
-#     그리고 차단하지 않은 IP는 임시 테이블에 로그를 남겨 나중에 분석 자료로 이용한다.
-#
-#     * 추후 변경 사항
-#     """
-#     cursor = conn.cursor()
-#
-#     if session.get('useremail') != None:
-#         user_id = get_user_id(conn, session['useremail'])
-#     else:
-#         user_id = 0
-#
-#     method = request.method
-#     api_endpoint = request.environ['PATH_INFO']
-#     ip_address = request.headers.get('x-forwarded-for-client-ip')
-#
-#     query_apiCount = """
-#         SELECT count(*) FROM CICERON.TEMP_ACTIONS_LOG
-#           WHERE (user_id = %s OR ip_address = %s)
-#             AND log_time BETWEEN (CURRENT_TIMESTAMP - interval '1 seconds') AND CURRENT_TIMESTAMP"""
-#     cursor.execute(query_apiCount, (user_id, ip_address, ))
-#     conn_count = cursor.fetchone()[0]
-#
-#     query_getBlacklist = """
-#         SELECT count(*) FROM CICERON.BLACKLIST
-#           WHERE user_id = %s
-#             AND CURRENT_TIMESTAMP BETWEEN time_from AND time_to
-#     """
-#     cursor.execute(query_getBlacklist, (user_id, ))
-#     blacklist_count = cursor.fetchone()[0]
-#
-#     is_OK = True
-#     if conn_count > 100:
-#         session.pop('logged_in', None)
-#         session.pop('useremail', None)
-#         query_insertBlackList = """
-#             INSERT INTO CICERON.BLACKLIST (id, user_id, ip_address, time_from, time_to)
-#             VALUES
-#             (
-#                nextval('CICERON.SEQ_BLACKLIST')
-#               ,%s
-#               ,%s
-#               ,CURRENT_TIMESTAMP
-#               ,CURRENT_TIMESTAMP + interval('30 minutes')
-#             )
-#         """
-#         cursor.execute(query_insertBlackList, (user_id, ip_address, ))
-#         is_OK = False
-#
-#     if blacklist_count > 0:
-#         session.pop('logged_in', None)
-#         session.pop('useremail', None)
-#         is_OK = False
-#
-#     query_insertLog = """
-#         INSERT INTO CICERON.TEMP_ACTIONS_LOG
-#           (id, user_id, method, api, log_time, ip_address)
-#         VALUES
-#           (
-#              nextval('CICERON.SEQ_USER_ACTIONS')
-#             ,%s
-#             ,%s
-#             ,%s
-#             ,CURRENT_TIMESTAMP
-#             ,%s
-#           )
-#     """
-#     cursor.execute(query_insertLog, (user_id, method, api_endpoint, ip_address, ))
-#     conn.commit()
-#
-#     return is_OK

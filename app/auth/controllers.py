@@ -280,7 +280,7 @@ def google_signin():
     user, is_ok = model.select_user('google', userinfo['id'])
 
     if not user:
-        #: facebook_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
+        #: social_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
         auser, a_is_ok = model.select_user('local', userinfo['email'])
         if auser:
             return render_template('user/login.html'

@@ -77,12 +77,21 @@ print(app.url_map)
 #####################################################################################
 
 
+from app import common
+from flask import request
+
+
 @app.before_request
 def before_request():
     """
     모든 API 실행 전 실행하는 부분
     """
-    pass
+    if '/api' in request.environ['PATH_INFO']:
+        is_ok = common.ddos_check_and_write_log()
+        if is_ok is False:
+            return make_response(jsonify(result_en='Blocked connection'
+                                         , result_ko='접속이 차단되었습니다'
+                                         , result=503), 503)
 
 
 @app.teardown_request
