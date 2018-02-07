@@ -13,6 +13,7 @@ var pageScript = function () {
         //var lang = getUrlParameter('lang');
         //if(ver != undefined && ver.trim() != '') $('#selVersion').val(ver);
         //if(lang != undefined && lang.trim() != '') $('#selLang').val(lang);
+        if ($('#hd_msg').val() != '{{result_ko}}') $('#p_msg').css({'color': 'red'}).text($('#hd_msg').val());          
     };
     this.clickEvents = function () {
         $('#googleLink').on('click', function () {

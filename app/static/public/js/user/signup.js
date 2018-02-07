@@ -7,23 +7,29 @@ var pageScript = function () {
                 alert('로그온 상태입니다.');
                 location.href = '/static/front/project/projects.html';
             }
-        }, 500);
+        }, 500);        
         setTimeout(function () {
             if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
             if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
             if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
             if ($('#hd_picture').val() == '{{picture}}') $('#hd_picture').val('');
-            if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('');
+            if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('local');
         }, 1000);
     };
-    this.preEvents = function () {
-        local.social_init();
+    this.preEvents = function () {        
+        local.social_init();      
     };
     this.clickEvents = function () {
         $('.add').on('click', function (e) {
             e.preventDefault();
             local.check_form();
         });
+    };
+    this.mask = function () {
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
+        $('#mask').css({'width': maskWidth,'height': maskHeight}).show();
     };
     this.check_form = function () {
         var email = $('#email'),
@@ -100,24 +106,27 @@ var pageScript = function () {
 
         console.log('######### 4596 ###########');
         console.log(data);
+ 
+        local.mask();
+        $('#dvLoading').show();
 
-        $.ajax({
-            url: '/api/v1/auth/signup/local',
-            data: data,
-            type: 'POST',
-            async: true,
-            success: function (res) {
-                alert(res.result_ko);
-                if (res.result == 200) {
-                    location.href = '/static/front/user/login.html';
-                } else console.log(res);
-            },
-            error: function (e) {
-                alert(e.responseJSON.result_ko);
-                console.log('[fail : 1658]');
-                console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
-            }
-        });
+        // $.ajax({
+        //     url: '/api/v1/auth/signup/' + $('#hd_type').val(),
+        //     data: data,
+        //     type: 'POST',
+        //     async: true,
+        //     success: function (res) {
+        //         alert(res.result_ko);
+        //         if (res.result == 200) {
+        //             location.href = '/static/front/user/login.html';
+        //         } else console.log(res);
+        //     },
+        //     error: function (e) {
+        //         alert(e.responseJSON.result_ko);
+        //         console.log('[fail : 1658]');
+        //         console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
+        //     }
+        // });
     };
     this.social_init = function () {
         if ($('#hd_social_id').val() != '{{social_id}}') {

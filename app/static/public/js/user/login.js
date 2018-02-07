@@ -5,8 +5,13 @@ var pageScript = function () {
             if (IsValidStr(_USER_ID)) {
                 alert('로그온 상태입니다.');
                 location.href = '/static/front/project/projects.html';
+            } else {
+                //if($('#hd_msg').val() != '{{result_ko}}') $('#p_msg').text($('#hd_msg').val());
             }
         }, 500);
+    };
+    this.preInit = function () {
+        if ($('#hd_msg').val() != '{{result_ko}}') $('#p_msg').css({'color': 'red'}).text($('#hd_msg').val());        
     };
     this.clickEvent = function () {
         //$('#loginBtn').on('click', function(){
@@ -35,7 +40,7 @@ var pageScript = function () {
                     } else console.log(res);
                 },
                 error: function (e) {
-                    //alert(e.responseJSON.result_ko);
+                    alert(e.responseJSON.result_ko);
                     console.log('[fail : 1658]');
                     console.log(e);
                 }
@@ -44,6 +49,7 @@ var pageScript = function () {
     };
     this.bind = function () {
         local.loginCheck();
+        local.preInit();
         local.clickEvent();
     };
 };
