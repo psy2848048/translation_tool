@@ -12,5 +12,5 @@ users.add_url_rule('/me/picture', view_func=ctrl.change_picture, methods=['PUT']
 
 
 #: 테스트용
-users.add_url_rule('/me/withdraw', view_func=ctrl.user_withdraw, methods=['DELETE'])
+users.add_url_rule('/me/bye', view_func=ctrl.user_withdraw, methods=['DELETE'])
 users.add_url_rule('/test', view_func=ctrl.test_picture, methods=['GET'])
