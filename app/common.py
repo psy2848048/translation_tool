@@ -1,9 +1,22 @@
 #: 여기저기서 자꾸쓰는 함수 모음집
+from app import app
 from datetime import datetime
 import hashlib
 import string
 import random
 import traceback
+import requests
+import re
+import io
+
+import boto3
+S3 = boto3.client(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+        # aws_session_token=SESSION_TOKEN,
+    )
+BUCKET_NAME = 'marocat'
 
 
 def convert_datetime_4mysql(basedate):
@@ -75,3 +88,32 @@ def send_mail(mail_to, title, content, mail_from='no-reply@ciceron.me', name='CI
     except:
         traceback.print_exc()
         return False
+
+
+def upload_photo_to_bytes_on_s3(picture, mimetype, name):
+    """
+    S3에 Bytes로 사진 저장하기
+    :param picture: 사진, bytes
+    :param mimetype:
+    :param name:
+    :return: S3에 저장한 이름과 URL + 성공유무
+    """
+    try:
+        t = create_token(name)
+        pname = 'profile/' + str(datetime.utcnow().strftime('%Y%m%d%H%M%S')) + t + '.' + mimetype
+
+        S3.upload_fileobj(io.BytesIO(picture), BUCKET_NAME, pname)
+
+        purl = S3.generate_presigned_url(
+            ClientMethod='get_object',
+            Params={
+                'Bucket': BUCKET_NAME,
+                'Key': pname
+            }
+        )
+
+        return pname, purl, True
+    except:
+        print('Wrong! (S3 upload_fileobj)')
+        traceback.print_exc()
+        return None, None, False
