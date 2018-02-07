@@ -214,12 +214,13 @@ def cert_local_user(email, cert_token):
         return False
 
 
-def select_user_by_email(email):
+def select_user(input_type, input_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, is_certified, picture_url
+    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified, picture_url
                               FROM `marocat v1.1`.users 
-                              WHERE email = :email AND is_deleted=FALSE ;"""), email=email).fetchone()
+                              WHERE (email=:input_id OR facebook_id=:input_id OR google_id=:input_id) 
+                              AND is_deleted=FALSE ;"""), input_id=input_id).fetchone()
 
     if res is None:
         return None, 0
@@ -228,36 +229,16 @@ def select_user_by_email(email):
     else:
         user = User()
         user.id = res['email']
+        user.idx = res['id']
         user.nickname = res['name']
         user.picture = res['picture_url']
 
+        if input_type == 'facebook':
+            user.facebook_id = res['facebook_id']
+        elif input_type == 'google':
+            user.google_id = res['google_id']
+
         return user, 1
-
-
-def select_user_by_social_id(social_type, social_id):
-    conn = db.engine.connect()
-
-    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified, picture_url
-                              FROM `marocat v1.1`.users 
-                              WHERE (facebook_id=:fid OR google_id=:gid) AND is_deleted=FALSE ;""")
-                       , fid=social_id, gid=social_id).fetchone()
-
-    if res is None:
-        return None, 0
-    elif res['is_certified'] is 0:
-        return None, 2
-
-    user = User()
-    user.id = res['email']
-    user.nickname = res['name']
-    user.picture = res['picture_url']
-
-    if social_type == 'facebook':
-        user.facebook_id = res['facebook_id']
-    elif social_type == 'google':
-        user.google_id = res['google_id']
-
-    return user, 1
 
 
 def select_user_info_by_email(email):
