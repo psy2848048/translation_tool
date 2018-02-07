@@ -117,3 +117,78 @@ def upload_photo_to_bytes_on_s3(picture, mimetype, name):
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
         return None, None, False
+
+
+# def ddos_check_and_write_log(conn):
+#     """
+#     API 실행 전, 해당 IP에서 1초에 100번 이상 실행되면 30분동안 접속 차단한다.
+#     그리고 차단하지 않은 IP는 임시 테이블에 로그를 남겨 나중에 분석 자료로 이용한다.
+#
+#     * 추후 변경 사항
+#     """
+#     cursor = conn.cursor()
+#
+#     if session.get('useremail') != None:
+#         user_id = get_user_id(conn, session['useremail'])
+#     else:
+#         user_id = 0
+#
+#     method = request.method
+#     api_endpoint = request.environ['PATH_INFO']
+#     ip_address = request.headers.get('x-forwarded-for-client-ip')
+#
+#     query_apiCount = """
+#         SELECT count(*) FROM CICERON.TEMP_ACTIONS_LOG
+#           WHERE (user_id = %s OR ip_address = %s)
+#             AND log_time BETWEEN (CURRENT_TIMESTAMP - interval '1 seconds') AND CURRENT_TIMESTAMP"""
+#     cursor.execute(query_apiCount, (user_id, ip_address, ))
+#     conn_count = cursor.fetchone()[0]
+#
+#     query_getBlacklist = """
+#         SELECT count(*) FROM CICERON.BLACKLIST
+#           WHERE user_id = %s
+#             AND CURRENT_TIMESTAMP BETWEEN time_from AND time_to
+#     """
+#     cursor.execute(query_getBlacklist, (user_id, ))
+#     blacklist_count = cursor.fetchone()[0]
+#
+#     is_OK = True
+#     if conn_count > 100:
+#         session.pop('logged_in', None)
+#         session.pop('useremail', None)
+#         query_insertBlackList = """
+#             INSERT INTO CICERON.BLACKLIST (id, user_id, ip_address, time_from, time_to)
+#             VALUES
+#             (
+#                nextval('CICERON.SEQ_BLACKLIST')
+#               ,%s
+#               ,%s
+#               ,CURRENT_TIMESTAMP
+#               ,CURRENT_TIMESTAMP + interval('30 minutes')
+#             )
+#         """
+#         cursor.execute(query_insertBlackList, (user_id, ip_address, ))
+#         is_OK = False
+#
+#     if blacklist_count > 0:
+#         session.pop('logged_in', None)
+#         session.pop('useremail', None)
+#         is_OK = False
+#
+#     query_insertLog = """
+#         INSERT INTO CICERON.TEMP_ACTIONS_LOG
+#           (id, user_id, method, api, log_time, ip_address)
+#         VALUES
+#           (
+#              nextval('CICERON.SEQ_USER_ACTIONS')
+#             ,%s
+#             ,%s
+#             ,%s
+#             ,CURRENT_TIMESTAMP
+#             ,%s
+#           )
+#     """
+#     cursor.execute(query_insertLog, (user_id, method, api_endpoint, ip_address, ))
+#     conn.commit()
+#
+#     return is_OK

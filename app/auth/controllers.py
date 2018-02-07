@@ -65,21 +65,12 @@ def signup(signup_type):
                                           , result_ko='비밀번호는 4자리 이상이어야 합니다.'
                                           , result=467), 467)
 
-    #: 존재하는 이메일 사용자인지 확인하기
-    user, is_ok = model.select_user_by_email(email)
+    #: 존재하는 사용자인지 확인하기
+    user, is_ok = model.select_user('local', email)
     if is_ok in [1, 2]:
-        return make_response(json.jsonify(result_en='You are already signed up for an email'
+        return make_response(json.jsonify(result_en='You are already signed up'
                                           , result_ko='이미 가입한 사용자입니다'
                                           , result=260), 260)
-
-    #: 존재하는 소셜 사용자인지 확인하기
-    if signup_type != 'local':
-        user = model.select_user_by_social_id(signup_type, social_id)
-
-        if user:
-            return make_response(json.jsonify(result_en='You are already signed up for {}'.format(signup_type)
-                                              , result_ko='이미 가입한 사용자입니다'
-                                              , result=260), 260)
 
     #: 사용자 DB에 저장 + 인증 이메일 보내기
     is_done = model.insert_user(signup_type, name, email, password, social_id, picture)
@@ -156,7 +147,7 @@ def local_signin():
                                           , result=460), 460)
 
     #: 입력된 email의 사용자 찾기
-    user, is_ok = model.select_user_by_email(email)
+    user, is_ok = model.select_user('local', email)
 
     if is_ok == 0:
         return make_response(json.jsonify(result_en='User does not exist'
@@ -215,9 +206,17 @@ def facebook_authorized():
     data = facebook.get('/me?fields=email,name,picture').data
 
     #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
-    user, is_ok = model.select_user_by_social_id('facebook', data.get('id'))
+    user, is_ok = model.select_user('facebook', data.get('id'))
 
     if not user:
+        #: facebook_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
+        auser, a_is_ok = model.select_user('local', data.get('email'))
+        if auser:
+            return render_template('user/login.html'
+                            , result_en='You are already signed up'
+                            , result_ko='이미 가입한 사용자입니다'
+                            , result=260)
+
         #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
         if current_user.is_authenticated is True:
             email = current_user.id
@@ -278,9 +277,17 @@ def google_signin():
     pprint(userinfo)
 
     #: 존재하는 구글 사용자인지 확인 = google_id 존재 유무 확인
-    user, is_ok = model.select_user_by_social_id('google', userinfo['id'])
+    user, is_ok = model.select_user('google', userinfo['id'])
 
     if not user:
+        #: facebook_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
+        auser, a_is_ok = model.select_user('local', userinfo['email'])
+        if auser:
+            return render_template('user/login.html'
+                                   , result_en='You are already signed up'
+                                   , result_ko='이미 가입한 사용자입니다'
+                                   , result=260)
+
         #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
         if current_user.is_authenticated is True:
             email = current_user.id
