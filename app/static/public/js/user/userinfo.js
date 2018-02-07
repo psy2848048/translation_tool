@@ -277,7 +277,7 @@ var pageScript = function () {
         var g_btn = $('#google_btn');
         var f_btn = $('#facebook_btn');
         if (IsValidStr(userinfo.conn_google_time)) {
-            g_btn.removeClass('connect_before').addClass('connect_after').val('연동완료');
+            g_btn.removeClass('connect_before').addClass('connect_after').val('연동완료').prop('disabled', 'disabled');
             $('#sp_google_desc').text('구글 계정과 연동되어 있습니다.');
         } else {
             $('#sp_google_desc').text('구글 계정과 연동되지 않은 상태입니다.');
@@ -285,7 +285,7 @@ var pageScript = function () {
         }
         if (IsValidStr(userinfo.conn_facebook_time)) {
             $('#sp_facebook_desc').text('페이스북 계정과 연동되어 있습니다.');
-            f_btn.removeClass('connect_before').addClass('connect_after').val('연동완료');
+            f_btn.removeClass('connect_before').addClass('connect_after').val('연동완료').prop('disabled', 'disabled');
         } else {
             $('#sp_facebook_desc').text('페이스북 계정과 연동되지 않은 상태입니다.');
             f_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');

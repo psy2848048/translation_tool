@@ -238,7 +238,15 @@ function getSession() {
         }
     });
 }
+function mask() {
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
 
+    $('#mask').css({
+        'width': maskWidth,
+        'height': maskHeight
+    }).show();
+}
 // 공통 ajax
 // url = 실행할 url
 // method = POST, GET, PUT, DELETE...
@@ -273,7 +281,7 @@ var AjaxExecute = function (url, method, data) {
             console.log('### ajaxOptions ###');
             console.log(ajaxOptions);
         }
-    });
+    });        
     return result;
 };
 
