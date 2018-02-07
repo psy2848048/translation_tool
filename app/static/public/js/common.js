@@ -167,7 +167,7 @@ function IsValidObj(o) {
 }
 
 function IsValidStr(s) {
-    if (s == undefined || s == null || s == '') return false;
+    if (s == undefined || s == null || s.trim() == '') return false;
     else return true;
 }
 

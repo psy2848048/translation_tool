@@ -6,10 +6,20 @@ var pageScript = function () {
         if ($('#hd_msg').val() != '{{result_ko}}') alert($('#hd_msg').val());          
     };
     this.selectEvent = function () {};
+    this.mask = function () {
+        var maskHeight = $(document).height();
+        var maskWidth = $(window).width();
+
+        $('#mask').css({'width': maskWidth,'height': maskHeight}).show();
+    };
     this.btnClickEvents = function () {
         // 사진변경 버튼
         $('#picture_btn').on('click', function (e) {
             e.preventDefault();
+
+            local.mask();
+            $('#dvLoading').show();
+    
             var reg_ext = ['JPG', 'JPEG', 'GIF', 'PNG'];
             var msg = 'JPG, JPEG, GIF, PNG 이미지 파일 확장자만 허용합니다.';
             var fileUpload = $('#file_frm').get(0);
@@ -19,56 +29,68 @@ var pageScript = function () {
             for (var i = 0; i < files.length; i++) {
                 /* 사이즈 체크 */
                 var fileSize = files[i].size;
-                var mega = 5; // 메가
+                var mega = 10; // 메가 : 서버에는 썸네일 방식으로 떨구기러 함(가로세로 30px 정도가 적당)
                 var maxFilesize = parseInt(mega) * 1025 * 1000;
                 if (fileSize > maxFilesize) {
                     alert('파일당 최대용량은 ' + mega + '메가 입니다.');
-                    //break;
                     $('#file_frm').val('');
                     return false;                        
                 }
                 /* 확장자 체크 */
                 var ext = getFileExtension(files[i].name);
-                //console.log('[1254] ext : ', ext);
                 if (ext == '') alert('파일 확장자에 문제가 있습니다!');
                 else {
                     for (var j = 0; j < reg_ext.length; j++) {
-                        //alert(reg_ext[j].toUpperCase());
                         if (reg_ext[j].toUpperCase() == ext) {
-                            //alert(0);
                             is_allowed_ext = true;
                             continue;
                         }
                     }
                 }
-                f_data.append('file', files[i]);
+                f_data.append('picture', files[i]);
             }
-            console.log('f_data : ', f_data);
             if (is_allowed_ext) {
+                local.mask();
+                $('#dvLoading').show();
+    
                 $.ajax({
-                    url: 'server_url',
-                    type: "POST",
+                    url: '/api/v1/users/me/picture',
+                    type: "PUT",
                     contentType: false,
                     processData: false,
                     data: f_data,
-                    // dataType: "json",
                     success: function (res) {
-                        if (res.result == 'OK') {
-                            alert('업로드가 완료되었습니다.');
-                        } else alert('업로드에 문제가 있습니다.');
-                        console.log('[4576] res.result : ', res.result);
+                        alert(res.result_ko);  
+            
+                        console.log('##### Upload Success #####');
+                        console.log(res);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        console.log('[9786] xhr.status : ', xhr.status);
-                        console.log('[6458] thrownError : ', thrownError);
-                        console.log('[3197] xhr.responseText : ', xhr.responseText);
+                        if(IsValidStr(xhr.responseText.result_ko)) alert(xhr.responseText.result_ko);
+                        else alert('error code : ' + xhr.status);
+            
+                        console.log('##### Upload Error #####');
+                        console.log('### xhr ###');
+                        console.log(xhr);
+                        console.log('### xhr.status ###');
+                        console.log(xhr.status);
+                        console.log('### xhr.responseText ###');
+                        console.log(xhr.responseText);
+                        console.log('### thrownError ###');
+                        console.log(thrownError);
+                        console.log('### ajaxOptions ###');
+                        console.log(ajaxOptions);
                     }
                 });
+
+                $('#mask').fadeOut('slow');
+                $('#dvLoading').fadeOut('slow');
+    
             } else {
                 alert('JPG, JPEG, GIF, PNG 이미지 확장자만 업로드가 가능합니다.');
                 $('#file_frm').val('');
                 return false;
-            }
+            }            
         });
         // 닉네임 수정 실행버튼
         $('#nick_btn').on('click', function (e) {
@@ -103,11 +125,11 @@ var pageScript = function () {
             if(IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
             else alert(ajax_result);
         });
-        // 업로드 버튼 : onselected 방식으로 할지 click 방식으로 할지 미정
-        $('#name_btn').on('click', function (e) {
-            e.preventDefault();
-            alert('업로드 작업예정');
-        });
+        // // 업로드 버튼 : onselected 방식으로 할지 click 방식으로 할지 미정
+        // $('#name_btn').on('click', function (e) {
+        //     e.preventDefault();
+        //     alert('업로드 작업예정');
+        // });
         // // 로컬계정 생성 버튼
         // $('#email_btn').on('click', function (e) {
         //     e.preventDefault();
