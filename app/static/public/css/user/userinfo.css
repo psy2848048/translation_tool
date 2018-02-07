@@ -483,3 +483,24 @@ li p {
     font-style: italic;
     font-size:12px;
 }
+
+#mask {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 100;
+    background-color: #000;
+    opacity: 0.1;
+    display: block;
+}
+#dvLoading {
+    background: transparent url(../../img/loading3.gif) no-repeat center center;
+    height: 100px;
+    width: 100px;
+    position: fixed;
+    z-index: 1000;
+    left: 50%;
+    top: 50%;
+    margin: -25px 0 0 -25px;
+    display: none;
+}

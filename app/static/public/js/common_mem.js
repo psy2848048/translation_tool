@@ -18,12 +18,15 @@ $(function () {
             alert('로그아웃 상태입니다.');
             location.href = '/static/front/user/login.html';
             return false;
+        }else{
+            $('#sp_user_nick').text(_USER_NICK);
+            $('#sp_user_email').text(_USER_ID);    
         }
-    }, 100);
+    }, 1000);
 
-    // 우측상단 유저
-    setTimeout(function () {
-        $('#sp_user_nick').text(_USER_NICK);
-        $('#sp_user_email').text(_USER_ID);
-    }, 200);
+    // // 우측상단 유저
+    // setTimeout(function () {
+    //     $('#sp_user_nick').text(_USER_NICK);
+    //     $('#sp_user_email').text(_USER_ID);
+    // }, 200);
 });
