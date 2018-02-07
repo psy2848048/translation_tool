@@ -41,7 +41,7 @@
                     <!-- <option value="중국어">중국어</option> -->
                 </select>
             </div>
-            <p>가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은
+            <p id="p_msg">가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은
                 <a href="login.html">이곳을 클릭</a>해서 로그인 하세요.</p>
             <ul>
                 <li>
@@ -51,13 +51,13 @@
                     <p>소셜 구글</p>
                 </li>
                 <li>
-                    <a id="facebookLink" href="javascript:;">
+                    <a id="facebookLink" href="/api/v1/auth/facebook/signin">
                         <img src="/static/public/img/facebook.png">
                     </a>
                     <p>소셜 페이스북</p>
                 </li>
                 <li>
-                    <a href="signup.html?type=e">
+                    <a href="signup.html">
                         <img src="/static/public/img/email.png">
                     </a>
                     <p>회원님 이메일</p>
@@ -69,6 +69,7 @@
                 <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>이 적용됩니다.</p>
         </div>
     </div>
+    <input type="hidden" name="" id="hd_msg" value="{{result_ko}}">
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
     <script src="/static/public/js/common.js"></script>
     <script src="/static/public/js/user/join_pick.js"></script>

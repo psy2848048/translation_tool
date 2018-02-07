@@ -478,3 +478,8 @@ li p {
     display: none;
     margin-top:20px;
 }
+
+#sp_nick_desc{
+    font-style: italic;
+    font-size:12px;
+}

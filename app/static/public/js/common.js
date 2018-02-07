@@ -281,4 +281,5 @@ $(function () {
     getSession();
 
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
+    $('#mainFooter').load('/static/front/common_html/main_footer.html ul, br');
 });
