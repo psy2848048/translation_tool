@@ -34,7 +34,7 @@ SCOPES = ['https://www.googleapis.com/auth/plus.login'
 
 @login_manager.user_loader
 def user_loader(uid):
-    user = model.select_user_info_by_email(uid)
+    user = model.select_user_profile_by_email(uid)
     return user
 
 
@@ -176,6 +176,71 @@ def local_signin():
                                               , result=465), 465)
 
 
+def social_callback():
+    social_type = request.values.get('social_type', None)
+    social_id = request.values.get('social_id', None)
+    social_name = request.values.get('social_name', None)
+    social_email = request.values.get('social_email', None)
+    picture = request.values.get('picture', None)
+
+    #: 존재하는 소셜 사용자인지 확인 = 소셜 존재 유무 확인
+    user, is_ok = model.select_user(social_type, social_id)
+
+    #: 소셜 존재
+    if user:
+        #: 소셜 존재함 + 로그아웃 상태 --> 로그인 시키기
+        if current_user.is_authenticated is False:
+            login_user(user, remember=True)
+            session['user_nickname'] = user.nickname
+            session['user_picture'] = user.picture
+            return render_template('project/projects.html')
+
+        #: 소셜 존재함 + 로그인 상태 ++ 로그인한 사용자와 소셜이 연결된 사용자가 다른 경우 --> 연동 실패 메세지 + 사용자 정보 페이지로 이동
+        elif current_user.is_authenticated is True:
+            if user.id != current_user.id:
+                return render_template('user/userinfo.html'
+                                       , result_en="Already connected to another account"
+                                       , result_ko="이미 다른 계정과 연결되었습니다"
+                                       , result=264)
+
+    #: 소셜 존재함 + 이메일 인증되지 않음 --> 로그인 페이지로 이동
+    if is_ok == 2:
+        return render_template('user/login.html'
+                               , result_en='Unauthenticated User'
+                               , result_ko='이메일 인증되지 않은 사용자입니다'
+                               , result=263)
+
+    #: 소셜 존재하지 않음
+    if not user:
+        #: 소셜 존재하지 않음 + 로그인 상태 --> 페이스북 연동 시키기 + 사용자 정보 페이지로 이동
+        if current_user.is_authenticated is True:
+            email = current_user.id
+            is_done = model.update_user_social_info(social_type, email, social_id, social_email, social_name)
+            if is_done is True:
+                return render_template('user/userinfo.html'
+                                       , result_en="Connection complete!"
+                                       , result_ko="소셜 연동 완료!"
+                                       , result=262)
+            else:
+                return render_template('user/userinfo.html'
+                                       , result_en='Something Wrong'
+                                       , result_ko='일시적인 오류로 실패했습니다'
+                                       , result=461)
+
+        #: 소셜 존재하지 않음 + 이메일 존재 --> 로그인 페이지로 이동
+        luser, is_ok2 = model.select_user('local', social_email)
+        if luser is not None:
+            return render_template('user/login.html'
+                                   , result_en='You are already signed up'
+                                   , result_ko='이미 가입한 사용자입니다. 다른 방법으로 가입하셨나요?'
+                                   , result=260)
+
+        #: 소셜 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지로 이동
+        if current_user.is_authenticated is False:
+            return render_template('user/signup.html', signup_type=social_type, social_id=social_id
+                                   , name=social_name, email=social_email, picture=picture)
+
+
 #: 페이스북
 def facebook_signin():
     return facebook.authorize(callback=url_for('auth.facebook_authorized'
@@ -205,52 +270,9 @@ def facebook_authorized():
     session['facebook_token'] = (resp['access_token'], '')
     data = facebook.get('/me?fields=email,name,picture').data
 
-    #: 존재하는 페이스북 사용자인지 확인 = facebook_id 존재 유무 확인
-    user, is_ok = model.select_user('facebook', data.get('id'))
-
-    if not user:
-        #: facebook_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
-        auser, a_is_ok = model.select_user('local', data.get('email'))
-        if auser:
-            return render_template('user/login.html'
-                            , result_en='You are already signed up'
-                            , result_ko='이미 가입한 사용자입니다'
-                            , result=260)
-
-        #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
-        if current_user.is_authenticated is True:
-            email = current_user.id
-            is_done = model.update_user_social_info('facebook', email, data.get('id'))
-            if is_done is True:
-                return render_template('user/userinfo.html'
-                                       , result_en="Connection complete!"
-                                       , result_ko="페이스북 연동 완료!"
-                                       , result=262)
-            else:
-                return render_template('user/userinfo.html'
-                                       , result_en='Something Wrong'
-                                       , result_ko='일시적인 오류로 실패했습니다'
-                                       , result=461)
-
-        #: 존재함 + 인증되지 않음 --> 로그인 페이지
-        elif is_ok == 2:
-            return render_template('user/login.html'
-                                   , result_en='Unauthenticated User'
-                                   , result_ko='이메일 인증되지 않은 사용자입니다'
-                                   , result=263)
-
-        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지
-        else:
-            return render_template('user/signup.html', social_id=data.get('id'), signup_type='facebook'
-                                   , name=data.get('name'), email=data.get('email'), picture=data['picture']['data']['url'])
-
-    #: 존재함 + 로그아웃 상태 --> 로그인!
-    elif user and current_user.is_authenticated is False:
-        login_user(user, remember=True)
-        session['user_nickname'] = user.nickname
-        session['user_picture'] = user.picture
-
-    return render_template('project/projects.html')
+    return redirect(url_for('auth.social_callback', social_type='facebook', social_id=data['id']
+                            , social_name=data['name'], social_email=data.get('email')
+                            , picture=data['picture']['data']['url']))
 
 
 @facebook.tokengetter
@@ -273,59 +295,10 @@ def google_signin():
 
     authorization_header = {"Authorization": "OAuth %s" % session['google_credentials']['token']}
     res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
-    userinfo = json.loads(res.text)
-    pprint(userinfo)
+    data = json.loads(res.text)
 
-    #: 존재하는 구글 사용자인지 확인 = google_id 존재 유무 확인
-    user, is_ok = model.select_user('google', userinfo['id'])
-
-    if not user:
-        #: social_id 존재하지 않음 + 이메일은 존재함 --> 로그인 페이지
-        auser, a_is_ok = model.select_user('local', userinfo['email'])
-        if auser:
-            return render_template('user/login.html'
-                                   , result_en='You are already signed up'
-                                   , result_ko='이미 가입한 사용자입니다'
-                                   , result=260)
-
-        #: 존재하지 않음 + 로그인 상태 --> 페이스북 연동
-        if current_user.is_authenticated is True:
-            email = current_user.id
-            is_done = model.update_user_social_info('google', email, userinfo['id'])
-            if is_done is True:
-                return render_template('user/userinfo.html'
-                                       , result_en="Connection complete!"
-                                       , result_ko="구글 연동 완료!"
-                                       , result=262)
-            else:
-                return render_template('user/userinfo.html'
-                                       , result_en='Something Wrong'
-                                       , result_ko='일시적인 오류로 실패했습니다'
-                                       , result=461)
-
-        #: 존재함 + 인증되지 않음 --> 로그인 페이지
-        elif is_ok == 2:
-            return render_template('user/login.html'
-                                   , result_en='Unauthenticated User'
-                                   , result_ko='이메일 인증되지 않은 사용자입니다'
-                                   , result=263)
-
-        #: 존재하지 않음 + 로그아웃 상태 --> 회원가입
-        else:
-            return render_template('user/signup.html', social_id=userinfo['id'], signup_type='google'
-                                   , name=userinfo['name'], email=userinfo['email'], picture=userinfo['picture'])
-
-    #: 존재함 + 로그아웃 상태 --> 로그인!
-    elif user and current_user.is_authenticated is False:
-        login_user(user, remember=True)
-        session['user_nickname'] = user.nickname
-        session['user_picture'] = user.picture
-
-        # Save credentials back to session in case access token was refreshed.
-        # ACTION ITEM: In a production app, you likely want to save these credentials in a persistent database instead.
-        session['google_credentials'] = google_credentials_to_dict(credentials)
-
-    return render_template('project/projects.html')
+    return redirect(url_for('auth.social_callback', social_type='google', social_id=data['id']
+                            , social_name=data['name'], social_email=data['email'], picture=data['picture']))
 
 
 def google_authorized():

@@ -46,7 +46,7 @@ def ddos_check_and_write_log():
 
     #: 사용자 id 받아오기
     if current_user.is_authenticated is True:
-        uid = current_user.info['id']
+        uid = current_user.profile['id']
     else:
         uid = 0
 
@@ -86,6 +86,7 @@ def ddos_check_and_write_log():
         trans.commit()
         return is_ok
     except:
+        print('Wrong (ddos_check_and_write_log)')
         traceback.print_exc()
         trans.rollback()
         return make_response(jsonify(result_en='Something Wrong'
