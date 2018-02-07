@@ -27,8 +27,8 @@ def change_password():
     is_done = model.update_password(current_user.id, new_pwd)
 
     if is_done == 1:
-        return make_response(json.jsonify(result_en='OK'
-                                          , result_ko='완료'
+        return make_response(json.jsonify(result_en='Password changed successfully!'
+                                          , result_ko='비밀번호가 변경되었습니다!'
                                           , result=200), 200)
     elif is_done == 2:
         return make_response(json.jsonify(result_en='Password is wrong'
@@ -47,8 +47,8 @@ def change_nickname():
     is_done = model.update_nickname(current_user.id, nickname)
 
     if is_done is True:
-        return make_response(json.jsonify(result_en='OK'
-                                          , result_ko='완료'
+        return make_response(json.jsonify(result_en='Nickname changed successfully!'
+                                          , result_ko='닉네임이 변경되었습니다!'
                                           , result=200), 200)
     else:
         return make_response(json.jsonify(result_en='Something Wrong'
@@ -62,8 +62,8 @@ def change_picture():
     is_done = model.update_picture(current_user.id, picture)
 
     if is_done is 1:
-        return make_response(json.jsonify(result_en='OK'
-                                          , result_ko='완료'
+        return make_response(json.jsonify(result_en='Picture changed successfully!'
+                                          , result_ko='프로필사진이 변경되었습니다!'
                                           , result=200), 200)
     elif is_done is 2:
         return make_response(json.jsonify(result_en='Picture upload failed'

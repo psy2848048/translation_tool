@@ -133,6 +133,52 @@ def send_email_for_cert_signup(email):
         return False
 
 
+def send_email_for_recovery_pwd(email):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    t = Table('token', meta, autoload=True)
+    u = Table('users', meta, autoload=True)
+
+    try:
+        #: 16자리 인증코드 생성
+        new_pwd = common.create_token(email, size=16)
+        res = conn.execute(t.insert(), token=new_pwd, issue_to=email, memo=email+'님이 비밀번호 찾기 요청')
+        if res.rowcount != 1:
+            print('Wrong! (create_token or insert_token)')
+            trans.rollback()
+            return False
+
+        #: 변경된 비밀번호로 바꾸기
+        hash_new_pwd = common.encrypt_pwd(new_pwd)
+        res = conn.execute(u.update(whereclause=(u.c.email == email)), password=hash_new_pwd, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            print('Wrong! (update_user_password)')
+            trans.rollback()
+            return False
+
+        #: 인증코드 이메일 보내기
+        title = 'MaroCat에서 새로운 비밀번호를 발급했습니다'
+        with open('app/static/front/user/find_pass_email.html', 'r') as f:
+            file = f.read()
+
+        content = file.format(password=new_pwd, email=email)
+        is_done = common.send_mail(email, title, content)
+
+        if is_done is True:
+            trans.commit()
+            return True
+        else:
+            print('Wrong! (send_mail)')
+            trans.rollback()
+            return False
+    except:
+        print('Wrong! (send_email_for_recovery_pwd)')
+        traceback.print_exc()
+        trans.rollback()
+        return False
+
+
 def cert_local_user(email, cert_token):
     conn = db.engine.connect()
     trans = conn.begin()

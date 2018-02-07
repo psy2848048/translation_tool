@@ -387,7 +387,17 @@ def google_credentials_to_dict(credentials):
 
 
 def recovery_password():
-    email = request.form.get('')
+    email = request.form.get('email', None)
+
+    is_done = model.send_email_for_recovery_pwd(email)
+    if is_done is True:
+        return make_response(json.jsonify(result_en='Sent your password to email'
+                                          , result_ko='비밀번호를 이메일로 발송 완료했습니다'
+                                          , result=200), 200)
+    else:
+        return make_response(json.jsonify(result_en='Something Wrong'
+                                          , result_ko='일시적인 오류로 실패했습니다'
+                                          , result=461), 461)
 
 
 #: (테스트용) 세션 확인
