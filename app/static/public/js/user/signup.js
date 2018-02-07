@@ -110,23 +110,23 @@ var pageScript = function () {
         local.mask();
         $('#dvLoading').show();
 
-        // $.ajax({
-        //     url: '/api/v1/auth/signup/' + $('#hd_type').val(),
-        //     data: data,
-        //     type: 'POST',
-        //     async: true,
-        //     success: function (res) {
-        //         alert(res.result_ko);
-        //         if (res.result == 200) {
-        //             location.href = '/static/front/user/login.html';
-        //         } else console.log(res);
-        //     },
-        //     error: function (e) {
-        //         alert(e.responseJSON.result_ko);
-        //         console.log('[fail : 1658]');
-        //         console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
-        //     }
-        // });
+        $.ajax({
+            url: '/api/v1/auth/signup/' + $('#hd_type').val(),
+            data: data,
+            type: 'POST',
+            async: true,
+            success: function (res) {
+                alert(res.result_ko);
+                if (res.result == 200) {
+                    location.href = '/static/front/user/login.html';
+                } else console.log(res);
+            },
+            error: function (e) {
+                alert(e.responseJSON.result_ko);
+                console.log('[fail : 1658]');
+                console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
+            }
+        });
     };
     this.social_init = function () {
         if ($('#hd_social_id').val() != '{{social_id}}') {
