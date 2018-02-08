@@ -1,9 +1,30 @@
 from sqlalchemy import Table, MetaData, exc, text
-from app import db, common
+from app import app, db, common
 import traceback
 import hashlib
 from datetime import datetime
 import re
+
+import boto3
+import io
+S3 = boto3.client(
+    's3',
+    aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+    aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+    # aws_session_token=SESSION_TOKEN,
+)
+BUCKET_NAME = 'marocat'
+
+
+def select_user_picture(uid):
+    conn = db.engine.connect()
+    res = conn.execute(text("""SELECT picture_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
+
+    obj = S3.get_object(
+        Bucket=BUCKET_NAME,
+        Key=res['picture_s3key']
+    )
+    return io.BytesIO(obj['Body'].read())
 
 
 def update_password(email, new_pwd):
@@ -69,16 +90,31 @@ def update_picture(email, picture):
 
     try:
         mimetype = re.split('/', picture.content_type)
-        pname, purl, is_done = common.upload_photo_to_bytes_on_s3(picture.read(), mimetype[1], email)
-        if is_done is False:
-            return 2
+        t = common.create_token(email)
+        udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+        pname = 'profile/picture-' + udate + '-' + t + '.' + mimetype[1]
 
-        res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname, picture_url=purl)
+        S3.upload_fileobj(io.BytesIO(picture.read()), BUCKET_NAME, pname)
 
-        if res.rowcount != 1:
-            print('update_nickname', res.rowcount)
-            trans.rollback()
-            return 0
+        # purl = S3.generate_presigned_url(
+        #     ClientMethod='get_object',
+        #     Params={
+        #         'Bucket': BUCKET_NAME,
+        #         'Key': pname
+        #     }
+        # )
+    except:
+        print('Wrong! (S3 upload_fileobj)')
+        traceback.print_exc()
+        return 2
+
+    try:
+        res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname)
+
+        # if res.rowcount != 1:
+        #     print('update_nickname', res.rowcount)
+        #     trans.rollback()
+        #     return 0
 
         trans.commit()
         return 1

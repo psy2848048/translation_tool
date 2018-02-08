@@ -179,16 +179,17 @@ def upload_photo_to_bytes_on_s3(picture, mimetype, name):
 
         S3.upload_fileobj(io.BytesIO(picture), BUCKET_NAME, pname)
 
-        purl = S3.generate_presigned_url(
-            ClientMethod='get_object',
-            Params={
-                'Bucket': BUCKET_NAME,
-                'Key': pname
-            }
-        )
+        # purl = S3.generate_presigned_url(
+        #     ClientMethod='get_object',
+        #     Params={
+        #         'Bucket': BUCKET_NAME,
+        #         'Key': pname
+        #     }
+        # )
 
-        return pname, purl, True
+        # return pname, purl, True
+        return pname, True
     except:
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
-        return None, None, False
+        return None, False

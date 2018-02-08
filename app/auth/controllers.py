@@ -48,7 +48,6 @@ def signup(signup_type):
     password = request.form.get('password', None)
     social_id = request.form.get('social_id', None)
     picture = request.form.get('picture', None)
-    print(signup_type)
 
     if None in [email, password, name]:
         return make_response(json.jsonify(result_en='Something Not Entered'
@@ -75,7 +74,7 @@ def signup(signup_type):
     #: 사용자 DB에 저장 + 인증 이메일 보내기
     is_done = model.insert_user(signup_type, name, email, password, social_id, picture)
 
-    if is_done is True:
+    if is_done is 1:
         return make_response(json.jsonify(result_en='Congratulation! You successfully sign-up!'
                                           , result_ko='축하합니다! 회원가입에 성공했습니다! \n이메일 인증 후 이용 가능합니다'
                                           , result=200), 200)
