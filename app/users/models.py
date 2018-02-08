@@ -4,9 +4,11 @@ import traceback
 import hashlib
 from datetime import datetime
 import re
+import copy
 
 import boto3
 import io
+from PIL import Image
 S3 = boto3.client(
     's3',
     aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
@@ -16,7 +18,18 @@ S3 = boto3.client(
 BUCKET_NAME = 'marocat'
 
 
-def select_user_picture(uid):
+def select_user_thumbnail(uid):
+    conn = db.engine.connect()
+    res = conn.execute(text("""SELECT thumbnail_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
+
+    obj = S3.get_object(
+        Bucket=BUCKET_NAME,
+        Key=res['thumbnail_s3key']
+    )
+    return io.BytesIO(obj['Body'].read())
+
+
+def select_user_thumbnail_original(uid):
     conn = db.engine.connect()
     res = conn.execute(text("""SELECT picture_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
 
@@ -67,12 +80,12 @@ def update_nickname(email, nickname):
     u = Table('users', meta, autoload=True)
 
     try:
-        res = conn.execute(u.update().where(u.c.email == email), name=nickname)
+        res = conn.execute(u.update().where(u.c.email == email), name=nickname, update_time=datetime.utcnow())
 
-        if res.rowcount != 1:
-            print('update_nickname', res.rowcount)
-            trans.rollback()
-            return False
+        # if res.rowcount != 1:
+        #     print('update_nickname', res.rowcount)
+        #     trans.rollback()
+        #     return False
 
         trans.commit()
         return True
@@ -89,12 +102,30 @@ def update_picture(email, picture):
     u = Table('users', meta, autoload=True)
 
     try:
-        mimetype = re.split('/', picture.content_type)
+        pic = copy.deepcopy(picture.read())
+
+        #: 업로드할 파일 이름짓기
         t = common.create_token(email)
         udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-        pname = 'profile/picture-' + udate + '-' + t + '.' + mimetype[1]
+        _pname = 'profile/picture-' + udate
+        mimetype = re.split('/', picture.content_type)
+        mtype = '.' + mimetype[1]
 
-        S3.upload_fileobj(io.BytesIO(picture.read()), BUCKET_NAME, pname)
+        #: 원본 이미지 저장
+        pname = _pname + '-' + mtype
+        S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
+
+        #: 썸네일 저장
+        # img = Image.open(io.BytesIO(pic.read()))
+        img = Image.open(io.BytesIO(pic))
+        # timg = img.thumbnail((30, 30))
+        img.thumbnail((30, 30), Image.ANTIALIAS)
+        b = io.BytesIO()
+        img.save(b, format=mimetype[1].upper())
+        timg_bytes = b.getvalue()
+
+        tname = _pname + 'thumbnail' + mtype
+        S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
 
         # purl = S3.generate_presigned_url(
         #     ClientMethod='get_object',
@@ -109,7 +140,8 @@ def update_picture(email, picture):
         return 2
 
     try:
-        res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname)
+        res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname, thumbnail_s3key=tname
+                           , update_time=datetime.utcnow())
 
         # if res.rowcount != 1:
         #     print('update_nickname', res.rowcount)

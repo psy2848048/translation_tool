@@ -8,6 +8,7 @@ import re
 import io
 
 import boto3
+from PIL import Image
 S3 = boto3.client(
         's3',
         aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
@@ -40,12 +41,22 @@ def insert_user(signup_type, name, email, password, social_id, picture):
     try:
         if len(picture) > 15:
             r = requests.get(picture)
+            pic = r.content
             mimetype = re.split('/', r.headers['Content-Type'])
+
+            #: 업로드할 파일 이름짓기
             t = common.create_token(name)
             udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-            pname = 'profile/picture-' + udate + '-' + t + '.' + mimetype[1]
+            _pname = 'profile/picture-' + udate + '-'
+            mtype = '.' + mimetype[1]
 
-            S3.upload_fileobj(io.BytesIO(r.content), BUCKET_NAME, pname)
+            pname = _pname + mtype
+            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
+
+            img = Image.open(pic)
+            img.thumbnail((30, 30))
+            tname = _pname + 'thumbnail' + mtype
+            S3.upload_fileobj(io.BytesIO(img.thumbnail((30, 30))), BUCKET_NAME, tname)
 
             # purl = S3.generate_presigned_url(
             #     ClientMethod='get_object',
@@ -66,11 +77,13 @@ def insert_user(signup_type, name, email, password, social_id, picture):
         elif signup_type == 'facebook':
                 res = conn.execute(u.insert(), email=email, name=name, password=hashpwd
                                    , facebook_id=social_id, facebook_email=email, facebook_name=name
-                                   , conn_facebook_time=datetime.utcnow(), picture_s3key=pname)
+                                   , conn_facebook_time=datetime.utcnow()
+                                   , picture_s3key=pname, thumbnail_s3key=tname)
         elif signup_type == 'google':
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd
                                , google_id=social_id, google_email=email, google_name=name
-                               , conn_google_time=datetime.utcnow(), picture_s3key=pname)
+                               , conn_google_time=datetime.utcnow()
+                               , picture_s3key=pname, thumbnail_s3key=tname)
 
         if res.rowcount != 1:
             print('DUP! (user is already exist, local)')
@@ -261,7 +274,6 @@ def select_user(input_type, input_id):
         user = User()
         user.id = res['email']
         user.nickname = res['name']
-        user.picture = None
         return user, 1
 
 
@@ -284,6 +296,7 @@ def select_user_profile_by_email(email):
         user.profile = {
             'id': res['id'],
             'email': res['email'],
+            'name': res['name'],
             # 'picture': res['picture'],
             'facebook': {
                 'id': res['facebook_id'],
