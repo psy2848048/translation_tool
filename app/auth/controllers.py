@@ -237,6 +237,9 @@ def social_callback():
             return render_template('user/signup.html', signup_type=social_type, social_id=social_id
                                    , name=social_name, email=social_email, picture=picture)
 
+    print('이건 무슨 경우의 수일까..')
+    return redirect('/static/index.html')
+
 
 #: 페이스북
 def facebook_signin():
