@@ -11,6 +11,7 @@ auth.add_url_rule('/local/cert', view_func=ctrl.cert_local_signup, methods=['POS
 
 # 로컬 로그인
 auth.add_url_rule('/local/signin', view_func=ctrl.local_signin, methods=['POST'])
+auth.add_url_rule('/social/callback', view_func=ctrl.social_callback, methods=['GET'])
 
 
 # 페이스북

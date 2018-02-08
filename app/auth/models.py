@@ -11,9 +11,9 @@ import io
 class User(UserMixin):
     def can_login(self, password):
         conn = db.engine.connect()
-        res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as res FROM users WHERE email = :uid"""), pwd=password, uid=self.get_id()).fetchone()
+        res = conn.execute(text("""SELECT password = SHA2(:pwd, 512) as is_correcct FROM users WHERE email = :uid"""), pwd=password, uid=self.get_id()).fetchone()
 
-        if res['res'] == 1:
+        if res['is_correcct'] == 1:
             return True
         else:
             return False
@@ -40,12 +40,12 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd)
         elif signup_type == 'facebook':
                 res = conn.execute(u.insert(), email=email, name=name, password=hashpwd
-                                   , facebook_id=social_id, conn_facebook_time=datetime.utcnow()
-                                   , picture_s3key=pname, picture_url=purl)
+                                   , facebook_id=social_id, facebook_email=email, facebook_name=name
+                                   , conn_facebook_time=datetime.utcnow(), picture_s3key=pname, picture_url=purl)
         elif signup_type == 'google':
             res = conn.execute(u.insert(), email=email, name=name, password=hashpwd
-                               , google_id=social_id, conn_google_time=datetime.utcnow()
-                               , picture_s3key=pname, picture_url=purl)
+                               , google_id=social_id, google_email=email, google_name=name
+                               , conn_google_time=datetime.utcnow(), picture_s3key=pname, picture_url=purl)
 
         if res.rowcount != 1:
             print('DUP! (user is already exist, local)')
@@ -67,18 +67,22 @@ def insert_user(signup_type, name, email, password, social_id, picture):
         conn.close()
 
 
-def update_user_social_info(social_type, email, social_id):
+def update_user_social_info(social_type, email, social_id, social_email=None, social_name=None):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     u = Table('users', meta, autoload=True)
 
     try:
-        if social_type is 'facebook':
-            res = conn.execute(u.update(u.c.email == email), facebook_id=social_id, conn_facebook_time=datetime.utcnow())
+        if social_type == 'facebook':
+            res = conn.execute(u.update(u.c.email == email)
+                               , facebook_id=social_id, facebook_email=social_email, facebook_name=social_name
+                               , conn_facebook_time=datetime.utcnow(), update_time=datetime.utcnow())
 
-        elif social_type is 'google':
-            res = conn.execute(u.update(u.c.email == email), google_id=social_id, conn_google_time=datetime.utcnow())
+        elif social_type == 'google':
+            res = conn.execute(u.update(u.c.email == email)
+                               , google_id=social_id, google_email=social_email, google_name=social_name
+                               , conn_google_time=datetime.utcnow(), update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
@@ -112,7 +116,7 @@ def send_email_for_cert_signup(email):
             return False
 
         #: 인증코드 이메일 보내기
-        title = 'MaroCat 인증 코드입니다.'
+        title = '마이캣툴 인증 코드입니다.'
         with open('app/static/front/user/email_form.html', 'r') as f:
             file = f.read()
 
@@ -158,7 +162,7 @@ def send_email_for_recovery_pwd(email):
             return False
 
         #: 인증코드 이메일 보내기
-        title = 'MaroCat에서 새로운 비밀번호를 발급했습니다'
+        title = '마이캣툴에서 새로운 비밀번호를 발급했습니다'
         with open('app/static/front/user/find_pass_email.html', 'r') as f:
             file = f.read()
 
@@ -217,40 +221,58 @@ def cert_local_user(email, cert_token):
 def select_user(input_type, input_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, facebook_id, google_id, is_certified, picture_url
+    res = conn.execute(text("""SELECT id, name, email, is_certified, picture_url
+                                    , facebook_id, facebook_email, facebook_name
+                                    , google_id, google_email, google_name
                               FROM `marocat v1.1`.users 
                               WHERE (email=:input_id OR facebook_id=:input_id OR google_id=:input_id) 
                               AND is_deleted=FALSE ;"""), input_id=input_id).fetchone()
 
     if res is None:
         return None, 0
-    elif res['is_certified'] is 0:
+    elif res['is_certified'] == 0:
         return None, 2
     else:
         user = User()
         user.id = res['email']
-        user.idx = res['id']
         user.nickname = res['name']
         user.picture = res['picture_url']
-
-        if input_type == 'facebook':
-            user.facebook_id = res['facebook_id']
-        elif input_type == 'google':
-            user.google_id = res['google_id']
-
         return user, 1
 
 
-def select_user_info_by_email(email):
+def select_user_profile_by_email(email):
     conn = db.engine.connect()
     res = conn.execute(text("""SELECT id, name, email, picture_url as picture
-                                    , conn_facebook_time, conn_google_time
-                              FROM `marocat v1.1`.users WHERE email = :email;"""), email=email).fetchone()
+                                    , facebook_id, facebook_email, facebook_name, conn_facebook_time
+                                    , google_id, google_email, google_name, conn_google_time
+                              FROM `marocat v1.1`.users 
+                              WHERE email=:email AND is_deleted=FALSE;""")
+                       , email=email).fetchone()
 
     if res is None:
         return None
     else:
         user = User()
         user.id = res['email']
-        user.info = dict(res)
+        user.idx = res['id']
+
+        user.profile = {
+            'id': res['id'],
+            'email': res['email'],
+            'picture': res['picture'],
+            'facebook': {
+                'id': res['facebook_id'],
+                'email': res['facebook_email'],
+                'name': res['facebook_name'],
+                'connect_time': res['conn_facebook_time']
+            },
+            'google': {
+                'id': res['google_id'],
+                'email': res['google_email'],
+                'name': res['google_name'],
+                'connect_time': res['conn_google_time']
+            }
+
+        }
+
         return user

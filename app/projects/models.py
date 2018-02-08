@@ -284,7 +284,6 @@ def delete_project(pid):
                     WHERE project_id = :pid;""")
             , pid=pid)
 
-
         #: 프로젝트의 문서 삭제
         conn.execute(d.update(d.c.project_id == pid), is_deleted=True, update_time=datetime.utcnow())
 

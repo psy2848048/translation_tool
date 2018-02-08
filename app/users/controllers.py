@@ -6,8 +6,8 @@ import io
 
 
 @login_required
-def get_user_info():
-    return make_response(json.jsonify(current_user.info), 200)
+def get_user_profile():
+    return make_response(json.jsonify(current_user.profile), 200)
 
 
 @login_required
@@ -56,6 +56,7 @@ def change_nickname():
                                           , result=461), 461)
 
 
+@login_required
 def change_picture():
     picture = request.files.get('picture', None)
 
@@ -69,6 +70,20 @@ def change_picture():
         return make_response(json.jsonify(result_en='Picture upload failed'
                                           , result_ko='프로필 사진 업로드에 실패했습니다'
                                           , result=468), 468)
+    else:
+        return make_response(json.jsonify(result_en='Something Wrong'
+                                          , result_ko='일시적인 오류로 실패했습니다'
+                                          , result=461), 461)
+
+
+@login_required
+def user_withdraw():
+    is_done = model.delete_user(current_user.idx)
+
+    if is_done is True:
+        return make_response(json.jsonify(result_en='You successfully left Mycattool'
+                                          , result_ko='탈퇴 완료했습니다'
+                                          , result=200), 200)
     else:
         return make_response(json.jsonify(result_en='Something Wrong'
                                           , result_ko='일시적인 오류로 실패했습니다'
