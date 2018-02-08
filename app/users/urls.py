@@ -9,7 +9,8 @@ users.add_url_rule('/me', view_func=ctrl.get_profile, methods=['GET'])
 users.add_url_rule('/me/pwd', view_func=ctrl.change_password, methods=['PUT'])
 users.add_url_rule('/me/nickname', view_func=ctrl.change_nickname, methods=['PUT'])
 users.add_url_rule('/me/picture', view_func=ctrl.change_picture, methods=['PUT'])
-users.add_url_rule('/me/picture', view_func=ctrl.get_picture, methods=['GET'])
+users.add_url_rule('/me/picture', view_func=ctrl.get_thumbnail, methods=['GET'])
+users.add_url_rule('/me/picture/origin', view_func=ctrl.get_thumbnail_original, methods=['GET'])
 
 
 #: 테스트용

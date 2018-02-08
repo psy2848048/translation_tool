@@ -164,7 +164,6 @@ def local_signin():
         if is_ok is True:
             login_user(user, remember=True)
             session['user_nickname'] = user.nickname
-            session['user_picture'] = user.picture
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                               , result_ko="로그인 성공!"
@@ -191,7 +190,6 @@ def social_callback():
         if current_user.is_authenticated is False:
             login_user(user, remember=True)
             session['user_nickname'] = user.nickname
-            session['user_picture'] = user.picture
             return render_template('project/projects.html')
 
         #: 소셜 존재함 + 로그인 상태 ++ 로그인한 사용자와 소셜이 연결된 사용자가 다른 경우 --> 연동 실패 메세지 + 사용자 정보 페이지로 이동

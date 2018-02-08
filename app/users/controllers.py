@@ -1,4 +1,4 @@
-from flask import request, make_response, json, send_file
+from flask import request, make_response, json, send_file, session
 from flask_login import login_required, current_user
 from app import app
 import app.users.models as model
@@ -11,8 +11,14 @@ def get_profile():
 
 
 @login_required
-def get_picture():
-    picture = model.select_user_picture(current_user.idx)
+def get_thumbnail():
+    picture = model.select_user_thumbnail(current_user.idx)
+    return send_file(picture, mimetype='image/jpeg')
+
+
+@login_required
+def get_thumbnail_original():
+    picture = model.select_user_thumbnail_original(current_user.idx)
     return send_file(picture, mimetype='image/jpeg')
 
 
@@ -53,6 +59,7 @@ def change_nickname():
     is_done = model.update_nickname(current_user.id, nickname)
 
     if is_done is True:
+        session['user_nickname'] = nickname
         return make_response(json.jsonify(result_en='Nickname changed successfully!'
                                           , result_ko='닉네임이 변경되었습니다!'
                                           , result=200), 200)
