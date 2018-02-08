@@ -21,10 +21,14 @@ BUCKET_NAME = 'marocat'
 def select_user_thumbnail(uid):
     conn = db.engine.connect()
     res = conn.execute(text("""SELECT thumbnail_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
+    s3key = res['thumbnail_s3key']
+    # a = re.split('.', s3key)
+    # mimetype = a[-1]
+    # print(a)
 
     obj = S3.get_object(
         Bucket=BUCKET_NAME,
-        Key=res['thumbnail_s3key']
+        Key=s3key
     )
     return io.BytesIO(obj['Body'].read())
 
@@ -116,9 +120,7 @@ def update_picture(email, picture):
         S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
 
         #: 썸네일 저장
-        # img = Image.open(io.BytesIO(pic.read()))
         img = Image.open(io.BytesIO(pic))
-        # timg = img.thumbnail((30, 30))
         img.thumbnail((30, 30), Image.ANTIALIAS)
         b = io.BytesIO()
         img.save(b, format=mimetype[1].upper())

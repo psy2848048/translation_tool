@@ -56,9 +56,7 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
 
             #: 썸네일 저장
-            # img = Image.open(io.BytesIO(pic.read()))
             img = Image.open(io.BytesIO(pic))
-            # timg = img.thumbnail((30, 30))
             img.thumbnail((30, 30), Image.ANTIALIAS)
             b = io.BytesIO()
             img.save(b, format=mimetype[1].upper())
@@ -74,6 +72,9 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             #         'Key': pname
             #     }
             # )
+        else:
+            pname = 'profile/noman.png'
+            tname = 'profile/noman_thumbnail.png'
     except:
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
