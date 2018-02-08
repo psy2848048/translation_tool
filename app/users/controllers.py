@@ -55,6 +55,10 @@ def change_password():
 @login_required
 def change_nickname():
     nickname = request.form.get('nickname', None)
+    if nickname is None:
+        return make_response(json.jsonify(result_en='Something Not Entered'
+                                          , result_ko='입력되지 않은 값이 있습니다'
+                                          , result=460), 460)
 
     is_done = model.update_nickname(current_user.id, nickname)
 
@@ -72,6 +76,10 @@ def change_nickname():
 @login_required
 def change_picture():
     picture = request.files.get('picture', None)
+    if picture is None:
+        return make_response(json.jsonify(result_en='Something Not Entered'
+                                          , result_ko='입력되지 않은 값이 있습니다'
+                                          , result=460), 460)
 
     is_done = model.update_picture(current_user.id, picture)
 
