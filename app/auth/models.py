@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 import re
 import io
+import copy
 
 import boto3
 from PIL import Image
@@ -41,22 +42,30 @@ def insert_user(signup_type, name, email, password, social_id, picture):
     try:
         if len(picture) > 15:
             r = requests.get(picture)
-            pic = r.content
-            mimetype = re.split('/', r.headers['Content-Type'])
+            pic = copy.deepcopy(r.content)
 
             #: 업로드할 파일 이름짓기
-            t = common.create_token(name)
+            t = common.create_token(email)
             udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-            _pname = 'profile/picture-' + udate + '-'
+            _pname = 'profile/picture-' + udate
+            mimetype = re.split('/', r.headers['Content-Type'])
             mtype = '.' + mimetype[1]
 
-            pname = _pname + mtype
+            #: 원본 이미지 저장
+            pname = _pname + '-' + mtype
             S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
 
-            img = Image.open(pic)
-            img.thumbnail((30, 30))
+            #: 썸네일 저장
+            # img = Image.open(io.BytesIO(pic.read()))
+            img = Image.open(io.BytesIO(pic))
+            # timg = img.thumbnail((30, 30))
+            img.thumbnail((30, 30), Image.ANTIALIAS)
+            b = io.BytesIO()
+            img.save(b, format=mimetype[1].upper())
+            timg_bytes = b.getvalue()
+
             tname = _pname + 'thumbnail' + mtype
-            S3.upload_fileobj(io.BytesIO(img.thumbnail((30, 30))), BUCKET_NAME, tname)
+            S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
 
             # purl = S3.generate_presigned_url(
             #     ClientMethod='get_object',
@@ -256,7 +265,7 @@ def cert_local_user(email, cert_token):
         return False
 
 
-def select_user(input_type, input_id):
+def select_user(input_id):
     conn = db.engine.connect()
 
     res = conn.execute(text("""SELECT id, name, email, is_certified

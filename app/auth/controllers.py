@@ -65,7 +65,7 @@ def signup(signup_type):
                                           , result=467), 467)
 
     #: 존재하는 사용자인지 확인하기
-    user, is_ok = model.select_user('local', email)
+    user, is_ok = model.select_user(email)
     if is_ok in [1, 2]:
         return make_response(json.jsonify(result_en='You are already signed up'
                                           , result_ko='이미 가입한 사용자입니다'
@@ -146,7 +146,7 @@ def local_signin():
                                           , result=460), 460)
 
     #: 입력된 email의 사용자 찾기
-    user, is_ok = model.select_user('local', email)
+    user, is_ok = model.select_user(email)
 
     if is_ok == 0:
         return make_response(json.jsonify(result_en='User does not exist'
@@ -182,7 +182,7 @@ def social_callback():
     picture = request.values.get('picture', None)
 
     #: 존재하는 소셜 사용자인지 확인 = 소셜 존재 유무 확인
-    user, is_ok = model.select_user(social_type, social_id)
+    user, is_ok = model.select_user(social_id)
 
     #: 소셜 존재
     if user:
@@ -225,7 +225,7 @@ def social_callback():
                                        , result=461)
 
         #: 소셜 존재하지 않음 + 이메일 존재 --> 로그인 페이지로 이동
-        luser, is_ok2 = model.select_user('local', social_email)
+        luser, is_ok2 = model.select_user(social_email)
         if luser is not None:
             return render_template('user/login.html'
                                    , result_en='You are already signed up'
