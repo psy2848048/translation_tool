@@ -1,13 +1,19 @@
 from flask import request, make_response, json, send_file
 from flask_login import login_required, current_user
+from app import app
 import app.users.models as model
-import requests
 import io
 
 
 @login_required
-def get_user_profile():
+def get_profile():
     return make_response(json.jsonify(current_user.profile), 200)
+
+
+@login_required
+def get_picture():
+    picture = model.select_user_picture(current_user.idx)
+    return send_file(picture, mimetype='image/jpeg')
 
 
 @login_required
@@ -91,8 +97,38 @@ def user_withdraw():
 
 
 def test_picture():
-    purl = request.values.get('picture', None)
+    import requests
+    # purl = request.values.get('picture', None)
+    purl = 'https://marocat.s3.amazonaws.com/profile/20180207062149fO7f0J5a6c8Na.jpeg?AWSAccessKeyId=AKIAIPUIPGMGOME2HTNQ&amp;Signature=7paNzAJQhr2D0WRD%2B1W3sgQpk0Y%3D&amp;Expires=1517988110'
     r = requests.get(purl)
 
     # return io.BytesIO(r.content)
-    return send_file(io.BytesIO(r.content), mimetype=r.headers['Content-Type'], as_attachment=True, attachment_filename='user_picture')
+    return send_file(io.BytesIO(r.content), mimetype=r.headers['Content-Type'], as_attachment=True, attachment_filename='user_picture.jpg')
+
+
+def test_s3_getobjectlink():
+    import boto3
+    from app import app
+    S3 = boto3.client(
+        's3',
+        aws_access_key_id=app.config['AWS_ACCESS_KEY_ID'],
+        aws_secret_access_key=app.config['AWS_SECRET_ACCESS_KEY']
+        # aws_session_token=SESSION_TOKEN,
+    )
+    BUCKET_NAME = 'marocat'
+    pname = 'profile/20180207062149fO7f0J5a6c8Na.jpeg'
+
+    # res = S3.get_bucket_location(Bucket=BUCKET_NAME)
+    # object_url = "https://s3-{0}.amazonaws.com/{1}/{2}".format(
+    #     res['LocationConstraint'],
+    #     BUCKET_NAME,
+    #     'profile/20180207062149fO7f0J5a6c8Na.jpeg')
+    # return make_response(json.jsonify(url=object_url, **res), 200)
+
+    obj = S3.get_object(
+        Bucket=BUCKET_NAME,
+        Key=pname
+    )
+    from pprint import pprint
+    pprint(obj)
+    return send_file(io.BytesIO(obj['Body'].read()), mimetype='image/jpeg')
