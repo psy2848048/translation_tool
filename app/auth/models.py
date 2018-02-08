@@ -138,9 +138,9 @@ def update_user_social_info(social_type, email, social_id, social_email=None, so
                                , google_id=social_id, google_email=social_email, google_name=social_name
                                , conn_google_time=datetime.utcnow(), update_time=datetime.utcnow())
 
-        if res.rowcount != 1:
-            trans.rollback()
-            return False
+        # if res.rowcount != 1:
+        #     trans.rollback()
+        #     return False
 
         trans.commit()
         return True
