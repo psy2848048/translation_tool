@@ -120,14 +120,20 @@ def update_picture(email, picture):
         S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
 
         #: 썸네일 저장
-        img = Image.open(io.BytesIO(pic))
-        img.thumbnail((30, 30), Image.ANTIALIAS)
-        b = io.BytesIO()
-        img.save(b, format=mimetype[1].upper())
-        timg_bytes = b.getvalue()
-
+        #: 원본 사이즈가 (100,100) 이하인 경우는 원본 그대로 저장
         tname = _pname + 'thumbnail' + mtype
-        S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
+        img = Image.open(io.BytesIO(pic))
+
+        imgsize = img.size
+        if imgsize[0] > 100 or imgsize[1] > 100:
+            img.thumbnail((100, 100), Image.ANTIALIAS)
+            b = io.BytesIO()
+            img.save(b, format=mimetype[1].upper())
+            timg_bytes = b.getvalue()
+
+            S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
+        else:
+            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, tname)
 
         # purl = S3.generate_presigned_url(
         #     ClientMethod='get_object',
