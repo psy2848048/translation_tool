@@ -285,6 +285,16 @@ var AjaxExecute = function (url, method, data) {
     return result;
 };
 
+// 날짜객체를 스트링 형식으로 반환
+function ConvertDateToString(date){
+    return date.getFullYear() + '년 ' + parseInt(date.getMonth()+1) + '월 ' + date.getDate() + '일 ' + date.getHours() + '시 ' + date.getMinutes() + '분';
+}
+
+// 바이너리 이미지 받기
+function hexToBase64(str) {
+    return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
+}
+
 $(function () {
     getSession();
 

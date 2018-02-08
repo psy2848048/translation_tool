@@ -3,14 +3,17 @@ var pageScript = function () {
         userinfo = '';
     this.preInit = function () {
         local.memberInfo();
-        if ($('#hd_msg').val() != '{{result_ko}}') alert($('#hd_msg').val());          
+        if ($('#hd_msg').val() != '{{result_ko}}') alert($('#hd_msg').val());
     };
     this.selectEvent = function () {};
     this.mask = function () {
         var maskHeight = $(document).height();
         var maskWidth = $(window).width();
 
-        $('#mask').css({'width': maskWidth,'height': maskHeight}).show();
+        $('#mask').css({
+            'width': maskWidth,
+            'height': maskHeight
+        }).show();
     };
     this.btnClickEvents = function () {
         // 사진변경 버튼
@@ -19,7 +22,7 @@ var pageScript = function () {
 
             local.mask();
             $('#dvLoading').show();
-    
+
             var reg_ext = ['JPG', 'JPEG', 'GIF', 'PNG'];
             var msg = 'JPG, JPEG, GIF, PNG 이미지 파일 확장자만 허용합니다.';
             var fileUpload = $('#file_frm').get(0);
@@ -34,7 +37,7 @@ var pageScript = function () {
                 if (fileSize > maxFilesize) {
                     alert('파일당 최대용량은 ' + mega + '메가 입니다.');
                     $('#file_frm').val('');
-                    return false;                        
+                    return false;
                 }
                 /* 확장자 체크 */
                 var ext = getFileExtension(files[i].name);
@@ -52,7 +55,7 @@ var pageScript = function () {
             if (is_allowed_ext) {
                 local.mask();
                 $('#dvLoading').show();
-    
+
                 $.ajax({
                     url: '/api/v1/users/me/picture',
                     type: "PUT",
@@ -60,15 +63,16 @@ var pageScript = function () {
                     processData: false,
                     data: f_data,
                     success: function (res) {
-                        alert(res.result_ko);  
-            
+                        alert(res.result_ko);
+                        location.href=location.href;
+
                         console.log('##### Upload Success #####');
                         console.log(res);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
-                        if(IsValidStr(xhr.responseText.result_ko)) alert(xhr.responseText.result_ko);
+                        if (IsValidStr(xhr.responseText.result_ko)) alert(xhr.responseText.result_ko);
                         else alert('error code : ' + xhr.status);
-            
+
                         console.log('##### Upload Error #####');
                         console.log('### xhr ###');
                         console.log(xhr);
@@ -85,12 +89,12 @@ var pageScript = function () {
 
                 $('#mask').fadeOut('slow');
                 $('#dvLoading').fadeOut('slow');
-    
+
             } else {
                 alert('JPG, JPEG, GIF, PNG 이미지 확장자만 업로드가 가능합니다.');
                 $('#file_frm').val('');
                 return false;
-            }            
+            }
         });
         // 닉네임 수정 실행버튼
         $('#nick_btn').on('click', function (e) {
@@ -121,8 +125,10 @@ var pageScript = function () {
             //         console.log(err.responseText);
             //     }
             // });
-            var ajax_result = AjaxExecute('/api/v1/users/me/nickname', 'PUT', {nickname: nick});
-            if(IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
+            var ajax_result = AjaxExecute('/api/v1/users/me/nickname', 'PUT', {
+                nickname: nick
+            });
+            if (IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
             else alert(ajax_result);
         });
         // // 업로드 버튼 : onselected 방식으로 할지 click 방식으로 할지 미정
@@ -169,7 +175,7 @@ var pageScript = function () {
             // console.log(res);
 
             var ajax_result = AjaxExecute('/api/v1/users/me/pwd', 'PUT', data);
-            if(IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
+            if (IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
             else alert(ajax_result);
         });
         // // 로컬계정 생성 취소 버튼
@@ -236,11 +242,11 @@ var pageScript = function () {
             //         }
             //     });
             // }
-            location.href='/api/v1/auth/facebook/signin';
+            location.href = '/api/v1/auth/facebook/signin';
         });
         // 탈퇴 실행 버튼
         $('#remove_btn').on('click', function (e) {
-            e.preventDefault();            
+            e.preventDefault();
             // $.ajax({
             //     url: '탈퇴실행URL',
             //     type: 'POST',
@@ -262,34 +268,72 @@ var pageScript = function () {
             //         console.log(err.responseText);
             //     }
             // });
-            var ajax_result = AjaxExecute('탈퇴URL', 'submit방식');
-            if(IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
-            else alert(ajax_result);
+            var ajax_result = AjaxExecute('/api/v1/users/me/bye', 'DELETE');
+            if (IsValidStr(ajax_result.result_ko)) {
+                alert(ajax_result.result_ko);
+                logout();
+                //location.href='/';
+            } else alert(ajax_result);
         });
     };
     this.memberInfo = function () {
+        // 회원정보
         userinfo = AjaxExecute('/api/v1/users/me', 'GET');
         $('#sp_user_email').text(userinfo.email);
         $('#txt_name').val(userinfo.name);
-        if (IsValidStr(userinfo.picture)) {
-            $('#sp_user_picture').css('background', 'url(' + userinfo.picture + ')');
-        }
+        // if (IsValidStr(userinfo.picture)) {
+        //     $('#sp_user_picture').css('background', 'url(' + userinfo.picture + ')');
+        // }
         var g_btn = $('#google_btn');
         var f_btn = $('#facebook_btn');
-        if (IsValidStr(userinfo.conn_google_time)) {
+        var tran_date = '';
+        var connect_date = '';
+        if (IsValidStr(userinfo.google.connect_time)) {
             g_btn.removeClass('connect_before').addClass('connect_after').val('연동완료').prop('disabled', 'disabled');
-            $('#sp_google_desc').text('구글 계정과 연동되어 있습니다.');
+            if (IsValidObj(userinfo.google.connect_time)) {
+                connect_date = new Date(userinfo.google.connect_time);
+                tran_date = ConvertDateToString(connect_date);
+            }
+            $('#sp_google_desc').text(tran_date + ' (' + userinfo.google.name + ') 구글 계정과 연동됨');
         } else {
             $('#sp_google_desc').text('구글 계정과 연동되지 않은 상태입니다.');
             g_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');
         }
-        if (IsValidStr(userinfo.conn_facebook_time)) {
-            $('#sp_facebook_desc').text('페이스북 계정과 연동되어 있습니다.');
+        if (IsValidStr(userinfo.facebook.connect_time)) {
             f_btn.removeClass('connect_before').addClass('connect_after').val('연동완료').prop('disabled', 'disabled');
+            if (IsValidObj(userinfo.facebook.connect_time)) {
+                connect_date = new Date(userinfo.facebook.connect_time);
+                tran_date = ConvertDateToString(connect_date);
+            }
+            $('#sp_facebook_desc').text(tran_date + ' (' + userinfo.facebook.name + ') 페이스북 계정과 연동됨');
         } else {
             $('#sp_facebook_desc').text('페이스북 계정과 연동되지 않은 상태입니다.');
             f_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');
         }
+
+        // 회원사진정보
+        //var mem_phpto = AjaxExecute('/api/v1/users/me/picture', 'GET');
+        //console.log('mem_phpto' );
+        //console.log(mem_phpto);
+        //$('#sp_user_picture').html('<img src="' + 'data:image/jpeg;base64,' + hexToBase64(mem_phpto) + '" style="width:30px;height:30px;">');
+        //$('#sp_user_picture').html('<img src="/api/v1/users/me/picture" style="width:50px;height:50px;">');
+        //$('#sp_user_picture').html('<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />');
+
+        // var settings = {
+        //     "async": true,
+        //     "crossDomain": true,
+        //     "url": "https://localhost:5001/api/v1/users/me/picture",
+        //     "method": "GET",
+        //     "headers": {
+        //         "cache-control": "no-cache",
+        //         "postman-token": "74c7bab0-9a05-27ab-c3f1-e1d11d79d915"
+        //     }
+        // };
+
+        // $.ajax(settings).done(function (response) {
+        //     console.log('response');
+        //     console.log(response);
+        // });
     };
     this.bind = function () {
         local.preInit();

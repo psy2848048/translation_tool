@@ -122,6 +122,8 @@ var pageScript = function () {
                 } else console.log(res);
             },
             error: function (e) {
+                $('#mask').hide();
+                $('#dvLoading').hide();
                 alert(e.responseJSON.result_ko);
                 console.log('[fail : 1658]');
                 console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
