@@ -1,4 +1,4 @@
-from sqlalchemy import Table, MetaData, exc, text
+from sqlalchemy import Table, MetaData, exc, text, and_
 from app import app, db, common
 import traceback
 import hashlib
@@ -58,10 +58,10 @@ def update_password(email, new_pwd):
         hash_new_pwd = common.encrypt_pwd(new_pwd)
         res = conn.execute(u.update().where(u.c.email == email), password=hash_new_pwd, update_time=datetime.utcnow())
 
-        if res.rowcount != 1:
-            print('update_password', res.rowcount)
-            trans.rollback()
-            return 0
+        # if res.rowcount != 1:
+        #     print('update_password', res.rowcount)
+        #     trans.rollback()
+        #     return 0
 
         trans.commit()
         return 1
