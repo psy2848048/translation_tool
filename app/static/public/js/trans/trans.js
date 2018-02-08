@@ -833,5 +833,5 @@ $(function () {
         }else{
             $('#sp_user').text(_USER_NICK + '님 접속중');
         }
-    }, 100);    
+    }, 1000);    
 });

@@ -64,7 +64,7 @@ var pageScript = function () {
                     data: f_data,
                     success: function (res) {
                         alert(res.result_ko);
-                        location.href=location.href;
+                        location.href='/static/front/user/userinfo.html';
 
                         console.log('##### Upload Success #####');
                         console.log(res);
