@@ -437,11 +437,11 @@ input[type=button] {
 .circle {
   border-radius: 50%;
   display: inline-block;
-  width: 30px;
-  height: 30px;
+  width: 50px;
+  height: 50px;
   vertical-align: middle;
   text-align: center;
-  background: url(/static/public/img/noman.png);
+  background: url(/api/v1/users/me/picture);
   background-size: 100%;
   /* border: 1px solid #9b9aa6; */
   background-repeat: no-repeat;
