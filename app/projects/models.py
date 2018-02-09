@@ -345,13 +345,12 @@ def delete_project_member(mid, pid):
         return False
 
 
-def check_is_founder(uid, pid):
+def select_project_access_auth(uid, pid):
     conn = db.engine.connect()
-    select_is_founder = "SELECT is_founder FROM `marocat v1.1`.project_members WHERE user_id = :uid AND project_id = :pid;"
+    res = conn.execute(
+        text("""SELECT is_founder, can_read, can_modify, can_delete, can_create_doc
+                FROM `marocat v1.1`.project_members
+                WHERE user_id=:uid AND project_id=:pid;""")
+        , uid=uid, pid=pid).fetchone()
 
-    res = conn.execute(text(select_is_founder), uid=uid, pid=pid).fetchone()
-
-    if res['is_founder'] == 1:
-        return False
-    else:
-        return True
+    return dict(res)

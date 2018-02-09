@@ -70,6 +70,13 @@ def add_doc(pid):
     type = request.form.get('type', None)
     content = request.form.get('content', None)
 
+    #: 사용자 권한 검사
+    uid = current_user.idx
+    user_auth = model.select_project_access_auth(uid, pid)
+    if user_auth['can_create_doc'] != 1:
+        return make_response(json.jsonify(result='You do not have authority to create documents'), 403)
+
+    #: Request Data 검사
     if None in [title, origin_lang, trans_lang, type]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     elif not content and type == 'text':
@@ -101,6 +108,13 @@ def add_project_member(pid):
     can_delete = request.form.get('can_delete', None)
     can_create_doc = request.form.get('can_create_doc', None)
 
+    #: 사용자 권한 검사
+    # uid = current_user.idx
+    # user_auth = model.select_project_access_auth(uid, pid)
+    # if user_auth['can_read'] != 1:
+    #     return make_response(json.jsonify(result='You do not have authority'), 403)
+
+    #: Request Data 검사
     if None in [mid, can_read, can_modify, can_delete, can_create_doc]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
@@ -120,6 +134,13 @@ def modify_project_info(pid):
     status = request.form.get('status', None)
     due_date = request.form.get('due_date', None)
 
+    #: 사용자 권한 검사
+    uid = current_user.idx
+    user_auth = model.select_project_access_auth(uid, pid)
+    if user_auth['can_modify'] != 1:
+        return make_response(json.jsonify(result='You do not have authority to modify project'), 403)
+
+    #: Request Data 검사
     if None in [name, status]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     if status not in ['신규', '진행중', '완료', '취소']:
@@ -145,6 +166,13 @@ def modify_project_member(pid, mid):
     can_delete = request.form.get('can_delete', None)
     can_create_doc = request.form.get('can_create_doc', None)
 
+    #: 사용자 권한 검사
+    # uid = current_user.idx
+    # user_auth = model.select_project_access_auth(uid, pid)
+    # if user_auth['can_create_doc'] != 1:
+    #     return make_response(json.jsonify(result='You do not have authority to create documents'), 403)
+
+    #: Request Data 검사
     if None in [can_read, can_modify, can_delete, can_create_doc]:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
@@ -158,6 +186,12 @@ def modify_project_member(pid, mid):
 
 @login_required
 def delete_project(pid):
+    #: 사용자 권한 검사
+    uid = current_user.idx
+    user_auth = model.select_project_access_auth(uid, pid)
+    if user_auth['can_delete'] != 1:
+        return make_response(json.jsonify(result='You do not have authority to delete project'), 403)
+
     is_done = model.delete_project(pid)
 
     if is_done is True:
@@ -168,9 +202,9 @@ def delete_project(pid):
 
 @login_required
 def delete_project_member(pid, mid):
-    res = model.check_is_founder(mid, pid)
-    if res is False:
-        # return make_response(json.jsonify(result='Founder can not be deleted!'), 463)
+    #: 프로젝트 개설자는 삭제될 수 없다
+    user_auth = model.select_project_access_auth(mid, pid)
+    if user_auth['is_founder'] == 1:
         return make_response(json.jsonify(result=463), 200)
 
     is_done = model.delete_project_member(mid, pid)
