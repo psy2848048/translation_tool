@@ -1,9 +1,11 @@
 from flask import request, make_response, json
+from flask_login import login_required, current_user
 import app.termbase.models as model
 
 
+@login_required
 def get_termbase_list():
-    uid = 7
+    uid = current_user.idx
     origin_lang = request.values.get('origin_lang', None)
     trans_lang = request.values.get('trans_lang', None)
     page = int(request.values.get('page', 1))
@@ -16,8 +18,9 @@ def get_termbase_list():
     return make_response(json.jsonify(total_cnt=total_cnt, results=terms), 200)
 
 
+@login_required
 def save_termbase():
-    uid = 7
+    uid = current_user.idx
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
     origin_text = request.form.get('origin_text', None)
@@ -40,6 +43,7 @@ def save_termbase():
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def modify_term(tid):
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
@@ -54,6 +58,7 @@ def modify_term(tid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def delete_term(tid):
     is_done = model.delete_term(tid)
 

@@ -1,14 +1,17 @@
 from flask import request, make_response, json
+from flask_login import login_required, current_user
 import app.docs.models as model
 from app import common
 
 
-def get_doc_info(uid, did):
+@login_required
+def get_doc_info(did):
     doc_info = model.select_doc_info(did)
     return make_response(json.jsonify(doc_info), 200)
 
 
-def get_doc_members(uid, did):
+@login_required
+def get_doc_members(did):
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 10))
 
@@ -16,7 +19,8 @@ def get_doc_members(uid, did):
     return make_response(json.jsonify(total_cnt=total_cnt, results=doc_members), 200)
 
 
-def modify_doc_info(uid, did):
+@login_required
+def modify_doc_info(did):
     title = request.form.get('title', None)
     status = request.form.get('status', None)
     link = request.form.get('link', None)
@@ -46,7 +50,8 @@ def modify_doc_info(uid, did):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def modify_doc_member(uid, did, mid):
+@login_required
+def modify_doc_member(did, mid):
     can_read = request.form.get('can_read', None)
     can_modify = request.form.get('can_modify', None)
     can_delete = request.form.get('can_delete', None)
@@ -62,7 +67,8 @@ def modify_doc_member(uid, did, mid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def delete_doc(uid, did):
+@login_required
+def delete_doc(did):
     is_done = model.delete_doc(did)
 
     if is_done is True:

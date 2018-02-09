@@ -1,10 +1,13 @@
 from flask import request, make_response, json
+from flask_login import login_required, current_user
 import app.projects.models as model
 from app import common
 import nltk
 
 
-def get_projects_list(uid):
+@login_required
+def get_projects_list():
+    uid = current_user.idx
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 15))
 
@@ -12,12 +15,14 @@ def get_projects_list(uid):
     return make_response(json.jsonify(total_cnt=total_cnt, results=projects), 200)
 
 
-def get_project_info(uid, pid):
+@login_required
+def get_project_info(pid):
     project_info = model.select_project_info(pid)
     return make_response(json.jsonify(project_info), 200)
 
 
-def get_proejct_docs(uid, pid):
+@login_required
+def get_proejct_docs(pid):
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 15))
 
@@ -25,7 +30,8 @@ def get_proejct_docs(uid, pid):
     return make_response(json.jsonify(total_cnt=total_cnt, results=project_docs), 200)
 
 
-def get_proejct_members(uid, pid):
+@login_required
+def get_proejct_members(pid):
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 10))
 
@@ -33,7 +39,9 @@ def get_proejct_members(uid, pid):
     return make_response(json.jsonify(total_cnt=total_cnt, results=project_members), 200)
 
 
-def add_project(uid):
+@login_required
+def add_project():
+    uid = current_user.idx
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
 
@@ -53,7 +61,8 @@ def add_project(uid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def add_doc(uid, pid):
+@login_required
+def add_doc(pid):
     title = request.form.get('title', None)
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
@@ -84,7 +93,8 @@ def add_doc(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def add_project_member(uid, pid):
+@login_required
+def add_project_member(pid):
     mid = request.form.get('mid', None)
     can_read = request.form.get('can_read', None)
     can_modify = request.form.get('can_modify', None)
@@ -104,7 +114,8 @@ def add_project_member(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def modify_project_info(uid, pid):
+@login_required
+def modify_project_info(pid):
     name = request.form.get('name', None)
     status = request.form.get('status', None)
     due_date = request.form.get('due_date', None)
@@ -127,7 +138,8 @@ def modify_project_info(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def modify_project_member(uid, pid, mid):
+@login_required
+def modify_project_member(pid, mid):
     can_read = request.form.get('can_read', None)
     can_modify = request.form.get('can_modify', None)
     can_delete = request.form.get('can_delete', None)
@@ -144,7 +156,8 @@ def modify_project_member(uid, pid, mid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def delete_project(uid, pid):
+@login_required
+def delete_project(pid):
     is_done = model.delete_project(pid)
 
     if is_done is True:
@@ -153,7 +166,8 @@ def delete_project(uid, pid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
-def delete_project_member(uid, pid, mid):
+@login_required
+def delete_project_member(pid, mid):
     res = model.check_is_founder(mid, pid)
     if res is False:
         # return make_response(json.jsonify(result='Founder can not be deleted!'), 463)

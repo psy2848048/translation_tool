@@ -58,10 +58,10 @@ from app.users.urls import users
 app.register_blueprint(users, url_prefix='/api/v1/users')
 
 from app.projects.urls import projects
-app.register_blueprint(projects, url_prefix='/api/v1/<int:uid>/projects')
+app.register_blueprint(projects, url_prefix='/api/v1/projects')
 
 from app.docs.urls import docs
-app.register_blueprint(docs, url_prefix='/api/v1/<int:uid>/projects/docs')
+app.register_blueprint(docs, url_prefix='/api/v1/projects/docs')
 
 from app.workbench.urls import workbench
 app.register_blueprint(workbench, url_prefix='/api/v1/toolkit/workbench')
