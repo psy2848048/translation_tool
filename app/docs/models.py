@@ -1,5 +1,5 @@
-from app import db, common
-from sqlalchemy import Table, MetaData, text, func, and_
+from app import db
+from sqlalchemy import Table, MetaData, text, and_
 import traceback
 from datetime import datetime
 

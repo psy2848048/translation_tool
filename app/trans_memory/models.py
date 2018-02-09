@@ -1,7 +1,6 @@
-from sqlalchemy import Table, MetaData, func, text
+from sqlalchemy import Table, MetaData, text
 from app import db
 import traceback
-from io import TextIOWrapper
 import io
 import csv
 from datetime import datetime

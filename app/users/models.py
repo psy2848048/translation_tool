@@ -1,7 +1,6 @@
-from sqlalchemy import Table, MetaData, exc, text, and_
+from sqlalchemy import Table, MetaData, exc, text
 from app import app, db, common
 import traceback
-import hashlib
 from datetime import datetime
 import re
 import copy

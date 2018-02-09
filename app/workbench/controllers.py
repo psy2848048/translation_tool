@@ -1,7 +1,6 @@
-from flask import request, make_response, json, session, send_file, send_from_directory
+from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.workbench.models as model
-import io
 
 
 @login_required

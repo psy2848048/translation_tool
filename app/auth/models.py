@@ -1,4 +1,4 @@
-from sqlalchemy import Table, MetaData, text, exc
+from sqlalchemy import Table, MetaData, text
 from app import app, db, common
 import traceback
 from flask_login import UserMixin

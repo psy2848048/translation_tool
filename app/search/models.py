@@ -1,7 +1,5 @@
 from app import db
-from sqlalchemy import Table, MetaData
 from sqlalchemy import text
-import re
 
 
 def select_similarity_trans_memory(uid, query, origin_lang, trans_lang):

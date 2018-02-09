@@ -9,7 +9,7 @@ import io
 def select_doc(did):
     conn = db.engine.connect()
 
-    results = conn.execute(text("""SELECT os.id as sentence_id, d.origin_lang, d.trans_lang, os.text as origin_text
+    res = conn.execute(text("""SELECT os.id as sentence_id, d.origin_lang, d.trans_lang, os.text as origin_text
                                         , IF(ts.text is not NULL, ts.text, '') as trans_text
                                         , IF(ts.status is not NULL, ts.status, 0) as trans_status
                                         , IF(ts.type is not NULL, ts.type, 0) as trans_type
@@ -20,7 +20,7 @@ def select_doc(did):
 								                                                          WHERE is_deleted = FALSE GROUP BY origin_id ) tc ON tc.origin_id = os.id
                                   WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did)
 
-    doc_sentences = [dict(res) for res in results]
+    doc_sentences = [dict(r) for r in res]
     return doc_sentences
 
 
