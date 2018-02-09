@@ -3,7 +3,7 @@ var pageScript = function () {
         userinfo = '';
     this.preInit = function () {
         local.memberInfo();
-        $('#hd_msg').val(getUrlParameter('result_ko'));
+        $('#hd_msg').val(getUrlParameter('results'));
         setTimeout(function () {
             if ($('#hd_msg').val() != '') alert($('#hd_msg').val());
         }, 200);

@@ -528,3 +528,21 @@ body {
     padding:2px;
     text-align: center;
 }
+
+#sp_dummy{
+    border:0px solid red;
+}
+#sp_title{
+    /* display: inline-block; */
+    max-width: 450px;
+    overflow: hidden;
+    display: inline-block;
+    white-space: nowrap;
+    /* overflow: hidden; */
+    vertical-align: bottom;
+    text-overflow: ellipsis;
+}
+#sp_tran{
+    font-size:14px;
+    text-transform: uppercase;
+}

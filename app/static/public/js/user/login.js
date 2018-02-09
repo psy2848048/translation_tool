@@ -11,7 +11,7 @@ var pageScript = function () {
         }, 500);
     };
     this.preInit = function () {
-        $('#hd_msg').val(getUrlParameter('result_ko'));
+        $('#hd_msg').val(getUrlParameter('results'));
         setTimeout(function () {
             if ($('#hd_msg').val() != '') $('#p_msg').css({
                 'color': 'red'
