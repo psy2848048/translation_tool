@@ -4,7 +4,7 @@ var pageScript = function () {
     this.preInit = function () {
         local.memberInfo();
         if ($('#hd_msg').val() != '{{result_ko}}') alert($('#hd_msg').val());
-    };
+};
     this.selectEvent = function () {};
     this.mask = function () {
         var maskHeight = $(document).height();
@@ -35,8 +35,12 @@ var pageScript = function () {
                 var mega = 10; // 메가 : 서버에는 썸네일 방식으로 떨구기러 함(가로세로 30px 정도가 적당)
                 var maxFilesize = parseInt(mega) * 1025 * 1000;
                 if (fileSize > maxFilesize) {
+                    $('#mask').fadeOut('slow');
+                    $('#dvLoading').fadeOut('slow');
+                        
                     alert('파일당 최대용량은 ' + mega + '메가 입니다.');
-                    $('#file_frm').val('');
+                    //$('#file_frm').val('');
+                    location.href=location.href;
                     return false;
                 }
                 /* 확장자 체크 */
@@ -90,9 +94,10 @@ var pageScript = function () {
                 $('#mask').fadeOut('slow');
                 $('#dvLoading').fadeOut('slow');
 
-            } else {
+            } else {               
                 alert('JPG, JPEG, GIF, PNG 이미지 확장자만 업로드가 가능합니다.');
-                $('#file_frm').val('');
+                //$('#file_frm').val('');
+                location.href=location.href;
                 return false;
             }
         });

@@ -22,11 +22,5 @@ $(function () {
             $('#sp_user_nick').text(_USER_NICK);
             $('#sp_user_email').text(_USER_ID);    
         }
-    }, 1000);
-
-    // // 우측상단 유저
-    // setTimeout(function () {
-    //     $('#sp_user_nick').text(_USER_NICK);
-    //     $('#sp_user_email').text(_USER_ID);
-    // }, 200);
+    }, 2000);
 });

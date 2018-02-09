@@ -68,7 +68,7 @@ var PageScript = function () {
             };
             console.log('[입력데이타] : ', data);
             $.ajax({
-                url: '/api/v1/7/projects/',
+                url: '/api/v1/projects/',
                 type: 'POST',
                 data: data,
                 async: true,

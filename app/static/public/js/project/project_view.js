@@ -17,7 +17,7 @@ var PageScript = function () {
         $('#del_btn').on('click', function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
                 $.ajax({
-                    url: '/api/v1/7/projects/' + project_id,
+                    url: '/api/v1/projects/' + project_id,
                     type: 'DELETE',
                     async: true,
                     success: function (res) {
@@ -43,7 +43,7 @@ var PageScript = function () {
                     $('#listContents td input[type=checkbox]:checked').each(function () {
                         //console.log('체크된 문서 : ', $(this).attr('data-id'));
                         $.ajax({
-                            url: '/api/v1/7/projects/docs/' + $(this).attr('data-id'),
+                            url: '/api/v1/projects/docs/' + $(this).attr('data-id'),
                             type: 'DELETE',
                             async: true,
                             success: function (res) {
@@ -96,11 +96,11 @@ var PageScript = function () {
 
         // 본문중앙 프로젝트 상세설명            
         $.ajax({
-            url: '/api/v1/7/projects/' + project_id,
+            url: '/api/v1/projects/' + project_id,
             type: 'GET',
             async: true,
             success: function (res) {
-                console.log('[/api/v1/7/projects/' + project_id + '] : ', res);
+                console.log('[/api/v1/projects/' + project_id + '] : ', res);
                 if (res != undefined && res != '') {
                     $('#h2_title').text(res.name);
                     $('#sp_project_id').text(res.id);
@@ -135,9 +135,9 @@ var PageScript = function () {
             }
         });
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/7/projects/] : ', data);
-                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
+                //console.log('[/api/v1/projects/] : ', data);
+                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -162,8 +162,8 @@ var PageScript = function () {
         jqxhr.always(function () {});
 
         // 본문 프로젝트 문서 목록
-        var doc_list = $.get('/api/v1/7/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page, function (data) {
-                console.log('[/api/v1/7/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page + '] : ', data);
+        var doc_list = $.get('/api/v1/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page, function (data) {
+                console.log('[/api/v1/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page + '] : ', data);
                 if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
                     var row = '';
                     $(data.results).each(function (idx, res) {
