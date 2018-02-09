@@ -37,7 +37,7 @@ def insert_term(uid, origin_lang, trans_lang, origin_text, trans_text):
 
     try:
         #: 단어저장소에 단어 추가
-        res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang
+        res = conn.execute(tb.insert(), user_id=uid, origin_lang=origin_lang, trans_lang=trans_lang
                            , origin_text=origin_text, trans_text=trans_text)
 
         if res.rowcount != 1:
