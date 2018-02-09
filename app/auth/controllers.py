@@ -3,6 +3,7 @@ import app.auth.models as model
 from app import app
 import traceback
 import requests
+import urllib
 
 from flask_login import LoginManager, login_user, logout_user, current_user
 login_manager = LoginManager()
@@ -254,11 +255,29 @@ def social_callback():
 
         #: 소셜 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지로 이동
         if current_user.is_authenticated is False:
-            # return render_template('user/signup.html', signup_type=social_type, social_id=social_id
-            #                        , name=social_name, email=social_email, picture=picture)
-            return redirect(url_for('static', filename='front/user/signup.html'
-                                    , signup_type=social_type, social_id=social_id
-                                    , name=social_name, email=social_email, picture=picture))
+            return render_template('user/signup.html', signup_type=social_type, social_id=social_id
+                                   , name=social_name, email=social_email, picture=picture)
+
+            # return redirect(url_for('static', filename='front/user/signup.html'
+            #                         , signup_type=social_type, social_id=social_id
+            #                         , name=social_name, email=social_email, picture=picture))
+
+            # from urllib.parse import quote
+            # return redirect(url_for('static', filename='front/user/signup.html'
+            #                         , signup_type=quote(social_type), social_id=quote(social_id)
+            #                         , name=quote(social_name), email=quote(social_email), picture=quote(picture)))
+
+            # data = {
+            #     'signup_type': social_type,
+            #     'social_id': social_id,
+            #     'name': social_name,
+            #     'email': social_email,
+            #     'picture': picture
+            # }
+            # # qs = urllib.urlencode(data)
+            # import urllib
+            # data = urllib.urlencode(data, True)
+            # return redirect('https://localhost:5001/static/front/user/signup.html'+data)
 
     print('이건 무슨 경우의 수일까..')
     return redirect('/static/index.html')
