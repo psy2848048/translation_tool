@@ -280,6 +280,11 @@ var PageScript = function () {
                                 e.preventDefault();
                                 var new_word = $(this).closest('div').find('.boldWord').text();
                                 var new_word_trans = $(this).closest('div').find('input[type=text]').val();
+                                if(!IsValidStr(new_word_trans)){
+                                    alert('해석이 공백입니다');
+                                    $(this).closest('div').find('input[type=text]').focus();
+                                    return false;
+                                }
                                 //alert('new_word_trans : ', new_word_trans);
                                 var data = {
                                     origin_lang: origin_lang,
@@ -294,7 +299,8 @@ var PageScript = function () {
                                     data: data,
                                     async: true,
                                     success: function (args) {
-                                        local.showMessage('등록되었습니다.');
+                                        if(args.result == 'OK') local.showMessage('등록되었습니다.');
+                                        console.log(args);
                                     },
                                     error: function (e) {
                                         console.log('fail 113 : ' + e.responseText);
@@ -535,8 +541,6 @@ var PageScript = function () {
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
         var url = 'https://localhost:5001/api/v1/search/?q=' + thisText + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
-        //var url = 'https://localhost:5001/api/v1/search/?q=' + encodeURIComponent(thisText) + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
-        //var url = 'https%3A%2F%2Flocalhost%3A5001%2Fapi%2Fv1%2Fsearch%2F%3Fq%3DThere%20was%20not%20a%20speck%20of%20cloud%20in%20the%20clear%20sky.The%20wind%20blows%20gently.%26target%3Dtm%2Ctb%26ol%3Den%26tl%3Dko';
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
@@ -591,53 +595,52 @@ var PageScript = function () {
                 });
 
 
-                //var tb_html = '';                
-                // if (data.tb != undefined && data.tb.length > 0) {
-                //     for (var j = 0; j < data.tb.length; j++) {
-                //         tb_html += '<div>';
-                //         tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정 (' +  data.tb[j].username + ')"> ';
-                //         tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span>';
-                //         tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
-                //         tb_html += '</div>';
-                //     }
-                // }
-
-                // $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
-                // $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
-                //     'border': '1px solid #999',
-                //     'border-radius': '5px',
-                //     'width': '98%',
-                //     'margin': '2px auto',
-                //     'padding-top': '5px',
-                //     'padding-bottom': '5px',
-                //     'padding-left': '5px'
-                // });
-                // $('#tran2section table div input[type=button]').on('click', function (e) {
-                //     e.preventDefault();
-                //     var org_word = $(this).closest('div').find('.boldWord').text();
-                //     var trans_word = $(this).closest('div').find('input[type=text]').val();
-                //     var word_id = $(this).attr('data-id');
-                //     $.ajax({
-                //         url: '/api/v1/toolkit/termbase/' + word_id,
-                //         type: 'PUT',
-                //         data: {
-                //             trans_text: trans_word
-                //         },
-                //         success: function (args) {
-                //             console.log('6695 [args]');
-                //             console.log(args);
-                //             if (args.result == 'OK') {
-                //                 local.showMessage('수정되었습니다.');
-                //             } else {
-                //                 local.showMessage('수정되지 않았습니다.');
-                //             }
-                //         },
-                //         error: function (e) {
-                //             local.showMessage('fail 386');
-                //             console.log(e.responseText);
-                //         }
-                //     });
-                // });
+                var tb_html = '';                
+                 if (data.tb != undefined && data.tb.length > 0) {
+                     for (var j = 0; j < data.tb.length; j++) {
+                         tb_html += '<div>';
+                         tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정 (' +  data.tb[j].username + ')"> ';
+                         tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span>';
+                         tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
+                         tb_html += '</div>';
+                     }
+                 }
+                 $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
+                 $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
+                     'border': '1px solid #999',
+                     'border-radius': '5px',
+                     'width': '98%',
+                     'margin': '2px auto',
+                     'padding-top': '5px',
+                     'padding-bottom': '5px',
+                     'padding-left': '5px'
+                 });
+                 $('#tran2section table div input[type=button]').on('click', function (e) {
+                     e.preventDefault();
+                     var org_word = $(this).closest('div').find('.boldWord').text();
+                     var trans_word = $(this).closest('div').find('input[type=text]').val();
+                     var word_id = $(this).attr('data-id');
+                     $.ajax({
+                         url: '/api/v1/toolkit/termbase/' + word_id,
+                         type: 'PUT',
+                         data: {
+                             trans_text: trans_word
+                         },
+                         success: function (args) {
+                             console.log('6695 [args]');
+                             console.log(args);
+                             if (args.result == 'OK') {
+                                 local.showMessage('수정되었습니다.');
+                             } else {
+                                 local.showMessage('수정되지 않았습니다.');
+                             }
+                         },
+                         error: function (e) {
+                             local.showMessage('fail 386');
+                             console.log(e.responseText);
+                         }
+                     });
+                 });
             })
             .done(function () {})
             .fail(function () {
@@ -841,5 +844,5 @@ $(function () {
             //$('#sp_user').text(_USER_NICK + '님 접속중');
             $('#sp_user').text($('#hd_nick').val() + '님 접속중');
         }
-    }, 1000);    
+    }, 3500);    
 });

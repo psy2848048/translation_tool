@@ -75,51 +75,51 @@ var PageScript = function () {
             .always(function () {});
         jqxhr3.always(function () {});
 
-        // 단어
-        var jqxhr4 = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb', function (result) {
-            console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb');
-            console.log(result);
-            if(result.tb == null || result.tb == undefined || result.tb.length < 1){
-                    $('#s_tb').html('단어 검색결과가 없습니다.');
-                }else{
-                    var html = '';
-                    html += '<ul>';
-                    $(result.tb).each(function(idx, res){
-                        html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
-                    });
-                    html += '</ul>';
-                    $('#s_tb').html(html);
-                }
-            })
-            .done(function () {})
-            .fail(function () {
-                alert("error 1576");
-            })
-            .always(function () {});
-        jqxhr4.always(function () {});
+        // // 단어
+        // var jqxhr4 = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb', function (result) {
+        //     console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb');
+        //     console.log(result);
+        //     if(result.tb == null || result.tb == undefined || result.tb.length < 1){
+        //             $('#s_tb').html('단어 검색결과가 없습니다.');
+        //         }else{
+        //             var html = '';
+        //             html += '<ul>';
+        //             $(result.tb).each(function(idx, res){
+        //                 html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
+        //             });
+        //             html += '</ul>';
+        //             $('#s_tb').html(html);
+        //         }
+        //     })
+        //     .done(function () {})
+        //     .fail(function () {
+        //         alert("error 1576");
+        //     })
+        //     .always(function () {});
+        // jqxhr4.always(function () {});
 
-        // 문장
-        var jqxhr5 = $.get('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm', function (result) {
-            console.log('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm'); 
-            console.log(result); 
-            if(result.tm == null || result.tm == undefined || result.tm.length < 1){
-                    $('#s_tm').html('문장 검색결과가 없습니다.');
-                }else{
-                    var html = '';
-                    html += '<ul>';
-                    $(result.tm).each(function(idx, res){
-                        html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
-                    });
-                    html += '</ul>';
-                    $('#s_tm').html(html);
-                }
-            })
-            .done(function () {})
-            .fail(function () {
-                alert("error 9468");
-            })
-            .always(function () {});
-        jqxhr5.always(function () {});
+        // // 문장
+        // var jqxhr5 = $.get('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm', function (result) {
+        //     console.log('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm'); 
+        //     console.log(result); 
+        //     if(result.tm == null || result.tm == undefined || result.tm.length < 1){
+        //             $('#s_tm').html('문장 검색결과가 없습니다.');
+        //         }else{
+        //             var html = '';
+        //             html += '<ul>';
+        //             $(result.tm).each(function(idx, res){
+        //                 html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
+        //             });
+        //             html += '</ul>';
+        //             $('#s_tm').html(html);
+        //         }
+        //     })
+        //     .done(function () {})
+        //     .fail(function () {
+        //         alert("error 9468");
+        //     })
+        //     .always(function () {});
+        // jqxhr5.always(function () {});
     };
     this.bind = function () {
         local.preInits();
