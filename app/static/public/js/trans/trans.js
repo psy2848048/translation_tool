@@ -12,6 +12,14 @@ var PageScript = function () {
         // body 흐리게
         local.mask();
 
+        // 제목, 번역언어 기본정보 출력
+        var doc_basic_info = AjaxExecute('/api/v1/projects/docs/' + doc_id, 'GET');
+        console.log('/api/v1/projects/docs/' + doc_id);
+        console.log('doc_basic_info');
+        console.log(doc_basic_info);
+        $('#sp_title').html(doc_basic_info.title);
+        $('#sp_tran').text(' (' + doc_basic_info.origin_lang + ' -> ' + doc_basic_info.trans_lang + ')');
+
         // 원문 로딩
         var jqxhr = $.get("/api/v1/toolkit/workbench/docs/" + doc_id, function (data) {
                 console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + ' 9987] : ');

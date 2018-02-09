@@ -9,6 +9,7 @@ var pageScript = function () {
             }
         }, 500);        
         setTimeout(function () {
+            $('#hd_msg').val(getUrlParameter('results'));
             if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
             if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
             if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
