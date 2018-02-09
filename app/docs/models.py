@@ -119,7 +119,12 @@ def select_doc_access_auth(uid, did):
     res = conn.execute(
         text("""SELECT can_read, can_modify, can_delete
                 FROM `marocat v1.1`.doc_members
-                WHERE user_id=:uid AND doc_id=:did;""")
+                WHERE user_id=:uid AND doc_id=:did AND is_deleted=FALSE;""")
         , uid=uid, did=did).fetchone()
 
-    return dict(res)
+    user_auth = {
+        'can_read': int(res['can_read']),
+        'can_modify': int(res['can_modify']),
+        'can_delete': int(res['can_delete'])
+    }
+    return user_auth

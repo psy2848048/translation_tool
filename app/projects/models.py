@@ -353,4 +353,11 @@ def select_project_access_auth(uid, pid):
                 WHERE user_id=:uid AND project_id=:pid;""")
         , uid=uid, pid=pid).fetchone()
 
-    return dict(res)
+    user_auth = {
+        'is_founder': int(res['is_founder']),
+        'can_read': int(res['can_read']),
+        'can_modify': int(res['can_modify']),
+        'can_delete': int(res['can_delete']),
+        'can_create_doc': int(res['can_create_doc'])
+    }
+    return user_auth
