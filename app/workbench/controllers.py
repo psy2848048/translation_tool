@@ -1,18 +1,22 @@
 from flask import request, make_response, json, session, send_file, send_from_directory
+from flask_login import login_required, current_user
 import app.workbench.models as model
 import io
 
 
+@login_required
 def get_doc(did):
     doc_sentences = model.select_doc(did)
     return make_response(json.jsonify(results=doc_sentences), 200)
 
 
+@login_required
 def get_trans_comments(did, sid):
     comments = model.select_trans_comments(sid)
     return make_response(json.jsonify(results=comments), 200)
 
 
+@login_required
 def output_doc_to_file(did):
     output_type = request.values.get('type', None)
 
@@ -36,6 +40,7 @@ def output_doc_to_file(did):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def save_trans_sentence(sid):
     trans_text = request.values.get('trans_text', None)
     trans_type = request.values.get('trans_type', None)
@@ -48,9 +53,9 @@ def save_trans_sentence(sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def add_trans_comment(did, sid):
-    # uid = session['uid']
-    uid = 7
+    uid = current_user.idx
     comment = request.form.get('comment', None)
 
     if not comment:
@@ -64,6 +69,7 @@ def add_trans_comment(did, sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def modify_sentence_status(sid, status):
     is_done = model.update_sentence_status(sid, status)
 
@@ -73,6 +79,7 @@ def modify_sentence_status(sid, status):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def delete_trans_comment(cid):
     is_done = model.delete_trans_comment(cid)
 
@@ -82,6 +89,7 @@ def delete_trans_comment(cid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def get_doc_comments(did):
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 50))
@@ -90,8 +98,9 @@ def get_doc_comments(did):
     return make_response(json.jsonify(total_cnt=total_cnt, results=comments), 200)
 
 
+@login_required
 def add_doc_comment(did):
-    uid = 7
+    uid = current_user.idx
     comment = request.form.get('comment', None)
 
     if not comment:
@@ -105,8 +114,9 @@ def add_doc_comment(did):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def delete_doc_comment(cid):
-    uid = 7
+    uid = current_user.idx
     is_done = model.delete_trans_comment(cid)
 
     if is_done is True:

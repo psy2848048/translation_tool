@@ -1,9 +1,11 @@
 from flask import request, make_response, json
+from flask_login import login_required, current_user
 import app.trans_memory.models as model
 
 
+@login_required
 def get_trans_memory_list():
-    uid = 7
+    uid = current_user.idx
     origin_lang = request.values.get('origin_lang', None)
     trans_lang = request.values.get('trans_lang', None)
     page = int(request.values.get('page', 1))
@@ -16,8 +18,9 @@ def get_trans_memory_list():
     return make_response(json.jsonify(total_cnt=total_cnt, results=tm), 200)
 
 
+@login_required
 def save_trans_memory():
-    uid = 7
+    uid = current_user.idx
 
     #: 문장 하나만 받을 때
     origin_lang = request.form.get('origin_lang', None)
@@ -45,6 +48,7 @@ def save_trans_memory():
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def modify_trans_memory(sid):
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
@@ -59,6 +63,7 @@ def modify_trans_memory(sid):
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
 
+@login_required
 def delete_trans_memory(sid):
     is_done = model.delete_trans_memory(sid)
 
