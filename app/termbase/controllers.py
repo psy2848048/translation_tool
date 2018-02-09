@@ -27,6 +27,9 @@ def save_termbase():
     trans_text = request.form.get('trans_text', None)
     file = request.files.get('file', None)
 
+    from pprint import pprint
+    pprint(request.form)
+
     if not None in [origin_lang, trans_lang, origin_text, trans_text]:
         is_done = model.insert_term(uid, origin_lang, trans_lang, origin_text, trans_text)
     elif file is not None:

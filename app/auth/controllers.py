@@ -3,7 +3,6 @@ import app.auth.models as model
 from app import app
 import traceback
 import requests
-import urllib
 
 from flask_login import LoginManager, login_user, logout_user, current_user
 login_manager = LoginManager()

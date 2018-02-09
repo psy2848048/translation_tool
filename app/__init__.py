@@ -90,6 +90,11 @@ def before_request():
     """
     모든 API 실행 전 실행하는 부분
     """
+    if request.url.startswith('http://'):
+        url = request.url.replace('http://', 'https://', 1)
+        code = 301
+        return redirect(url, code=code)
+
     if '/api' in request.environ['PATH_INFO']:
         is_ok = common.ddos_check_and_write_log()
         if is_ok is False:
