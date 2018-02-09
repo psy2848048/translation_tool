@@ -11,9 +11,9 @@ var PageScript = function () {
         $('#limited_date').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
 
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/7/projects/] : ', data);
-                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
+                //console.log('[/api/v1/projects/] : ', data);
+                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -39,7 +39,7 @@ var PageScript = function () {
 
         // 문서정보
         $.ajax({
-            url: '/api/v1/7/projects/docs/' + doc_id,
+            url: '/api/v1/projects/docs/' + doc_id,
             type: 'GET',
             //data: data,
             async: true,
@@ -75,13 +75,13 @@ var PageScript = function () {
         });
         // 하단 참가자 목록
         $.ajax({
-            url: '/api/v1/7/projects/docs/' + doc_id + '/members?page=1&rows=100', // 1차는 하드코딩 : 페이징 필요여부가 애매
+            url: '/api/v1/projects/docs/' + doc_id + '/members?page=1&rows=100', // 1차는 하드코딩 : 페이징 필요여부가 애매
             type: 'GET',
             //data: data,
             async: true,
             success: function (args) {
                 if (IsValidObj(args) && IsValidObj(args.results) && args.results.length > 0) {
-                    console.log('[/api/v1/7/projects/docs/' + doc_id + '/members?page=1&rows=100] : ', args);
+                    console.log('[/api/v1/projects/docs/' + doc_id + '/members?page=1&rows=100] : ', args);
                     var html = '';
                     $(args.results).each(function (idx) {
                         var result = args.results[idx];
@@ -190,7 +190,7 @@ var PageScript = function () {
             };
             console.log('[data] : ', data);
             $.ajax({
-                url: '/api/v1/7/projects/docs/' + doc_id,
+                url: '/api/v1/projects/docs/' + doc_id,
                 type: 'PUT',
                 data: data,
                 async: true,

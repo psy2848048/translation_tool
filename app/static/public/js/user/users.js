@@ -7,9 +7,9 @@ var PageScript = function () {
         cur_path = $(location).attr('pathname');
     this.preInits = function () {
         // 좌측 프로젝트 리스트
-        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/7/projects/] : ', data);
-                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
+                //console.log('[/api/v1/projects/] : ', data);
+                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -55,7 +55,7 @@ var PageScript = function () {
             if ($('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').length > 0) {
                 $('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
                     var user = $(this).closest('tr').find('td:eq(1)').text();
-                    var url = '/api/v1/7/projects/' + project_id + '/members/' + user;
+                    var url = '/api/v1/projects/' + project_id + '/members/' + user;
                     console.log('[4512 url]');
                     console.log(url);
                     $.ajax({
@@ -141,7 +141,7 @@ var PageScript = function () {
             if ($('#listContents2 table td:nth-of-type(1) input[type=checkbox]:checked').length > 0) {
                 $('#listContents2 table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
                     var user = $(this).closest('tr').find('td:eq(1)').text();
-                    var url = '/api/v1/7/projects/' + project_id + '/members';
+                    var url = '/api/v1/projects/' + project_id + '/members';
                     var data = {
                         mid: user,
                         can_read: 1,
@@ -203,11 +203,11 @@ var PageScript = function () {
         } else {
             local.show();
             $.ajax({
-                url: '/api/v1/7/projects/' + project_id + '/members?page=' + page + '&rows=' + rows,
+                url: '/api/v1/projects/' + project_id + '/members?page=' + page + '&rows=' + rows,
                 type: 'GET',
                 async: true,
                 success: function (res) {
-                    console.log('7784 [/api/v1/7/projects/' + project_id + '/members?page=' + page + '&rows=' + rows + '] : ', res);
+                    console.log('7784 [/api/v1/projects/' + project_id + '/members?page=' + page + '&rows=' + rows + '] : ', res);
                     var html = '';
                     if (res != undefined && res.results.length > 0) {
                         $(res.results).each(function (idx) {

@@ -83,15 +83,10 @@ jQuery.fn.center = function () {
 
 function getFileExtension(file_name) {
     var result;
-    //console.log('[6652] file_name : ', file_name);
-    //console.log('[1145] file_name.length : ', file_name.length);
-    //console.log('[2415] file_name.lastIndexOf(".") : ', file_name.lastIndexOf('.'));
     if (file_name != undefined && file_name.length > 0 && file_name.lastIndexOf('.') != -1) {
         result = file_name.substring(file_name.lastIndexOf('.') + 1, file_name.length).toUpperCase();
-        //console.log('[5487] result : ', result);
         return result;
     } else {
-        //console.log('[8526] result : ', result);
         return '';
     }
 }
@@ -231,6 +226,8 @@ function getSession() {
             console.log(res);
             _USER_ID = res.user_id;
             _USER_NICK = res.user_nickname;
+            $('#hd_id').val(res.user_id);
+            $('#hd_nick').val(res.user_nickname);
         },
         error: function (e) {
             console.log('############ 5496 ############');
@@ -251,7 +248,7 @@ function mask() {
 // url = 실행할 url
 // method = POST, GET, PUT, DELETE...
 // data : 넘길 데이타
-//var AjaxExecute = function (url, method, data, success_msg, success_url, err_msg) {
+//var AjaxExecute = function (url, method, data) {
 var AjaxExecute = function (url, method, data) {
     var result = '';
     $.ajax({
