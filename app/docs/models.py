@@ -112,3 +112,14 @@ def delete_doc(did):
         traceback.print_exc()
         trans.rollback()
         return False
+
+
+def select_doc_access_auth(uid, did):
+    conn = db.engine.connect()
+    res = conn.execute(
+        text("""SELECT can_read, can_modify, can_delete
+                FROM `marocat v1.1`.doc_members
+                WHERE user_id=:uid AND doc_id=:did;""")
+        , uid=uid, did=did).fetchone()
+
+    return dict(res)

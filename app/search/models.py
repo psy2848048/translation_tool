@@ -4,7 +4,7 @@ from sqlalchemy import text
 import re
 
 
-def select_similarity_trans_memory(query, origin_lang, trans_lang):
+def select_similarity_trans_memory(uid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
 
     #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
@@ -19,20 +19,19 @@ def select_similarity_trans_memory(query, origin_lang, trans_lang):
                 FROM ( SELECT tm.id as tm_id, origin_text, trans_text 
                             , u.name as username, u.id as user_id
                         FROM `marocat v1.1`.translation_memory tm 
-                        JOIN ( users_tmlist ut, users u ) 
-                        ON ( ut.tm_id = tm.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
+                        JOIN users u ON ( u.id = tm.user_id AND u.is_deleted = FALSE )
                         WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
-                        AND origin_lang = :ol AND trans_lang = :tl AND tm.is_deleted = FALSE) sm
+                        AND origin_lang=:ol AND trans_lang=:tl AND user_id=:uid AND tm.is_deleted = FALSE) sm
                 GROUP BY username, sm.trans_text
                 ORDER BY score DESC 
                 LIMIT 3;""")
-        , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang).fetchall()
+        , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang, uid=uid).fetchall()
 
     results = [dict(r) for r in res if r['score'] > 50]
     return results
 
 
-def select_termbase(query, origin_lang, trans_lang):
+def select_termbase(uid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
     nouns = query[:-1].split()
 
@@ -43,12 +42,11 @@ def select_termbase(query, origin_lang, trans_lang):
             res = conn.execute(
                 text("""SELECT tb.id as term_id, origin_text, trans_text, u.name as username, u.id as user_id
                         FROM `marocat v1.1`.termbase tb 
-                        JOIN ( users_tblist ut, users u ) 
-                        ON ( ut.tb_id = tb.id AND u.id = ut.user_id AND ut.is_deleted = FALSE AND u.is_deleted = FALSE )
+                        JOIN users u ON ( u.id = tb.user_id AND u.is_deleted = FALSE )
                         WHERE origin_text LIKE :noun 
-                        AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
+                        AND origin_lang = :ol AND trans_lang = :tl AND user_id=:uid AND tb.is_deleted = FALSE 
                         GROUP BY u.name, trans_text;""")
-                , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang).fetchall()
+                , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang, uid=uid).fetchall()
         else:
             continue
 
@@ -57,33 +55,6 @@ def select_termbase(query, origin_lang, trans_lang):
     #: 중복되는 단어 제거하기
     terms = {frozenset(item.items()): item for item in temp}.values()
     return list(terms)
-
-
-def select_termbase_only_one(query):
-    """
-    유사한 단어 없이, 완전히 query와 일치하는 단어 찾는다.
-    :param query:
-    :return:
-    """
-    conn = db.engine.connect()
-    words = []
-
-    res = conn.execute(text("""SELECT id as term_id, trans_lang, origin_text, trans_text FROM marocat.word_memory 
-                               WHERE is_deleted = FALSE AND (origin_text LIKE :noun OR trans_text LIKE :noun );"""), noun='%'+query+'%')
-
-    temp = {}
-    for r in res:
-        if r.trans_lang is not 'ko':
-            temp['term_id'] = r.term_id
-            temp['origin_text'] = r.origin_text
-            temp['trans_text'] = r.trans_text
-            words.append(temp)
-        else:
-            temp['term_id'] = r.term_id
-            temp['origin_text'] = r.trans_text
-            temp['trans_text'] = r.origin_text
-            words.append(temp)
-    return words
 
 
 def select_projects(uid, query):
@@ -114,7 +85,7 @@ def select_users(query):
     conn = db.engine.connect()
 
     res = conn.execute(text("""SELECT id as user_id, name, email FROM `marocat v1.1`.users
-                               WHERE email = :query"""),
-                       query=query)
+                               WHERE email=:query AND is_deleted=FALSE"""),
+                       query=query).fetchall()
     results = [dict(r) for r in res]
     return results
