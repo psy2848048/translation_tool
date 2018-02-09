@@ -507,12 +507,6 @@ var PageScript = function () {
 
                     if (trans_type == 'X') thisObj.closest('tr').find('td:eq(4)').removeClass().text('');
                     else if (trans_type == 'T') thisObj.closest('tr').find('td:eq(4)').removeClass().addClass('tColor').text('T');
-                    // else if (trans_type == 'TM') thisObj.closest('tr').find('td:eq(4)').css({
-                    //     'background-color': '#FF6FE6'
-                    // }).text('TM');
-                    // else if (trans_type == 'MT') thisObj.closest('tr').find('td:eq(4)').css({
-                    //     'background-color': '#FCFCFC'
-                    // }).text('MT');
                 }
             },
             error: function (e) {
@@ -540,15 +534,19 @@ var PageScript = function () {
     };
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var url = '/api/v1/search?q=' + thisText + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
-        console.log('[2154 /api/v1/search?q=' + thisText + '&target=tb,tm&ol=' + origin_lang + '&tl=' + trans_lang + ']');
-        console.log(url);
+        var url = 'https://localhost:5001/api/v1/search/?q=' + thisText + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
+        //var url = 'https://localhost:5001/api/v1/search/?q=' + encodeURIComponent(thisText) + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
+        //var url = 'https%3A%2F%2Flocalhost%3A5001%2Fapi%2Fv1%2Fsearch%2F%3Fq%3DThere%20was%20not%20a%20speck%20of%20cloud%20in%20the%20clear%20sky.The%20wind%20blows%20gently.%26target%3Dtm%2Ctb%26ol%3Den%26tl%3Dko';
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
+
                 console.log('## 결과 ################################');
+                console.log('[2154 url]');
+                console.log(url);
                 console.log('[data] ', data);
-                console.log('[data.tm] ', data.tm);
+                console.log('## 결과 ################################');
+
                 var tm_html = '';
                 if (data.tm != undefined && data.tm.length > 0) {
                     for (var i = 0; i < data.tm.length; i++) {
@@ -591,56 +589,55 @@ var PageScript = function () {
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(5)').removeClass().addClass(transBgClass).html(transType);
                     local.saveTrans($('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea'));
                 });
-                var tb_html = '';
 
-                console.log('[5692 data.tb] ');
-                console.log(data.tb);
-                if (data.tb != undefined && data.tb.length > 0) {
-                    for (var j = 0; j < data.tb.length; j++) {
-                        tb_html += '<div>';
-                        tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정 (' +  data.tb[j].username + ')"> ';
-                        tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span>';
-                        tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
-                        tb_html += '</div>';
-                    }
-                }
 
-                $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
-                $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
-                    'border': '1px solid #999',
-                    'border-radius': '5px',
-                    'width': '98%',
-                    'margin': '2px auto',
-                    'padding-top': '5px',
-                    'padding-bottom': '5px',
-                    'padding-left': '5px'
-                });
-                $('#tran2section table div input[type=button]').on('click', function (e) {
-                    e.preventDefault();
-                    var org_word = $(this).closest('div').find('.boldWord').text();
-                    var trans_word = $(this).closest('div').find('input[type=text]').val();
-                    var word_id = $(this).attr('data-id');
-                    $.ajax({
-                        url: '/api/v1/toolkit/termbase/' + word_id,
-                        type: 'PUT',
-                        data: {
-                            trans_text: trans_word
-                        },
-                        success: function (args) {
-                            console.log('6695 [args]');
-                            console.log(args);
-                            if (args.result == 'OK') {
-                                local.showMessage('수정되었습니다.');
-                            } else {
-                                local.showMessage('수정되지 않았습니다.');
-                            }
-                        },
-                        error: function (e) {
-                            local.showMessage('fail 386');
-                            console.log(e.responseText);
-                        }
-                    });
-                });
+                //var tb_html = '';                
+                // if (data.tb != undefined && data.tb.length > 0) {
+                //     for (var j = 0; j < data.tb.length; j++) {
+                //         tb_html += '<div>';
+                //         tb_html += '    <input type="button" data-id="' + data.tb[j].term_id + '" value="수정 (' +  data.tb[j].username + ')"> ';
+                //         tb_html += '    <span class="boldWord">' + data.tb[j].origin_text + '</span>';
+                //         tb_html += '    <input type="text" class="miniWord" value="' + data.tb[j].trans_text + '">';
+                //         tb_html += '</div>';
+                //     }
+                // }
+
+                // $('#tran2section table tr:nth-of-type(2) td').empty().append(tb_html);
+                // $('#tran2section table tr:nth-of-type(2) input[type=text]').css({
+                //     'border': '1px solid #999',
+                //     'border-radius': '5px',
+                //     'width': '98%',
+                //     'margin': '2px auto',
+                //     'padding-top': '5px',
+                //     'padding-bottom': '5px',
+                //     'padding-left': '5px'
+                // });
+                // $('#tran2section table div input[type=button]').on('click', function (e) {
+                //     e.preventDefault();
+                //     var org_word = $(this).closest('div').find('.boldWord').text();
+                //     var trans_word = $(this).closest('div').find('input[type=text]').val();
+                //     var word_id = $(this).attr('data-id');
+                //     $.ajax({
+                //         url: '/api/v1/toolkit/termbase/' + word_id,
+                //         type: 'PUT',
+                //         data: {
+                //             trans_text: trans_word
+                //         },
+                //         success: function (args) {
+                //             console.log('6695 [args]');
+                //             console.log(args);
+                //             if (args.result == 'OK') {
+                //                 local.showMessage('수정되었습니다.');
+                //             } else {
+                //                 local.showMessage('수정되지 않았습니다.');
+                //             }
+                //         },
+                //         error: function (e) {
+                //             local.showMessage('fail 386');
+                //             console.log(e.responseText);
+                //         }
+                //     });
+                // });
             })
             .done(function () {})
             .fail(function () {
@@ -669,7 +666,7 @@ var PageScript = function () {
             "user_email": "admin@sexycookie.com" // 일종의 암호로, 이거 바꾸면 안돌아가요
         };
         $.ajax({
-            url: 'http://52.196.164.64/translate',
+            url: 'https://translator.ciceron.me/translate',
             type: 'post',
             data: data,
             async: true,

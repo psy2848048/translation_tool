@@ -11,7 +11,12 @@ var pageScript = function () {
         }, 500);
     };
     this.preInit = function () {
-        if ($('#hd_msg').val() != '{{result_ko}}') $('#p_msg').css({'color': 'red'}).text($('#hd_msg').val());        
+        $('#hd_msg').val(getUrlParameter('result_ko'));
+        setTimeout(function () {
+            if ($('#hd_msg').val() != '') $('#p_msg').css({
+                'color': 'red'
+            }).text($('#hd_msg').val());
+        }, 200);
     };
     this.clickEvent = function () {
         //$('#loginBtn').on('click', function(){

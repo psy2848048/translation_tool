@@ -3,8 +3,11 @@ var pageScript = function () {
         userinfo = '';
     this.preInit = function () {
         local.memberInfo();
-        if ($('#hd_msg').val() != '{{result_ko}}') alert($('#hd_msg').val());
-};
+        $('#hd_msg').val(getUrlParameter('result_ko'));
+        setTimeout(function () {
+            if ($('#hd_msg').val() != '') alert($('#hd_msg').val());
+        }, 200);
+    };
     this.selectEvent = function () {};
     this.mask = function () {
         var maskHeight = $(document).height();
@@ -37,10 +40,10 @@ var pageScript = function () {
                 if (fileSize > maxFilesize) {
                     $('#mask').fadeOut('slow');
                     $('#dvLoading').fadeOut('slow');
-                        
+
                     alert('파일당 최대용량은 ' + mega + '메가 입니다.');
                     //$('#file_frm').val('');
-                    location.href=location.href;
+                    location.href = location.href;
                     return false;
                 }
                 /* 확장자 체크 */
@@ -68,7 +71,7 @@ var pageScript = function () {
                     data: f_data,
                     success: function (res) {
                         alert(res.result_ko);
-                        location.href='/static/front/user/userinfo.html';
+                        location.href = '/static/front/user/userinfo.html';
 
                         console.log('##### Upload Success #####');
                         console.log(res);
@@ -94,10 +97,10 @@ var pageScript = function () {
                 $('#mask').fadeOut('slow');
                 $('#dvLoading').fadeOut('slow');
 
-            } else {               
+            } else {
                 alert('JPG, JPEG, GIF, PNG 이미지 확장자만 업로드가 가능합니다.');
                 //$('#file_frm').val('');
-                location.href=location.href;
+                location.href = location.href;
                 return false;
             }
         });
