@@ -1,8 +1,6 @@
 from flask import request, make_response, json, send_file, session
 from flask_login import login_required, current_user
-from app import app
 import app.users.models as model
-import io
 
 
 @login_required

@@ -1,12 +1,10 @@
-from flask import request, make_response, json, url_for, session, redirect, jsonify, render_template, flash
+from flask import request, make_response, json, url_for, session, redirect, jsonify, render_template
 import app.auth.models as model
 from app import app
 import traceback
 import requests
-from urllib.parse import urlencode
-from pprint import pprint
 
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import LoginManager, login_user, logout_user, current_user
 login_manager = LoginManager()
 login_manager.init_app(app)
 

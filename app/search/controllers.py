@@ -1,4 +1,4 @@
-from flask import request, make_response, json, session
+from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.search.models as model
 

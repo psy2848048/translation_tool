@@ -8,8 +8,6 @@ import hashlib
 import string
 import random
 import traceback
-import requests
-import re
 import io
 
 import boto3
