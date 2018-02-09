@@ -8,14 +8,7 @@ var pageScript = function () {
                 location.href = '/static/front/project/projects.html';
             }
         }, 500);        
-
-        $('#hd_nick').val(getUrlParameter('name'));
-        $('#hd_email').val(getUrlParameter('email'));
-        $('#hd_social_id').val(getUrlParameter('social_id'));
-        $('#hd_picture').val(getUrlParameter('picture'));
-        $('#hd_type').val(getUrlParameter('signup_type'));
-
-        setTimeout(function () {           
+        setTimeout(function () {
             if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
             if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
             if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
