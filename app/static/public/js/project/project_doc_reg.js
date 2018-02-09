@@ -10,9 +10,9 @@ var PageScript = function () {
         ResetDay();
         if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
 
-        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/7/projects/] : ', data);
-                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
+                //console.log('[/api/v1/projects/] : ', data);
+                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -118,7 +118,7 @@ var PageScript = function () {
             };
             console.log('[data] : ', data);
             $.ajax({
-                url: '/api/v1/7/projects/' + project_id + '/docs',
+                url: '/api/v1/projects/' + project_id + '/docs',
                 type: 'POST',
                 data: data,
                 async: true,

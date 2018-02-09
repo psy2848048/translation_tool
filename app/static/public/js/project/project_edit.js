@@ -71,7 +71,7 @@ var PageScript = function () {
             };
             console.log('[data 4251] : ', data);
             $.ajax({
-                url: '/api/v1/7/projects/' + project_id,
+                url: '/api/v1/projects/' + project_id,
                 type: 'PUT',
                 data: data,
                 async: true,
@@ -102,11 +102,11 @@ var PageScript = function () {
 
         // 본문중앙 프로젝트 상세설명            
         $.ajax({
-            url: '/api/v1/7/projects/' + project_id,
+            url: '/api/v1/projects/' + project_id,
             type: 'GET',
             async: true,
             success: function (res) {
-                console.log('[/api/v1/7/projects/' + project_id + '] : ', res);
+                console.log('[/api/v1/projects/' + project_id + '] : ', res);
                 if (res != undefined && res != '') {
                     $('#txt_title').val(res.name);
                     $('#status_sel').val(res.status);
@@ -141,9 +141,9 @@ var PageScript = function () {
             }
         });
         // 좌측 프로젝트 메뉴리스트
-        var jqxhr = $.get('/api/v1/7/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/7/projects/] : ', data);
-                //console.log('[/api/v1/7/projects/ data.results[0] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
+                //console.log('[/api/v1/projects/] : ', data);
+                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';

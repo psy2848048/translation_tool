@@ -8,7 +8,7 @@ var PageScript = function () {
         local.show();
         console.log('[current pc] : ', new Date());
         console.log('[current pc gmt basic] : ', new Date().toGMTString());
-        var jqxhr_l = $.get('/api/v1/7/projects?rows=1000', function (data) {
+        var jqxhr_l = $.get('/api/v1/projects?rows=1000', function (data) {
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {
@@ -30,9 +30,9 @@ var PageScript = function () {
             })
             .always(function () {});
         jqxhr_l.always(function () {});
-        var jqxhr = $.get('/api/v1/7/projects?rows=' + rows + '&page=' + page, function (data) {
-                console.log('[/api/v1/7/projects?rows=' + rows + '&page=' + page + '] : ', data);
-                console.log('[/api/v1/7/projects?rows=' + rows + '&page=' + page + ' data.results[0]] : ', data.results[0]);
+        var jqxhr = $.get('/api/v1/projects?rows=' + rows + '&page=' + page, function (data) {
+                console.log('[/api/v1/projects?rows=' + rows + '&page=' + page + '] : ', data);
+                console.log('[/api/v1/projects?rows=' + rows + '&page=' + page + ' data.results[0]] : ', data.results[0]);
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {

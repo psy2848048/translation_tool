@@ -717,8 +717,18 @@ var PageScript = function () {
                     local.saveTrans($('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea'));
                 });
             },
-            error: function (e) {
-                console.log('fail 4102 : ' + e.responseText);
+            error: function (xhr, ajaxOptions, thrownError) {
+                //console.log('fail 4102 : ' + e.responseText);
+                console.log('### xhr ###');
+                console.log(xhr);
+                console.log('### xhr.status ###');
+                console.log(xhr.status);
+                console.log('### xhr.responseText ###');
+                console.log(xhr.responseText);
+                console.log('### thrownError ###');
+                console.log(thrownError);
+                console.log('### ajaxOptions ###');
+                console.log(ajaxOptions);
             }
         });
     };
@@ -831,7 +841,8 @@ $(function () {
             location.href = '/static/front/user/login.html';
             return false;
         }else{
-            $('#sp_user').text(_USER_NICK + '님 접속중');
+            //$('#sp_user').text(_USER_NICK + '님 접속중');
+            $('#sp_user').text($('#hd_nick').val() + '님 접속중');
         }
     }, 1000);    
 });
