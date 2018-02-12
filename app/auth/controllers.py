@@ -188,11 +188,11 @@ def social_callback():
         if current_user.is_authenticated is False:
             login_user(user, remember=True)
             session['user_nickname'] = user.nickname
-            # return render_template('project/projects.html')
             return redirect('/static/front/project/projects.html')
 
-        #: 소셜 존재함 + 로그인 상태 ++ 로그인한 사용자와 소셜이 연결된 사용자가 다른 경우 --> 연동 실패 메세지 + 사용자 정보 페이지로 이동
+        #: 소셜 존재함 + 로그인 상태
         elif current_user.is_authenticated is True:
+            #: + 로그인한 사용자와 소셜이 연결된 사용자가 다른 경우 --> 연동 실패 메세지 + 사용자 정보 페이지로 이동
             if user.id != current_user.id:
                 # return render_template('user/userinfo.html'
                 #                        , result_en="Already connected to another account"
@@ -202,29 +202,19 @@ def social_callback():
                                         , result_en="Already connected to another account"
                                         , result_ko="이미 다른 계정과 연결되었습니다"
                                         , result=264))
-                # results = {
-                #     'en': 'Already connected to another account',
-                #     'ko': '이미 다른 계정과 연결되었습니다',
-                #     'code': 264
-                # }
-                # return redirect(url_for('static', filename='front/user/userinfo.html', results=json.dumps(results)))
+
+            else:
+                return redirect(url_for('static', filename='front/user/userinfo.html'
+                                        , result_en="Connection complete!"
+                                        , result_ko="소셜 연동 완료!"
+                                        , result=262))
 
     #: 소셜 존재함 + 이메일 인증되지 않음 --> 로그인 페이지로 이동
     if is_ok == 2:
-        # return render_template('user/login.html'
-        #                        , result_en='Unauthenticated User'
-        #                        , result_ko='이메일 인증되지 않은 사용자입니다'
-        #                        , result=263)
         return redirect(url_for('static', filename='front/user/login.html'
                                 , result_en="Unauthenticated User"
                                 , result_ko="이메일 인증되지 않은 사용자입니다"
                                 , result=263))
-        # results = {
-        #     'en': 'Unauthenticated User',
-        #     'ko': '이메일 인증되지 않은 사용자입니다',
-        #     'code': 263
-        # }
-        # return redirect(url_for('static', filename='front/user/login.html', results=json.dumps(results)))
 
     #: 소셜 존재하지 않음
     if not user:
@@ -233,66 +223,35 @@ def social_callback():
             email = current_user.id
             is_done = model.update_user_social_info(social_type, email, social_id, social_email, social_name)
             if is_done is True:
-                # return render_template('user/userinfo.html'
-                #                        , result_en="Connection complete!"
-                #                        , result_ko="소셜 연동 완료!"
-                #                        , result=262)
                 return redirect(url_for('static', filename='front/user/userinfo.html'
                                         , result_en="Connection complete!"
                                         , result_ko="소셜 연동 완료!"
                                         , result=262))
-                # results = {
-                #     'en': 'Connection complete!',
-                #     'ko': '소셜 연동 완료!',
-                #     'code': 262
-                # }
-                # return redirect(url_for('static', filename='front/user/userinfo.html', results=json.dumps(results)))
 
             else:
-                # return render_template('user/userinfo.html'
-                #                        , result_en='Something Wrong'
-                #                        , result_ko='일시적인 오류로 실패했습니다'
-                #                        , result=461)
                 return redirect(url_for('static', filename='front/user/userinfo.html'
                                         , result_en='Something Wrong'
                                         , result_ko='일시적인 오류로 실패했습니다'
                                         , result=461))
 
-                # results = {
-                #     'en': 'Something Wrong',
-                #     'ko': '일시적인 오류로 실패했습니다',
-                #     'code': 461
-                # }
-                # return redirect(url_for('static', filename='front/user/userinfo.html', results=json.dumps(results)))
-
         #: 소셜 존재하지 않음 + 이메일 존재 --> 로그인 페이지로 이동
         luser, is_ok2 = model.select_user(social_email)
         if luser is not None:
-            return render_template('user/login.html'
-                                   , result_en='You are already signed up'
-                                   , result_ko='이미 가입한 사용자입니다. 다른 방법으로 가입하셨나요?'
-                                   , result=260)
-
-            # results = {
-            #     'en': 'You are already signed up',
-            #     'ko': '이미 가입한 사용자입니다. 다른 방법으로 가입하셨나요?',
-            #     'code': 260
-            # }
-            # return redirect(url_for('static', filename='front/user/login.html', results=json.dumps(results)))
+            return redirect(url_for('static', filename='front/user/login.html'
+                                    , result_en='You are already signed up'
+                                    , result_ko='이미 가입한 사용자입니다. 다른 방법으로 가입하셨나요?'
+                                    , result=260))
 
         #: 소셜 존재하지 않음 + 로그아웃 상태 --> 회원가입 페이지로 이동
         if current_user.is_authenticated is False:
-            return render_template('user/signup.html', signup_type=social_type, social_id=social_id
-                                   , name=social_name, email=social_email, picture=picture)
-
-            # results = {
-            #     'signup_type': social_type,
-            #     'social_id': social_id,
-            #     'name': social_name,
-            #     'email': social_email,
-            #     'picture': picture
-            # }
-            # return redirect(url_for('static', filename='front/user/signup.html', results=json.dumps(results)))
+            results = {
+                'signup_type': social_type,
+                'social_id': social_id,
+                'name': social_name,
+                'email': social_email,
+                'picture': picture
+            }
+            return redirect(url_for('static', filename='front/user/signup.html', **results))
 
     print('이건 무슨 경우의 수일까..')
     return redirect('/static/index.html')
@@ -327,6 +286,14 @@ def facebook_authorized():
     session['facebook_token'] = (resp['access_token'], '')
     data = facebook.get('/me?fields=email,name,picture').data
 
+    # user_info = {
+    #     'social_type': 'facebook',
+    #     'social_id': data['id'],
+    #     'social_name': data['name'],
+    #     'social_email': data.get('email'),
+    #     'picture': data['picture']['data']['url']
+    # }
+    # return redirect(url_for('auth.social_callback', user_info=json.dumps(user_info)))
     return redirect(url_for('auth.social_callback', social_type='facebook', social_id=data['id']
                             , social_name=data['name'], social_email=data.get('email')
                             , picture=data['picture']['data']['url']))
