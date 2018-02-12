@@ -81,6 +81,7 @@ def select_project_members(pid, page, rows):
     results = conn.execute(text("""SELECT pm.user_id as id, u.name, u.email, is_founder, can_read, can_modify, can_delete, can_create_doc
                                    FROM `marocat v1.1`.project_members pm JOIN users u ON u.id = pm.user_id
                                    WHERE project_id = :pid AND pm.is_deleted = FALSE AND u.is_deleted = FALSE
+                                   ORDER BY is_founder DESC, u.name
                                    LIMIT :row_count OFFSET :offset;"""), pid=pid, row_count=rows, offset=rows * (page - 1))
     project_members = [dict(res) for res in results]
 
