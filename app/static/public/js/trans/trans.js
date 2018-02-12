@@ -548,7 +548,7 @@ var PageScript = function () {
     };
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var url = '/api/v1/search/?q=' + RemoveBr(thisText) + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
+        var url = '/api/v1/search/?q=' + RemoveBr(thisText) + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang + '&tid=' + project_id;
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
