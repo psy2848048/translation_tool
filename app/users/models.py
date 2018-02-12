@@ -169,50 +169,26 @@ def delete_user(uid):
     meta = MetaData(bind=db.engine)
 
     u = Table('users', meta, autoload=True)
-    p = Table('projects', meta, autoload=True)
-    pm = Table('project_members', meta, autoload=True)
-    dm = Table('doc_members', meta, autoload=True)
-    d = Table('docs', meta, autoload=True)
     tc = Table('trans_comments', meta, autoload=True)
 
     try:
         #: 번역문댓글 삭제
         conn.execute(tc.update(tc.c.user_id == uid), is_deleted=True, update_time=datetime.utcnow())
 
-        #: 번역문 삭제
+        #: 본인이 개설자인 프로젝트와 문서 삭제
+        #: project_members, projects, + docs, doc_members, doc_origin_sentences, doc_trans_sentences 삭제
         conn.execute(
-            text("""UPDATE `marocat v1.1`.doc_trans_sentences ts 
-                    JOIN ( doc_origin_sentences os, doc_members dm ) ON ( ts.origin_id = os.id AND os.doc_id = dm.doc_id)
-                    SET ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP 
-                    WHERE user_id = :uid;""")
+            text("""UPDATE `marocat v1.1`.project_members pm
+                    LEFT JOIN (projects p, docs d, doc_members dm, doc_origin_sentences os, doc_trans_sentences ts) 
+                    ON (pm.project_id=p.id AND pm.project_id=d.project_id AND pm.project_id=dm.project_id AND d.id=os.doc_id AND os.id=ts.origin_id)
+                    SET pm.is_deleted=TRUE, pm.update_time=CURRENT_TIMESTAMP
+                      , p.is_deleted=TRUE, p.update_time=CURRENT_TIMESTAMP 
+                      , d.is_deleted=TRUE, d.update_time=CURRENT_TIMESTAMP 
+                      , dm.is_deleted=TRUE, dm.update_time=CURRENT_TIMESTAMP 
+                      , os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
+                      , ts.is_deleted=TRUE, ts.update_time=CURRENT_TIMESTAMP 
+                    WHERE pm.user_id=:uid AND is_founder=TRUE;""")
             , uid=uid)
-
-        #: 원문 삭제
-        conn.execute(
-            text("""UPDATE `marocat v1.1`.doc_origin_sentences os JOIN doc_members dm ON os.doc_id = dm.doc_id
-                    SET os.is_deleted=TRUE, os.update_time=CURRENT_TIMESTAMP 
-                    WHERE user_id = :uid;""")
-            , uid=uid)
-
-        #: 프로젝트의 문서 삭제
-        conn.execute(
-            text("""UPDATE `marocat v1.1`.docs d JOIN doc_members dm ON d.id = dm.doc_id
-                            SET d.is_deleted=TRUE, d.update_time=CURRENT_TIMESTAMP 
-                            WHERE user_id = :uid;""")
-            , uid=uid)
-
-        #: 프로젝트 참가자의 문서 권한 삭제
-        conn.execute(dm.update(dm.c.user_id == uid), is_deleted=True, update_time=datetime.utcnow())
-
-        #: 프로젝트 삭제 및 프로젝트 참가자에서 삭제
-        conn.execute(
-            text("""UPDATE `marocat v1.1`.projects p JOIN project_members pm ON p.id = pm.project_id
-                    SET p.is_deleted=TRUE, p.update_time=CURRENT_TIMESTAMP
-                      , pm.is_deleted=TRUE, pm.update_time=CURRENT_TIMESTAMP 
-                    WHERE user_id = :uid;""")
-            , uid=uid)
-        # res = conn.execute(pm.update(pm.c.user_id == uid), is_deleted=True, update_time=datetime.utcnow())
-        # res = conn.execute(p.update(p.c.id == pid), is_deleted=True, update_time=datetime.utcnow())
 
         #: 사용자 삭제
         res = conn.execute(u.update(u.c.id == uid), is_deleted=True, update_time=datetime.utcnow())
