@@ -401,6 +401,7 @@ def google_credentials_to_dict(credentials):
 def recovery_password():
     email = request.form.get('email', None)
 
+    #: 버전2에선 자세한 오류로 내보내기
     is_done = model.send_email_for_recovery_pwd(email)
     if is_done is True:
         return make_response(json.jsonify(result_en='Sent your password to email'
