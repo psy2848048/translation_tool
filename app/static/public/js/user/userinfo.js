@@ -1,15 +1,18 @@
+$('#hd_social_result').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result').ReplaceAll('+',' '));
+$('#hd_social_result_ko').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_ko').ReplaceAll('+',' '));
+$('#hd_social_result_en').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_en').ReplaceAll('+',' '));
+if($('#hd_social_result_ko').val().trim() != ''){
+    alert($('#hd_social_result_ko').val().trim());
+}
+
 var pageScript = function () {
     var local = this,
         userinfo = '';
     this.preInit = function () {
         local.memberInfo();
-        $('#hd_msg').val(getUrlParameter('results'));
-        $('#hd_social_result').val(getUrlParameter('result'));
-        $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
-        $('#hd_social_result_en').val(getUrlParameter('result_en'));
-        setTimeout(function () {
-            if ($('#hd_msg').val() != '') alert($('#hd_msg').val());
-        }, 200);
+        // setTimeout(function () {
+        //     if ($('#hd_msg').val() != '') alert($('#hd_msg').val());
+        // }, 200);
     };
     this.selectEvent = function () {};
     this.mask = function () {

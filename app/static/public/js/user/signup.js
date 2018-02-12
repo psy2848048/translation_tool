@@ -1,3 +1,9 @@
+$('#hd_nick').val(getUrlParameter('name') == undefined ? '' : getUrlParameter('name').ReplaceAll('+',' '));
+$('#hd_email').val(getUrlParameter('email') == undefined ? '' : getUrlParameter('email').ReplaceAll('+',' '));
+$('#hd_social_id').val(getUrlParameter('social_id') == undefined ? '' : getUrlParameter('social_id').ReplaceAll('+',' '));
+$('#hd_picture').val(getUrlParameter('picture') == undefined ? '' : getUrlParameter('picture').ReplaceAll('+',' '));
+$('#hd_type').val(getUrlParameter('signup_type') == undefined ? '' : getUrlParameter('signup_type').ReplaceAll('+',' '));
+
 var pageScript = function () {
     var local = this;
     //type = getUrlParameter('type');
@@ -8,16 +14,13 @@ var pageScript = function () {
                 location.href = '/static/front/project/projects.html';
             }
         }, 500);        
-        setTimeout(function () {
-            $('#hd_social_result').val(getUrlParameter('result'));
-            $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
-            $('#hd_social_result_en').val(getUrlParameter('result_en'));
-            if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
-            if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
-            if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
-            if ($('#hd_picture').val() == '{{picture}}') $('#hd_picture').val('');
-            if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('local');
-        }, 1000);
+        // setTimeout(function () {
+        //     if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
+        //     if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
+        //     if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
+        //     if ($('#hd_picture').val() == '{{picture}}') $('#hd_picture').val('');
+        //     if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('local');
+        // }, 1000);
     };
     this.preEvents = function () {        
         local.social_init();      

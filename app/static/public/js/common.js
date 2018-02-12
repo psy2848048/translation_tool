@@ -292,6 +292,11 @@ function hexToBase64(str) {
     return btoa(String.fromCharCode.apply(null, str.replace(/\r|\n/g, "").replace(/([\da-fA-F]{2}) ?/g, "0x$1 ").replace(/ +$/, "").split(" ")));
 }
 
+// ReplaceAll prototype 선언
+String.prototype.ReplaceAll = function(org, dest) {
+    return this.split(org).join(dest);
+}
+
 $(function () {
     getSession();
 

@@ -1,3 +1,10 @@
+$('#hd_social_result').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result').ReplaceAll('+',' '));
+$('#hd_social_result_ko').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_ko').ReplaceAll('+',' '));
+$('#hd_social_result_en').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_en').ReplaceAll('+',' '));
+if($('#hd_social_result_ko').val().trim() != ''){
+    alert($('#hd_social_result_ko').val().trim());
+}
+
 var pageScript = function () {
     var local = this;
     this.loginCheck = function () {
@@ -5,19 +12,20 @@ var pageScript = function () {
             if (IsValidStr(_USER_ID)) {
                 alert('로그온 상태입니다.');
                 location.href = '/static/front/project/projects.html';
-            } else {
-                $('#hd_social_result').val(getUrlParameter('result'));
-                $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
-                $('#hd_social_result_en').val(getUrlParameter('result_en'));
-            }
+            } 
+            // else {
+            //     $('#hd_social_result').val(getUrlParameter('result'));
+            //     $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
+            //     $('#hd_social_result_en').val(getUrlParameter('result_en'));
+            // }
         }, 500);
     };
     this.preInit = function () {
         $('#hd_msg').val(getUrlParameter('results'));
         setTimeout(function () {
-            if ($('#hd_msg').val() != '') $('#p_msg').css({
+            if ($('#hd_social_result_ko').val() != '') $('#p_msg').css({
                 'color': 'red'
-            }).text($('#hd_msg').val());
+            }).text($('#hd_social_result_ko').val());
         }, 200);
     };
     this.clickEvent = function () {
