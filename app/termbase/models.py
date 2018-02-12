@@ -33,7 +33,6 @@ def insert_term(uid, origin_lang, trans_lang, origin_text, trans_text):
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tb = Table('termbase', meta, autoload=True)
-    ut = Table('users_tblist', meta, autoload=True)
 
     try:
         #: 단어저장소에 단어 추가
@@ -43,10 +42,6 @@ def insert_term(uid, origin_lang, trans_lang, origin_text, trans_text):
         if res.rowcount != 1:
             trans.rollback()
             return False
-
-        #: 단어 주인(사용자) 저장하기
-        tid = res.lastrowid
-        res = conn.execute(ut.insert(), user_id=uid, tb_id=tid)
 
         if res.rowcount != 1:
             trans.rollback()
