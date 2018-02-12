@@ -762,7 +762,7 @@ var PageScript = function () {
                                 rows += '    <img data-id="13" src="/static/public/img/comment_del2.png">';
                                 rows += '</p>';
                             } else {
-                                rows += '<p data-comment-id="' + args.comment_id + '"><a href="javascript:;" onclick="javascript:showComment(' + args.sentence_id + ', null);">' + args.sentence_id + '번 문장에 [' + args.name + ']님 의견이 추가되었습니다</a></p>';
+                                rows += '<p data-comment-id="' + args.comment_id + '"><a href="javascript:showComment(' + args.sentence_id + ', null);">' + args.sentence_id + '번 문장에 [' + args.name + ']님 의견이 추가되었습니다</a></p>';
                             }
                         });
                         $('#doc_chat_content').html(rows);
