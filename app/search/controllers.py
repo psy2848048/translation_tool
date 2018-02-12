@@ -19,12 +19,12 @@ def search():
         #: 문장저장소 검색
         if t == 'tm':
             temp = []
-            res = model.select_similarity_trans_memory(uid, query, origin_lang, trans_lang)
+            res = model.select_similarity_trans_memory(tid, query, origin_lang, trans_lang)
             results['tm'] = res
 
         #: 단어저장소 검색
         elif t == 'tb':
-            res = model.select_termbase(uid, query, origin_lang, trans_lang)
+            res = model.select_termbase(tid, query, origin_lang, trans_lang)
             results['tb'] = res
 
         #: 프로젝트 검색

@@ -175,20 +175,32 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
-    pm = Table('project_members', meta, autoload=True)
 
     try:
+        #: 프로젝트 참가자 목록에 추가하기
         res = conn.execute(
             text("""INSERT INTO project_members (user_id, project_id, can_read, can_modify, can_delete, can_create_doc)
                     VALUES (:uid, :pid, :can_read, :can_modify, :can_delete, :can_create_doc)
                     ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
-                                          , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete, can_create_doc=:can_create_doc;""")
+                    , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete
+                    , can_create_doc=:can_create_doc;""")
             , uid=uid, pid=pid, is_founder=False
             , can_read=can_read, can_modify=can_modify, can_delete=can_delete, can_create_doc=can_create_doc)
 
-        if res.rowcount == 2:
+        if res.rowcount == 0:
             trans.rollback()
             return 2
+
+        #: 프로젝트내의 문서에 권한 주기
+        conn.execute(
+            text("""INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
+                    SELECT DISTINCT :uid, pm.project_id, d.id, :can_read, :can_modify, :can_delete
+                    FROM `marocat v1.1`.project_members pm 
+                    JOIN docs d ON (d.project_id = pm.project_id)
+                    WHERE pm.project_id=:pid
+                    ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
+                    , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete;""")
+            , uid=uid, pid=pid, can_read=can_read, can_modify=can_modify, can_delete=can_delete)
 
         trans.commit()
         return 1

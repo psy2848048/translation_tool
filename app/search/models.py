@@ -2,7 +2,7 @@ from app import db
 from sqlalchemy import text
 
 
-def select_similarity_trans_memory(uid, query, origin_lang, trans_lang):
+def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
 
     #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
@@ -14,22 +14,27 @@ def select_similarity_trans_memory(uid, query, origin_lang, trans_lang):
         text("""SELECT longest_common_substring_percent(:sentence, sm.origin_text) as score
                      , tm_id, sm.origin_text, sm.trans_text
                      , username, user_id
-                FROM ( SELECT tm.id as tm_id, origin_text, trans_text 
-                            , u.name as username, u.id as user_id
-                        FROM `marocat v1.1`.translation_memory tm 
-                        JOIN users u ON ( u.id = tm.user_id AND u.is_deleted = FALSE )
-                        WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
-                        AND origin_lang=:ol AND trans_lang=:tl AND user_id=:uid AND tm.is_deleted = FALSE) sm
+                FROM (SELECT tm.id as tm_id, origin_text, trans_text 
+                            , username, tm.user_id
+                      FROM `marocat v1.1`.translation_memory tm 
+                      JOIN (SELECT user_id, u.name as username
+                            FROM `marocat v1.1`.project_members pm 
+                            JOIN users u ON ( u.id = pm.user_id )
+                            WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
+                      ) t1 ON ( t1.user_id = tm.user_id )
+                      WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
+                      AND origin_lang=:ol AND trans_lang=:tl AND tm.is_deleted = FALSE
+                ) sm
                 GROUP BY username, sm.trans_text
                 ORDER BY score DESC 
                 LIMIT 3;""")
-        , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang, uid=uid).fetchall()
+        , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang, pid=tid).fetchall()
 
     results = [dict(r) for r in res if r['score'] > 50]
     return results
 
 
-def select_termbase(uid, query, origin_lang, trans_lang):
+def select_termbase(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
     nouns = query[:-1].split()
 
@@ -38,13 +43,18 @@ def select_termbase(uid, query, origin_lang, trans_lang):
         # 추후 수정사항: 나중에 검색대상 구분하자
         if len(noun) > 2:
             res = conn.execute(
-                text("""SELECT tb.id as term_id, origin_text, trans_text, u.name as username, u.id as user_id
+                text("""SELECT tb.id as term_id, origin_text, trans_text
+                             , username, tb.user_id
                         FROM `marocat v1.1`.termbase tb 
-                        JOIN users u ON ( u.id = tb.user_id AND u.is_deleted = FALSE )
+                        JOIN (SELECT user_id, u.name as username
+                            FROM `marocat v1.1`.project_members pm 
+                            JOIN users u ON ( u.id = pm.user_id )
+                            WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
+                        ) t1 ON ( t1.user_id = tb.user_id )
                         WHERE origin_text LIKE :noun 
-                        AND origin_lang = :ol AND trans_lang = :tl AND user_id=:uid AND tb.is_deleted = FALSE 
-                        GROUP BY u.name, trans_text;""")
-                , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang, uid=uid).fetchall()
+                        AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
+                        GROUP BY username, trans_text;""")
+                , noun='%'+noun+'%', ol=origin_lang, tl=trans_lang, pid=tid).fetchall()
         else:
             continue
 
