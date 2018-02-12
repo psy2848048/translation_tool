@@ -6,7 +6,9 @@ var pageScript = function () {
                 alert('로그온 상태입니다.');
                 location.href = '/static/front/project/projects.html';
             } else {
-                //if($('#hd_msg').val() != '{{result_ko}}') $('#p_msg').text($('#hd_msg').val());
+                $('#hd_social_result').val(getUrlParameter('result'));
+                $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
+                $('#hd_social_result_en').val(getUrlParameter('result_en'));
             }
         }, 500);
     };

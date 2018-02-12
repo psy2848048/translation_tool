@@ -246,7 +246,7 @@ body {
     overflow-x: hidden;
     overflow-y: auto;
     padding: 5px;
-    height: calc(36%);
+    height: calc(42%);
 }
 
 #doc_chat_content {
@@ -328,7 +328,7 @@ body {
 /*-------------------------------------------------------------*/
 
 #tran2section {
-    top: calc(38%);
+    top: calc(45%);
     padding: 5px;
 }
 
@@ -525,7 +525,7 @@ body {
     float:right;
 }
 #comment_refresh li{
-    padding:2px;
+    /* padding:2px; */
     text-align: center;
 }
 

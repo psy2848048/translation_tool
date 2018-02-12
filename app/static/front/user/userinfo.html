@@ -57,7 +57,7 @@
                                 <td>닉네임</td>
                                 <td>
                                     <input type="text" name="" id="txt_name">
-                                    <span id="sp_nick_desc"> * 변경된 닉네임은 재로그인 시 정상적으로 사용됩니다.</span>
+                                    <span id="sp_nick_desc"> * 변경된 닉네임은 재로그인 혹은 새로고침시 정상적으로 보여집니다.</span>
                                 </td>
                                 <td>
                                     <input type="button" name="" id="nick_btn" value=" 변경 " class="myinfo_btn">
@@ -126,7 +126,9 @@
     </div>
     <div id="mask"></div>
     <div id="dvLoading"></div>
-    <input type="hidden" name="" id="hd_social_result" value="{{results}}">
+    <input type="hidden" name="" id="hd_social_result" value="{{result}}">
+    <input type="hidden" name="" id="hd_social_result_ko" value="{{result_ko}}">
+    <input type="hidden" name="" id="hd_social_result_en" value="{{result_en}}">
     <input type="hidden" name="" id="hd_msg" value="">
     <script src="/static/public/js/jquery-1.12.4.min.js"></script>
     <script src="/static/public/js/common.js"></script>
