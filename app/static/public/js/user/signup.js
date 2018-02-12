@@ -126,10 +126,14 @@ var pageScript = function () {
                 if (res.result == 200) {
                     location.href = '/static/front/user/login.html';
                 } else console.log(res);
+
+                $('#mask').hide();
+                $('#dvLoading').hide();
             },
             error: function (e) {
                 $('#mask').hide();
                 $('#dvLoading').hide();
+                
                 alert(e.responseJSON.result_ko);
                 console.log('[fail : 1658]');
                 console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
