@@ -10,6 +10,7 @@ def search():
     origin_lang = request.values.get('ol', None)
     trans_lang = request.values.get('tl', None)
 
+    tid = request.values.get('tid', None)
     target = request.values.get('target', None)
     targets = target.split(',')
 
