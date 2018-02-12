@@ -100,7 +100,6 @@ def insert_or_update_trans(sid, trans_text, trans_type):
                                    SET origin_id = :oid, text = :trans_text, type = :trans_type
                                    ON DUPLICATE KEY UPDATE origin_id = :oid, text = :trans_text, type = :trans_type, update_time = CURRENT_TIMESTAMP;""")
                            , oid=sid, trans_text=trans_text, trans_type=trans_type)
-        print(res.rowcount)
         if res.rowcount not in [1, 2]:
             trans.rollback()
             return False

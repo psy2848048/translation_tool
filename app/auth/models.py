@@ -1,4 +1,4 @@
-from sqlalchemy import Table, MetaData, text
+from sqlalchemy import Table, MetaData, text, and_
 from app import app, db, common
 import traceback
 from flask_login import UserMixin
@@ -213,11 +213,11 @@ def send_email_for_recovery_pwd(email):
 
         #: 변경된 비밀번호로 바꾸기
         hash_new_pwd = common.encrypt_pwd(new_pwd)
-        res = conn.execute(u.update(whereclause=(u.c.email == email)), password=hash_new_pwd, update_time=datetime.utcnow())
-        if res.rowcount != 1:
-            print('Wrong! (update_user_password)')
-            trans.rollback()
-            return False
+        res = conn.execute(u.update(whereclause=(and_(u.c.email == email, u.c.is_deleted == False))), password=hash_new_pwd, update_time=datetime.utcnow())
+        # if res.rowcount != 1:
+        #     print('Wrong! (update_user_password)')
+        #     trans.rollback()
+        #     return False
 
         #: 인증코드 이메일 보내기
         title = '마이캣툴에서 새로운 비밀번호를 발급했습니다'

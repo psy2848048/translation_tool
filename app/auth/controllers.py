@@ -290,7 +290,7 @@ def facebook_authorized():
         'social_type': 'facebook',
         'social_id': data['id'],
         'social_name': data['name'],
-        'social_email': data.get('email', None),
+        'social_email': data.get('email'),
         'picture': data['picture']['data']['url']
     }
     return social_callback(**user_info)
