@@ -1,8 +1,8 @@
-$('#hd_nick').val(getUrlParameter('name') == undefined ? '' : getUrlParameter('name').ReplaceAll('+',' '));
-$('#hd_email').val(getUrlParameter('email') == undefined ? '' : getUrlParameter('email').ReplaceAll('+',' '));
-$('#hd_social_id').val(getUrlParameter('social_id') == undefined ? '' : getUrlParameter('social_id').ReplaceAll('+',' '));
-$('#hd_picture').val(getUrlParameter('picture') == undefined ? '' : getUrlParameter('picture').ReplaceAll('+',' '));
-$('#hd_type').val(getUrlParameter('signup_type') == undefined ? '' : getUrlParameter('signup_type').ReplaceAll('+',' '));
+$('#hd_nick').val(getUrlParameter('name') == undefined ? '' : getUrlParameter('name'));
+$('#hd_email').val(getUrlParameter('email') == undefined ? '' : getUrlParameter('email'));
+$('#hd_social_id').val(getUrlParameter('social_id') == undefined ? '' : getUrlParameter('social_id'));
+$('#hd_picture').val(getUrlParameter('picture') == undefined ? '' : getUrlParameter('picture'));
+$('#hd_type').val(getUrlParameter('signup_type') == undefined ? '' : getUrlParameter('signup_type'));
 
 var pageScript = function () {
     var local = this;
@@ -137,7 +137,7 @@ var pageScript = function () {
         });
     };
     this.social_init = function () {
-        if ($('#hd_social_id').val() != '{{social_id}}') {
+        if ($('#hd_social_id').val() != '') {
             $('#nick').val($('#hd_nick').val());
             $('#email').val($('#hd_email').val());
         }

@@ -3,19 +3,23 @@ var _USER_ID = '',
     _USER_NICK = '';  
 
 // 특정 파라미터값 추출
-function getUrlParameter(sParam) {
-    var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-        sURLVariables = sPageURL.split('&'),
-        sParameterName,
-        i;
+function getUrlParameter(name) {
+    // var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+    //     sURLVariables = sPageURL.split('&'),
+    //     sParameterName,
+    //     i;
 
-    for (i = 0; i < sURLVariables.length; i++) {
-        sParameterName = sURLVariables[i].split('=');
+    // for (i = 0; i < sURLVariables.length; i++) {
+    //     sParameterName = sURLVariables[i].split('=');
 
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : sParameterName[1];
-        }
-    }
+    //     if (sParameterName[0] === sParam) {
+    //         return sParameterName[1] === undefined ? true : sParameterName[1];
+    //     }
+    // }
+    name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+        results = regex.exec(location.search);
+    return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));    
 }
 
 // 특정한 엘리먼트에 색깔 주기
@@ -295,6 +299,13 @@ function hexToBase64(str) {
 // ReplaceAll prototype 선언
 String.prototype.ReplaceAll = function(org, dest) {
     return this.split(org).join(dest);
+}
+
+// 개행문자 제거
+function RemoveBr(value){
+    value = value.replace(/\n/g, " "); // 행바꿈제거
+    value = value.replace(/\r/g, " "); // 엔터제거
+    return value;
 }
 
 $(function () {

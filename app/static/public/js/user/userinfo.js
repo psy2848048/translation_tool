@@ -1,6 +1,6 @@
 $('#hd_social_result').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result').ReplaceAll('+',' '));
-$('#hd_social_result_ko').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_ko').ReplaceAll('+',' '));
-$('#hd_social_result_en').val(getUrlParameter('result') == undefined ? '' : getUrlParameter('result_en').ReplaceAll('+',' '));
+$('#hd_social_result_ko').val(getUrlParameter('result_ko') == undefined ? '' : getUrlParameter('result_ko').ReplaceAll('+',' '));
+$('#hd_social_result_en').val(getUrlParameter('result_en') == undefined ? '' : getUrlParameter('result_en').ReplaceAll('+',' '));
 if($('#hd_social_result_ko').val().trim() != ''){
     alert($('#hd_social_result_ko').val().trim());
 }
