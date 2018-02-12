@@ -196,7 +196,7 @@ var PageScript = function () {
                 $('#txtPublicSearch').focus();
                 return false;
             }
-            var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb&ol=' + origin_lang + '&tl=' + trans_lang, function (data) {
+            var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb&ol=' + origin_lang + '&tl=' + trans_lang + '&tid=' + project_id, function (data) {
                     console.log('## 단어검색 ##');
                     console.log(data);
                     // 현재 출력된 단어들과 대조해서 출력되어 있을 경우 무시
