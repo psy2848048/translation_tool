@@ -68,7 +68,7 @@ a:hover{
 #join_box span {
     border: 0px solid red;
     display: inline-block;
-    width: 100px;
+    /* width: 100px; */
 }
 
 #join_box span {

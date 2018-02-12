@@ -196,8 +196,8 @@ var PageScript = function () {
                 $('#txtPublicSearch').focus();
                 return false;
             }
-            var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb', function (data) {
-                    console.log('/api/v1/search?q=' + keyword + '&target=tb');
+            var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb&ol=' + origin_lang + '&tl=' + trans_lang, function (data) {
+                    console.log('## 단어검색 ##');
                     console.log(data);
                     // 현재 출력된 단어들과 대조해서 출력되어 있을 경우 무시
                     var is_newword = true;
@@ -213,7 +213,7 @@ var PageScript = function () {
                         var result = '';
                         if (data != undefined && data.tb.length > 0) {
                             // DB에 단어가 있을 경우
-                            if (!is_word) {
+                            //if (!is_word) {
                                 for (var i = 0; i < data.tb.length; i++) {
                                     result = '<div>';
                                     result += '    <input data-id="' + data.tb[i].term_id + '" type="button" value="수정 (' + data.tb[i].username + ')"> ';
@@ -263,7 +263,7 @@ var PageScript = function () {
                                         }
                                     });
                                 });
-                            }
+                            //}
                         } else {
                             // DB에 단어가 없을 경우
                             result = '<div>';
@@ -548,7 +548,7 @@ var PageScript = function () {
     };
     // TM 번역문 + 단어장 불러오기
     this.getTmAjax = function (doc_id, sentence_id, thisText, this_idx) {
-        var url = 'https://localhost:5001/api/v1/search/?q=' + thisText + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
+        var url = '/api/v1/search/?q=' + thisText + '&target=tm,tb&ol=' + origin_lang + '&tl=' + trans_lang;
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {

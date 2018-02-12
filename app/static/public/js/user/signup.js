@@ -9,7 +9,9 @@ var pageScript = function () {
             }
         }, 500);        
         setTimeout(function () {
-            $('#hd_msg').val(getUrlParameter('results'));
+            $('#hd_social_result').val(getUrlParameter('result'));
+            $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
+            $('#hd_social_result_en').val(getUrlParameter('result_en'));
             if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
             if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
             if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');

@@ -4,6 +4,9 @@ var pageScript = function () {
     this.preInit = function () {
         local.memberInfo();
         $('#hd_msg').val(getUrlParameter('results'));
+        $('#hd_social_result').val(getUrlParameter('result'));
+        $('#hd_social_result_ko').val(getUrlParameter('result_ko'));
+        $('#hd_social_result_en').val(getUrlParameter('result_en'));
         setTimeout(function () {
             if ($('#hd_msg').val() != '') alert($('#hd_msg').val());
         }, 200);
@@ -113,46 +116,12 @@ var pageScript = function () {
                 $('#txt_name').focus();
                 return false;
             }
-            // $.ajax({
-            //     url: '/api/v1/users/me/nickname',
-            //     type: 'PUT',
-            //     data: {
-            //         nickname: nick
-            //     },
-            //     async: true,
-            //     success: function (res) {
-            //         alert(res.result_ko);
-
-            //         console.log('##### 5214 #####');
-            //         console.log(res);
-            //     },
-            //     error: function (err) {
-            //         alert(err.result_ko);
-
-            //         console.log('##### 9876 #####');
-            //         console.log(err.responseText);
-            //     }
-            // });
             var ajax_result = AjaxExecute('/api/v1/users/me/nickname', 'PUT', {
                 nickname: nick
             });
             if (IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
             else alert(ajax_result);
         });
-        // // 업로드 버튼 : onselected 방식으로 할지 click 방식으로 할지 미정
-        // $('#name_btn').on('click', function (e) {
-        //     e.preventDefault();
-        //     alert('업로드 작업예정');
-        // });
-        // // 로컬계정 생성 버튼
-        // $('#email_btn').on('click', function (e) {
-        //     e.preventDefault();
-        //     if (!$(this).hasClass('connect_after')) {
-        //         $('#sp_local_desc').hide();
-        //         $('#local_connect_area').show();
-        //         $('#local_pass').focus();
-        //     }
-        // });
         // 비밀번호 변경 버튼
         $('#local_connect_btn').on('click', function (e) {
             e.preventDefault();
@@ -197,90 +166,20 @@ var pageScript = function () {
         // 구글 연동 실행 버튼
         $('#google_btn').on('click', function (e) {
             e.preventDefault();
-            // if (!$(this).hasClass('connect_after')) {
-            //     $.ajax({
-            //         url: '구글연동실행URL',
-            //         type: 'GET',
-            //         data: {
-            //             구글연동: '데이타'
-            //         },
-            //         async: true,
-            //         success: function (res) {
-            //             alert('구글과 연동됐다 OK 헐크버전');
-            //             $('#sp_google_desc').text('구글 계정과 연동되어 있습니다.');
-            //             $('#google_btn').removeClass().addClass('local_connect_after');
-
-            //             console.log('##### 9512 #####');
-            //             console.log(res);
-            //         },
-            //         error: function (err) {
-            //             alert('구글계정과 연동되지 않았습니다');
-
-            //             console.log('##### 7599 #####');
-            //             console.log(err.responseText);
-            //         }
-            //     });
-            // }
             location.href = '/api/v1/auth/google/signin';
         });
         // 페이스북 연동 실행 버튼
         $('#facebook_btn').on('click', function (e) {
             e.preventDefault();
-            // if (!$(this).hasClass('connect_after')) {
-            //     $.ajax({
-            //         url: '페이스북연동URL',
-            //         type: 'GET',
-            //         data: {
-            //             페이스북연동: '데이타'
-            //         },
-            //         async: true,
-            //         success: function (res) {
-            //             alert('페이스북과 연동됐다 OK 헐크버전');
-            //             $('#sp_facebook_desc').text('페이스북 계정과 연동되어 있습니다.');
-            //             $('#facebook_btn').removeClass().addClass('local_connect_after');
-
-            //             console.log('##### 1135 #####');
-            //             console.log(res);
-            //         },
-            //         error: function (err) {
-            //             alert('페이스북과 연동되지 않았습니다');
-
-            //             console.log('##### 7592 #####');
-            //             console.log(err.responseText);
-            //         }
-            //     });
-            // }
             location.href = '/api/v1/auth/facebook/signin';
         });
         // 탈퇴 실행 버튼
         $('#remove_btn').on('click', function (e) {
             e.preventDefault();
-            // $.ajax({
-            //     url: '탈퇴실행URL',
-            //     type: 'POST',
-            //     data: {
-            //         탈퇴: '데이타'
-            //     },
-            //     async: true,
-            //     success: function (res) {
-            //         alert('정상적으로 탈퇴되었습니다.\n\n굿바이 사요나라~');
-            //         location.href = '/';
-
-            //         console.log('##### 5858 #####');
-            //         console.log(res);
-            //     },
-            //     error: function (err) {
-            //         alert('회원탈퇴에 실패했습니다.');
-
-            //         console.log('##### 4592 #####');
-            //         console.log(err.responseText);
-            //     }
-            // });
             var ajax_result = AjaxExecute('/api/v1/users/me/bye', 'DELETE');
             if (IsValidStr(ajax_result.result_ko)) {
                 alert(ajax_result.result_ko);
                 logout();
-                //location.href='/';
             } else alert(ajax_result);
         });
     };
@@ -289,9 +188,6 @@ var pageScript = function () {
         userinfo = AjaxExecute('/api/v1/users/me', 'GET');
         $('#sp_user_email').text(userinfo.email);
         $('#txt_name').val(userinfo.name);
-        // if (IsValidStr(userinfo.picture)) {
-        //     $('#sp_user_picture').css('background', 'url(' + userinfo.picture + ')');
-        // }
         var g_btn = $('#google_btn');
         var f_btn = $('#facebook_btn');
         var tran_date = '';
@@ -318,30 +214,6 @@ var pageScript = function () {
             $('#sp_facebook_desc').text('페이스북 계정과 연동되지 않은 상태입니다.');
             f_btn.removeClass('connect_after').addClass('connect_before').val('연동하기');
         }
-
-        // 회원사진정보
-        //var mem_phpto = AjaxExecute('/api/v1/users/me/picture', 'GET');
-        //console.log('mem_phpto' );
-        //console.log(mem_phpto);
-        //$('#sp_user_picture').html('<img src="' + 'data:image/jpeg;base64,' + hexToBase64(mem_phpto) + '" style="width:30px;height:30px;">');
-        //$('#sp_user_picture').html('<img src="/api/v1/users/me/picture" style="width:50px;height:50px;">');
-        //$('#sp_user_picture').html('<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />');
-
-        // var settings = {
-        //     "async": true,
-        //     "crossDomain": true,
-        //     "url": "https://localhost:5001/api/v1/users/me/picture",
-        //     "method": "GET",
-        //     "headers": {
-        //         "cache-control": "no-cache",
-        //         "postman-token": "74c7bab0-9a05-27ab-c3f1-e1d11d79d915"
-        //     }
-        // };
-
-        // $.ajax(settings).done(function (response) {
-        //     console.log('response');
-        //     console.log(response);
-        // });
     };
     this.bind = function () {
         local.preInit();
