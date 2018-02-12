@@ -172,12 +172,12 @@ def local_signin():
                                               , result=465), 465)
 
 
-def social_callback():
-    social_type = request.values.get('social_type', None)
-    social_id = request.values.get('social_id', None)
-    social_name = request.values.get('social_name', None)
-    social_email = request.values.get('social_email', None)
-    picture = request.values.get('picture', None)
+def social_callback(social_type, social_id, social_name, social_email, picture):
+    # social_type = request.values.get('social_type', None)
+    # social_id = request.values.get('social_id', None)
+    # social_name = request.values.get('social_name', None)
+    # social_email = request.values.get('social_email', None)
+    # picture = request.values.get('picture', None)
 
     #: 존재하는 소셜 사용자인지 확인 = 소셜 존재 유무 확인
     user, is_ok = model.select_user(social_id)
@@ -286,17 +286,17 @@ def facebook_authorized():
     session['facebook_token'] = (resp['access_token'], '')
     data = facebook.get('/me?fields=email,name,picture').data
 
-    # user_info = {
-    #     'social_type': 'facebook',
-    #     'social_id': data['id'],
-    #     'social_name': data['name'],
-    #     'social_email': data.get('email'),
-    #     'picture': data['picture']['data']['url']
-    # }
-    # return redirect(url_for('auth.social_callback', user_info=json.dumps(user_info)))
-    return redirect(url_for('auth.social_callback', social_type='facebook', social_id=data['id']
-                            , social_name=data['name'], social_email=data.get('email')
-                            , picture=data['picture']['data']['url']))
+    user_info = {
+        'social_type': 'facebook',
+        'social_id': data['id'],
+        'social_name': data['name'],
+        'social_email': data.get('email', None),
+        'picture': data['picture']['data']['url']
+    }
+    return social_callback(**user_info)
+    # return redirect(url_for('auth.social_callback', social_type='facebook', social_id=data['id']
+    #                         , social_name=data['name'], social_email=data.get('email')
+    #                         , picture=data['picture']['data']['url']))
 
 
 @facebook.tokengetter
@@ -321,8 +321,16 @@ def google_signin():
     res = requests.get('https://www.googleapis.com/oauth2/v2/userinfo', headers=authorization_header)
     data = json.loads(res.text)
 
-    return redirect(url_for('auth.social_callback', social_type='google', social_id=data['id']
-                            , social_name=data['name'], social_email=data['email'], picture=data['picture']))
+    user_info = {
+        'social_type': 'google',
+        'social_id': data['id'],
+        'social_name': data['name'],
+        'social_email': data['email'],
+        'picture': data['picture']
+    }
+    return social_callback(**user_info)
+    # return redirect(url_for('auth.social_callback', social_type='google', social_id=data['id']
+    #                         , social_name=data['name'], social_email=data['email'], picture=data['picture']))
 
 
 def google_authorized():

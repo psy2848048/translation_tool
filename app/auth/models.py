@@ -48,8 +48,12 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             t = common.create_token(email)
             udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
             _pname = 'profile/picture-' + udate
+
             mimetype = re.split('/', r.headers['Content-Type'])
-            mtype = '.' + mimetype[1]
+            if mimetype[1] != 'png':
+                mtype = '.jpg'
+            else:
+                mtype = '.' + mimetype[1]
 
             #: 원본 이미지 저장
             pname = _pname + '-' + mtype
