@@ -166,10 +166,8 @@ function IsValidObj(o) {
 }
 
 function IsValidStr(s) {
-    if (s == undefined || s == null || s == '') return false;
-    else {
-        return true;
-    }
+    if (s == undefined || s == null || $.trim(s) == '') return false;
+    else return true;
 }
 
 // 날짜용도와 타입에 따른 결과 반환
