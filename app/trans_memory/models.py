@@ -62,7 +62,6 @@ def insert_trans_memory_csv_file(uid, csv_file, origin_lang, trans_lang):
         for row in data:
             #: CSV 파일 형식이 `원문언어, 번역언어, 원문단어, 번역단어`순인 경우
             if len(row) == 4:
-                print(1)
                 res = conn.execute(tm.insert(), user_id=uid, origin_lang=row[0], trans_lang=row[1]
                                    , origin_text=row[2], trans_text=row[3])
                 if res.rowcount != 1:

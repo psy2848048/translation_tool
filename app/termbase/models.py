@@ -43,10 +43,6 @@ def insert_term(uid, origin_lang, trans_lang, origin_text, trans_text):
             trans.rollback()
             return False
 
-        if res.rowcount != 1:
-            trans.rollback()
-            return False
-
         trans.commit()
         return True
     except:
