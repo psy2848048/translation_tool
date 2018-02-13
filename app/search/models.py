@@ -1,5 +1,9 @@
 from app import db
 from sqlalchemy import text
+import re
+# from ckonlpy.tag import Twitter
+# twit = Twitter()
+# from pprint import pprint
 
 
 def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
@@ -36,7 +40,18 @@ def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
 
 def select_termbase(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
-    nouns = query[:-1].split()
+
+    #: 검색 대상(query)의 마지막이 특수문자라면 지우기
+    p = re.compile('[-=.#/?:$}]')
+    m = p.match(query[-1])
+    if m:
+        nouns = query[:-1].split()
+    else:
+        nouns = query.split()
+
+    # if origin_lang.upper() == 'KO':
+    #     results = ko_morpheme_separation(nouns)
+    #     pprint(results)
 
     temp = []
     for noun in nouns:
@@ -63,6 +78,26 @@ def select_termbase(tid, query, origin_lang, trans_lang):
     #: 중복되는 단어 제거하기
     terms = {frozenset(item.items()): item for item in temp}.values()
     return list(terms)
+
+
+# def ko_morpheme_separation(nouns):
+#     results = []
+#     for noun in nouns:
+#         print(111, noun)
+#         results += twit.pos(noun)
+#     # t1 = re.sub(r"[(]\w+[)]", '', query)
+#     # t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
+#
+#     # for t in t2:
+#         # results.extend(twit.pos(t))
+#         # results.append(twit.pos(t))
+#         # results += twit.pos(t)
+#
+#     # results = [twit.pos(t) for t in t2]
+#
+#     # results.append('')
+#     # results.insert(0, '')
+#     return results
 
 
 def select_projects(uid, query):
