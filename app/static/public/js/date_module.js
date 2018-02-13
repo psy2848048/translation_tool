@@ -75,17 +75,18 @@ function ResetDay() {
         if ($('#sel_month').val() == 2) {
             if ($('#sel_year').val() == 2020 || $('#sel_year').val() == 2024 || $('#sel_year').val() == 2028 || $('#sel_year').val() == 2032) maxK = 29;
             else maxK = 28;
-        } else maxK = 31;
+        } else maxK = 30;
     } else {
-        maxK = 30;
+        maxK = 31;
     }
     var result = '    <option value="">일</option>';
-    for (var k = 1; k < maxK; k++) {
+    for (var k = 1; k <= maxK; k++) {
         if (k < 10) result += '    <option value="0' + k + '">0' + k + '</option>';
         else result += '    <option value="' + k + '">' + k + '</option>';
     }
     $('#sel_day').empty().html(result);
-    if(!IsValidStr($('#sel_day').val())) $('#sel_day').val('01');
+    //if(!IsValidStr($('#sel_day').val())) $('#sel_day').val('01');
+    //if(!IsValidStr($('#sel_day').val())) $('#sel_day').val('01');
 }
 // 1개월 후로 자동선택   
 function SetToday() {
@@ -104,10 +105,7 @@ function SetToday() {
     $('#sel_hour').val(hour);
     $('#sel_minute').val(minute);
 
-    //alert($('#sel_day').val());
-    //if ($('#sel_day').val() == null || $('#sel_day').val() == undefined || $('#sel_day').val() == '') {
-    //    $('#sel_day').val('01');
-    //}
+    if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') ResetDay();
 }
 
 function AddPreZero(s) {

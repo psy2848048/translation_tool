@@ -5,8 +5,8 @@ var PageScript = function () {
         var minutePadding = 10;
         $('#limited_date_area').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
         SetToday();
-        ResetDay();
-        if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
+        //ResetDay();
+        //if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
     };
     this.btnEvents = function () {
         // 기간 제한없음 체크박스

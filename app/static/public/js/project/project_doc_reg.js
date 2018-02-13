@@ -7,8 +7,8 @@ var PageScript = function () {
         var minutePadding = 10;
         $('#limited_date').append(SetDateSelect(2028, minutePadding) + ' <input type="checkbox" id="chk_no_limit"> <label for="chk_no_limit">제한없음</label>');
         SetToday();
-        ResetDay();
-        if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
+        //ResetDay();
+        //if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
 
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
                 // 좌측 프로젝트 리스트
