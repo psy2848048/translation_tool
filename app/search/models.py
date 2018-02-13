@@ -1,9 +1,9 @@
 from app import db
 from sqlalchemy import text
 import re
-# from ckonlpy.tag import Twitter
-# twit = Twitter()
-# from pprint import pprint
+from ckonlpy.tag import Twitter
+twit = Twitter()
+from pprint import pprint
 
 
 def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
@@ -38,7 +38,7 @@ def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
     return results
 
 
-def select_termbase(tid, query, origin_lang, trans_lang):
+def select_en_termbase(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
 
     #: 검색 대상(query)의 마지막이 특수문자라면 지우기
@@ -48,10 +48,6 @@ def select_termbase(tid, query, origin_lang, trans_lang):
         nouns = query[:-1].split()
     else:
         nouns = query.split()
-
-    # if origin_lang.upper() == 'KO':
-    #     results = ko_morpheme_separation(nouns)
-    #     pprint(results)
 
     temp = []
     for noun in nouns:
@@ -80,24 +76,34 @@ def select_termbase(tid, query, origin_lang, trans_lang):
     return list(terms)
 
 
-# def ko_morpheme_separation(nouns):
-#     results = []
-#     for noun in nouns:
-#         print(111, noun)
-#         results += twit.pos(noun)
-#     # t1 = re.sub(r"[(]\w+[)]", '', query)
-#     # t2 = re.findall(r'\w+', re.sub(r'\d+', '', t1))
-#
-#     # for t in t2:
-#         # results.extend(twit.pos(t))
-#         # results.append(twit.pos(t))
-#         # results += twit.pos(t)
-#
-#     # results = [twit.pos(t) for t in t2]
-#
-#     # results.append('')
-#     # results.insert(0, '')
-#     return results
+def select_ko_termbase(tid, query, origin_lang, trans_lang):
+    conn = db.engine.connect()
+
+    texts = query.split()
+
+    temp = []
+    for t in texts:
+        tt = twit.pos(t)
+        # 추후 수정사항: 나중에 검색대상 구분하자
+        res = conn.execute(
+            text("""SELECT tb.id as term_id, origin_text, trans_text
+                         , username, tb.user_id
+                    FROM `marocat v1.1`.termbase tb 
+                    JOIN (SELECT user_id, u.name as username
+                        FROM `marocat v1.1`.project_members pm 
+                        JOIN users u ON ( u.id = pm.user_id )
+                        WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
+                    ) t1 ON ( t1.user_id = tb.user_id )
+                    WHERE origin_text LIKE :noun 
+                    AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
+                    GROUP BY username, trans_text;""")
+            , noun='%'+tt[0][0]+'%', ol=origin_lang, tl=trans_lang, pid=tid).fetchall()
+
+        temp += [dict(r) for r in res]
+
+    #: 중복되는 단어 제거하기
+    terms = {frozenset(item.items()): item for item in temp}.values()
+    return list(terms)
 
 
 def select_projects(uid, query):
