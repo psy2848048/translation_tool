@@ -56,7 +56,7 @@ def select_termbase(tid, query, origin_lang, trans_lang):
     temp = []
     for noun in nouns:
         # 추후 수정사항: 나중에 검색대상 구분하자
-        if len(noun) > 2:
+        if len(noun) > 1:
             res = conn.execute(
                 text("""SELECT tb.id as term_id, origin_text, trans_text
                              , username, tb.user_id
