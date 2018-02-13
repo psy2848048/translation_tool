@@ -1,21 +1,33 @@
+function checkBrowserType() {   
+    var bCR = new RegExp(/Chrome/).test(navigator.userAgent); // Google Chrome
+    var bIE = new RegExp(/MSIE/).test(navigator.userAgent); // MS Internet Explorer
+    var bFF = new RegExp(/Firefox/).test(navigator.userAgent); // Mozilla Firefox
+    var bNS = new RegExp(/Netscape/).test(navigator.userAgent); // Mozilla Netscape
+
+    if (bCR) {
+        //alert("크롬");
+    } else {
+        if (bIE) {
+            //alert("인터넷 익스플로러");
+        } else if (bFF) {
+            //alert("파이어폭스");
+        } else if (bNS) {
+            //alert("넷스케이프");
+        } else {
+            //alert("기타 브라우저");
+        }
+        alert('마이캣툴 Ver.1은 웹표준에 최적화 된 크롬 브라우저만 지원합니다.\n\n크롬 브라우저로 접속 바랍니다!');
+        location.href='/static/front/browser_err.html';
+    }
+}
+
 var _OFFSET = new Date().getTimezoneOffset();
 var _USER_ID = '',
     _USER_NICK = '';  
 
+
 // 특정 파라미터값 추출
 function getUrlParameter(name) {
-    // var sPageURL = decodeURIComponent(window.location.search.substring(1)),
-    //     sURLVariables = sPageURL.split('&'),
-    //     sParameterName,
-    //     i;
-
-    // for (i = 0; i < sURLVariables.length; i++) {
-    //     sParameterName = sURLVariables[i].split('=');
-
-    //     if (sParameterName[0] === sParam) {
-    //         return sParameterName[1] === undefined ? true : sParameterName[1];
-    //     }
-    // }
     name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
     var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
         results = regex.exec(location.search);
@@ -302,6 +314,8 @@ function RemoveBr(value){
 }
 
 $(function () {
+    checkBrowserType();
+
     getSession();
 
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
