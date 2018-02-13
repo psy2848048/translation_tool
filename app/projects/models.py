@@ -11,23 +11,29 @@ def select_projects(uid, page, rows):
     #: 사용자의 총 프로젝트 개수
     res = conn.execute(text("""SELECT count(*) 
                                FROM `marocat v1.1`.project_members pm JOIN projects p ON p.id = pm.project_id
-                               WHERE user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE;"""), uid=uid).fetchone()
+                               WHERE user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE;""")
+                       , uid=uid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date
-                                          , founder
-                                          , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
-                                    FROM `marocat v1.1`.projects p JOIN project_members pm ON pm.project_id = p.id
-                                                                  JOIN ( SELECT project_id as pid, user_id as uid, name as founder
-                                                                        FROM `marocat v1.1`.project_members pm JOIN ( users u ) ON ( u.id = pm.user_id )
-                                                                        WHERE is_founder = True AND u.is_deleted = FALSE ) t2 ON ( t2.pid = p.id )
-                                                                  LEFT JOIN ( SELECT d.project_id as pid, CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
-                                                                              FROM `marocat v1.1`.doc_trans_sentences ts JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
-                                                                              WHERE ts.is_deleted = FALSE AND os.is_deleted = FALSE AND d.is_deleted = FALSE
-                                                                              GROUP BY d.project_id ) t1 ON ( t1.pid = p.id ) 
-                                    WHERE pm.user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE
-                                    ORDER BY p.id DESC 
-                                    LIMIT :row_count OFFSET :offset;"""), uid=uid, row_count=rows, offset=rows * (page - 1))
+    results = conn.execute(
+        text("""SELECT p.id, p.name, p.status, p.create_time, p.due_date
+                    , founder
+                    , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
+                FROM `marocat v1.1`.projects p 
+                JOIN project_members pm ON pm.project_id = p.id
+                JOIN (SELECT project_id as pid, user_id as uid, name as founder
+                      FROM `marocat v1.1`.project_members pm JOIN ( users u ) ON ( u.id = pm.user_id )
+                      WHERE is_founder = True AND u.is_deleted = FALSE ) t2 ON ( t2.pid = p.id )
+                LEFT JOIN (SELECT project_id as pid
+                                , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                          FROM `marocat v1.1`.doc_trans_sentences ts
+                          JOIN (doc_origin_sentences os, docs d) ON (os.id = ts.origin_id AND d.id=os.doc_id)
+                          WHERE ts.is_deleted=FALSE AND os.is_deleted=FALSE AND d.is_deleted=FALSE
+                          GROUP BY d.project_id ) t1 ON ( t1.pid = p.id ) 
+                WHERE pm.user_id = :uid AND pm.is_deleted = FALSE AND p.is_deleted = FALSE
+                ORDER BY p.id DESC 
+                LIMIT :row_count OFFSET :offset;""")
+        , uid=uid, row_count=rows, offset=rows * (page - 1))
     projects = [dict(res) for res in results]
 
     return projects, total_cnt
@@ -55,16 +61,19 @@ def select_project_docs(pid, page, rows):
     res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.docs WHERE project_id = :pid AND is_deleted = FALSE;"""), pid=pid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
-                                          , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
-                                   FROM `marocat v1.1`.docs d LEFT JOIN ( SELECT os.doc_id as did,  CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
-                                                                          FROM `marocat v1.1`.doc_trans_sentences ts
-                                                                          JOIN doc_origin_sentences os ON os.id = ts.origin_id
-                                                                          GROUP BY os.doc_id ) t1 ON ( t1.did = d.id )
-                                   WHERE d.project_id = :pid AND d.is_deleted = FALSE
-                                   GROUP BY d.id
-                                   ORDER BY d.create_time DESC 
-                                   LIMIT :row_count OFFSET :offset"""), pid=pid, row_count=rows, offset=rows * (page - 1))
+    results = conn.execute(
+        text("""SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
+                     , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
+               FROM `marocat v1.1`.docs d 
+               LEFT JOIN (SELECT os.doc_id as did,  CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                          FROM `marocat v1.1`.doc_trans_sentences ts
+                          JOIN doc_origin_sentences os ON os.id = ts.origin_id
+                          GROUP BY os.doc_id ) t1 ON ( t1.did = d.id )
+               WHERE d.project_id = :pid AND d.is_deleted = FALSE
+               GROUP BY d.id
+               ORDER BY d.create_time DESC 
+               LIMIT :row_count OFFSET :offset""")
+        , pid=pid, row_count=rows, offset=rows * (page - 1))
     project_docs = [dict(res) for res in results]
 
     return project_docs, total_cnt
