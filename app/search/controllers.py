@@ -24,7 +24,10 @@ def search():
 
         #: 단어저장소 검색
         elif t == 'tb':
-            res = model.select_termbase(tid, query, origin_lang, trans_lang)
+            if origin_lang.upper() == 'KO':
+                res = model.select_ko_termbase(tid, query, origin_lang, trans_lang)
+            else:
+                res = model.select_en_termbase(tid, query, origin_lang, trans_lang)
             results['tb'] = res
 
         #: 프로젝트 검색
