@@ -1,5 +1,6 @@
 from app import db
 from sqlalchemy import text
+import re
 
 
 def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
@@ -36,7 +37,14 @@ def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
 
 def select_termbase(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
-    nouns = query[:-1].split()
+
+    #: 검색 대상(query)의 마지막이 특수문자라면 지우기
+    p = re.compile('[-=.#/?:$}]')
+    m = p.match(query[-1])
+    if m:
+        nouns = query[:-1].split()
+    else:
+        nouns = query.split()
 
     temp = []
     for noun in nouns:
