@@ -232,8 +232,8 @@ function getSession() {
         type: 'GET',
         async: true,
         success: function (res) {
-            $('#sp_user_nick').text(res.user_id);
-            $('#sp_user_email').text(res.user_nickname);  
+            $('#sp_user_email').text(res.user_id);  
+            $('#sp_user_nick').text(res.user_nickname);
 
             _USER_ID = res.user_id;
             _USER_NICK = res.user_nickname;
@@ -316,8 +316,8 @@ function RemoveBr(value){
 $(function () {
     checkBrowserType();
 
-    getSession();
-
     $('#mainHeader').load('/static/front/common_html/main_header.html ul');
     $('#mainFooter').load('/static/front/common_html/main_footer.html ul, br');
+
+    getSession();
 });

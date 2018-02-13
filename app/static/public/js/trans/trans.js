@@ -780,7 +780,6 @@ $(function () {
             location.href = '/static/front/user/login.html';
             return false;
         }else{
-            //$('#sp_user').text(_USER_NICK + '님 접속중');
             $('#sp_user').text($('#hd_nick').val() + '님 접속중');
         }
     }, 3500);    
