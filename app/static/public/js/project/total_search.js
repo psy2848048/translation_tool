@@ -8,8 +8,6 @@ var PageScript = function () {
     this.getSearchs = function () {
         // 프로젝트
         var jqxhr = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=p', function (result) {
-                console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=p');
-                console.log(result); 
                 if(result.p == null || result.p == undefined || result.p.length < 1){
                     $('#s_project').html('프로젝트 검색결과가 없습니다.');
                 }else{
@@ -31,8 +29,6 @@ var PageScript = function () {
 
         // 프로젝트 문서
         var jqxhr2 = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=d', function (result) {
-            console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=d'); 
-            console.log(result); 
             if(result.d == null || result.d == undefined || result.d.length < 1){
                     $('#s_doc').html('프로젝트 문서 검색결과가 없습니다.');
                 }else{
@@ -54,8 +50,6 @@ var PageScript = function () {
 
         // 사용자
         var jqxhr3 = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=u', function (result) {
-            console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=u'); 
-            console.log(result); 
             if(result.u == null || result.u == undefined || result.u.length < 1){
                     $('#s_user').html('사용자 검색결과가 없습니다.');
                 }else{
@@ -74,52 +68,6 @@ var PageScript = function () {
             })
             .always(function () {});
         jqxhr3.always(function () {});
-
-        // // 단어
-        // var jqxhr4 = $.get('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb', function (result) {
-        //     console.log('/api/v1/search/?q=' + getUrlParameter('text') + '&target=tb');
-        //     console.log(result);
-        //     if(result.tb == null || result.tb == undefined || result.tb.length < 1){
-        //             $('#s_tb').html('단어 검색결과가 없습니다.');
-        //         }else{
-        //             var html = '';
-        //             html += '<ul>';
-        //             $(result.tb).each(function(idx, res){
-        //                 html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
-        //             });
-        //             html += '</ul>';
-        //             $('#s_tb').html(html);
-        //         }
-        //     })
-        //     .done(function () {})
-        //     .fail(function () {
-        //         alert("error 1576");
-        //     })
-        //     .always(function () {});
-        // jqxhr4.always(function () {});
-
-        // // 문장
-        // var jqxhr5 = $.get('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm', function (result) {
-        //     console.log('/api/v1/search?q=' + getUrlParameter('text') + '&target=tm'); 
-        //     console.log(result); 
-        //     if(result.tm == null || result.tm == undefined || result.tm.length < 1){
-        //             $('#s_tm').html('문장 검색결과가 없습니다.');
-        //         }else{
-        //             var html = '';
-        //             html += '<ul>';
-        //             $(result.tm).each(function(idx, res){
-        //                 html += '    <li>' + res.origin_text + ' : ' + res.trans_text + '</li>';
-        //             });
-        //             html += '</ul>';
-        //             $('#s_tm').html(html);
-        //         }
-        //     })
-        //     .done(function () {})
-        //     .fail(function () {
-        //         alert("error 9468");
-        //     })
-        //     .always(function () {});
-        // jqxhr5.always(function () {});
     };
     this.bind = function () {
         local.preInits();

@@ -78,25 +78,10 @@ var pageScript = function () {
                     success: function (res) {
                         alert(res.result_ko);
                         location.href = '/static/front/user/userinfo.html';
-
-                        console.log('##### Upload Success #####');
-                        console.log(res);
                     },
                     error: function (xhr, ajaxOptions, thrownError) {
                         if (IsValidStr(xhr.responseText.result_ko)) alert(xhr.responseText.result_ko);
                         else alert('error code : ' + xhr.status);
-
-                        console.log('##### Upload Error #####');
-                        console.log('### xhr ###');
-                        console.log(xhr);
-                        console.log('### xhr.status ###');
-                        console.log(xhr.status);
-                        console.log('### xhr.responseText ###');
-                        console.log(xhr.responseText);
-                        console.log('### thrownError ###');
-                        console.log(thrownError);
-                        console.log('### ajaxOptions ###');
-                        console.log(ajaxOptions);
                     }
                 });
 
@@ -150,9 +135,6 @@ var pageScript = function () {
             var data = {
                 new_pwd: pass.val().trim()
             };
-            // var res = AjaxExecute('/api/v1/users/me/pwd', 'PUT', data);
-            // alert(res.result_ko);
-            // console.log(res);
 
             var ajax_result = AjaxExecute('/api/v1/users/me/pwd', 'PUT', data);
             if (IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);

@@ -66,14 +66,12 @@ var PageScript = function () {
                 name: $('#txt_title').val(),
                 due_date: date
             };
-            console.log('[입력데이타] : ', data);
             $.ajax({
                 url: '/api/v1/projects/',
                 type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
-                    //console.log('[args] : ', args);
                     if (args.result.toUpperCase() == 'OK') {
                         alert('프로젝트가 정상적으로 등록되었습니다.');
                         location.href = 'projects.html';
@@ -83,7 +81,6 @@ var PageScript = function () {
                 },
                 error: function (e) {
                     alert('등록실패\n\n에러코드 : 9976');
-                    console.log(e.responseText);
                 }
             });
         });

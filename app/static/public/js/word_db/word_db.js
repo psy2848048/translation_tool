@@ -28,7 +28,6 @@ var pageScript = function () {
                 trans_lang: thisTr.find('td:eq(3) input[type=text]').val(),
                 trans_text: thisTr.find('td:eq(4) input[type=text]').val()
             };
-            console.log('[data] : ', data);
             $.ajax({
                 url: '/api/v1/toolkit/termbase/' + thisTr.find('td:eq(0)').text(),
                 type: 'PUT',
@@ -44,8 +43,6 @@ var pageScript = function () {
                 },
                 error: function (err) {
                     alert('fail : error code 2154');
-                    console.log('fail : error code 2154');
-                    console.log(err.responseText);
                 }
             });
         });
@@ -82,7 +79,6 @@ var pageScript = function () {
                     type: 'DELETE',
                     async: true,
                     success: function (res) {
-                        console.log('[5462 res] : ', res);
                         if (res.result == 'OK') {
                             alert('단어가 삭제되었습니다.');
                             location.href = location.href;
@@ -90,8 +86,7 @@ var pageScript = function () {
                         }
                     },
                     error: function (e) {
-                        console.log('fail 6653');
-                        console.log(e.responseText);
+                        alert('fail 6653');
                     }
                 });
             }
@@ -169,8 +164,6 @@ var pageScript = function () {
                 row += '        <i class="fa fa-times" aria-hidden="true"></i>';
                 row += '    </th>';
                 row += '</tr>';
-                console.log('/api/v1/toolkit/termbase?origin_lang=' + local.o_lang + '&trans_lang=' + local.t_lang + '&rows=' + rows + '&page=' + page);
-                console.log(data);
             if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
                     $(data.results).each(function (idx, res) {
                         row += '<tr>';
@@ -201,7 +194,7 @@ var pageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 3396");
+                alert("error 3396");
             })
             .always(function () {});
         list.always(function () {

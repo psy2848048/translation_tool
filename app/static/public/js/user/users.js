@@ -8,8 +8,6 @@ var PageScript = function () {
     this.preInits = function () {
         // 좌측 프로젝트 리스트
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/projects/] : ', data);
-                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -34,7 +32,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 4416");
+                alert("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
@@ -56,14 +54,11 @@ var PageScript = function () {
                 $('#listContents table td:nth-of-type(1) input[type=checkbox]:checked').each(function () {
                     var user = $(this).closest('tr').find('td:eq(1)').text();
                     var url = '/api/v1/projects/' + project_id + '/members/' + user;
-                    console.log('[4512 url]');
-                    console.log(url);
                     $.ajax({
                         url: url,
                         type: 'DELETE',
                         async: true,
                         success: function (res) {
-                            console.log('[3362 res] : ', res);
                             if (res.result == 'OK') {
                                 alert('참가자가 삭제 되었습니다.');
                                 location.href = location.href;
@@ -76,8 +71,6 @@ var PageScript = function () {
                         },
                         error: function (e) {
                             alert('참가자가 삭제되지 않았습니다.');
-                            console.log('[fail 4452]');
-                            console.log(e.responseText);
                         }
                     });
                 });
@@ -98,8 +91,6 @@ var PageScript = function () {
                 type: 'GET',
                 async: true,
                 success: function (res) {
-                    console.log('[4594 res] : ', res);
-                    //$('#listContents2 table tbody tr:nth-of-type(1)').next().empty();
                     var html = '';
                     html += '<tr>';
                     html += '<th>';
@@ -131,8 +122,7 @@ var PageScript = function () {
                     $('#listContents2 table tbody').empty().append(html);
                 },
                 error: function (e) {
-                    console.log('fail 4265');
-                    console.log(e.responseText);
+                    alert('fail 4265');
                 }
             });
         });
@@ -155,7 +145,6 @@ var PageScript = function () {
                         data: data,
                         async: true,
                         success: function (res) {
-                            console.log('[5469 res] : ', res);
                             if (res.result.toUpperCase() == 'OK') {
                                 alert('참가자가 추가 되었습니다.');
                                 location.href = location.href;
@@ -166,8 +155,6 @@ var PageScript = function () {
                         },
                         error: function (e) {
                             alert('참가자가 추가되지 않았습니다.');
-                            console.log('fail 5562');
-                            console.log(e.responseText);
                         }
                     });
                 });
@@ -207,13 +194,10 @@ var PageScript = function () {
                 type: 'GET',
                 async: true,
                 success: function (res) {
-                    console.log('7784 [/api/v1/projects/' + project_id + '/members?page=' + page + '&rows=' + rows + '] : ', res);
                     var html = '';
                     if (res != undefined && res.results.length > 0) {
                         $(res.results).each(function (idx) {
                             var result = res.results[idx];
-                            console.log('1542 [result]');
-                            console.log(result);
                             html += '<tr>';
                             html += '    <td>';
                             html += '        <input type="checkbox">';
@@ -245,8 +229,7 @@ var PageScript = function () {
                     local.hide();
                 },
                 error: function (e) {
-                    console.log('fail 3348');
-                    console.log(e.responseText);
+                    alert('fail 3348');
                     local.hide();
                 }
             });

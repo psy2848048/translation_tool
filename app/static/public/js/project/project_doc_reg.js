@@ -11,8 +11,6 @@ var PageScript = function () {
         if ($('#sel_month').val() == 2 || $('#sel_month').val() == '02') SetToday();
 
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/projects/] : ', data);
-                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -31,7 +29,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 4416");
+                alert("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
@@ -116,7 +114,6 @@ var PageScript = function () {
                 'type': 'text',
                 'content': $('#mainArea textarea').val()
             };
-            console.log('[data] : ', data);
             $.ajax({
                 url: '/api/v1/projects/' + project_id + '/docs',
                 type: 'POST',
@@ -132,8 +129,6 @@ var PageScript = function () {
                 },
                 error: function (err) {
                     alert('fail : error code 4157');
-                    console.log('fail : error code 4157');
-                    console.log(err.responseText);
                 }
             });
         });

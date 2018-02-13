@@ -40,9 +40,6 @@ var pageScript = function () {
             };
             var url = '/api/v1/auth/local/signin';
 
-            console.log('######### 8596 ###########');
-            console.log(data);
-
             $.ajax({
                 url: url,
                 data: data,
@@ -52,12 +49,10 @@ var pageScript = function () {
                     alert(res.result_ko);
                     if (res.result == 200) {
                         location.href = '/static/front/project/projects.html';
-                    } else console.log(res);
+                    } 
                 },
                 error: function (e) {
                     alert(e.responseJSON.result_ko);
-                    console.log('[fail : 1658]');
-                    console.log(e);
                 }
             });
         });

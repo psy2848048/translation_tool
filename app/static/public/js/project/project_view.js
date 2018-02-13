@@ -21,15 +21,13 @@ var PageScript = function () {
                     type: 'DELETE',
                     async: true,
                     success: function (res) {
-                        console.log('[4563 res] : ', res);
                         if (res.result == 'OK') {
                             alert('프로젝트가 삭제되었습니다.');
                             location.href = 'projects.html?rows=' + rows + '&page=' + page;
                         }
                     },
                     error: function (e) {
-                        console.log('fail 8965');
-                        console.log(e.responseText);
+                        alert('fail 8965');
                     }
                 });
             }
@@ -41,23 +39,16 @@ var PageScript = function () {
                     //alert('프로젝트 삭제 프로세스 : 체크된 문서 갯수만큼 루핑 하면서 삭제한다.');
 
                     $('#listContents td input[type=checkbox]:checked').each(function () {
-                        //console.log('체크된 문서 : ', $(this).attr('data-id'));
                         $.ajax({
                             url: '/api/v1/projects/docs/' + $(this).attr('data-id'),
                             type: 'DELETE',
                             async: true,
                             success: function (res) {
-                                //console.log('[6578 res] : ', res);
                                 if(res.result == 'OK') {
                                     alert('문서가 삭제되었습니다.');
-                                    //location.href='projects.html';
-                                    //console.log(res);
                                 }
-                                //location.href = location.href;
-                                //location.href = 'project_view.html?project=' + project_id;
                             },
                             error: function (e) {
-                                console.log(e.responseText);
                                 alert('삭제실패\n\nfail code : 3365');
                                 return false;
                             }
@@ -100,7 +91,6 @@ var PageScript = function () {
             type: 'GET',
             async: true,
             success: function (res) {
-                console.log('[/api/v1/projects/' + project_id + '] : ', res);
                 if (res != undefined && res != '') {
                     $('#h2_title').text(res.name);
                     $('#sp_project_id').text(res.id);
@@ -130,14 +120,11 @@ var PageScript = function () {
                 }
             },
             error: function (e) {
-                console.log('fail 4436');
-                console.log(e.responseText);
+                alert('fail 4436');
             }
         });
         // 좌측 프로젝트 메뉴리스트
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/projects/] : ', data);
-                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -156,14 +143,13 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 4416");
+                alert("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
 
         // 본문 프로젝트 문서 목록
         var doc_list = $.get('/api/v1/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page, function (data) {
-                console.log('[/api/v1/projects/' + project_id + '/docs?rows=' + rows + '&page=' + page + '] : ', data);
                 if (data != undefined && data != null && data.results != undefined && data.results != null && parseInt(data.results.length) > 0) {
                     var row = '';
                     $(data.results).each(function (idx, res) {
@@ -199,7 +185,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 3396");
+                alert("error 3396");
             })
             .always(function () {});
         doc_list.always(function () {});
