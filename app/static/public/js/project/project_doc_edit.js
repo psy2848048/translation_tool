@@ -12,8 +12,6 @@ var PageScript = function () {
 
         // 좌측 프로젝트 메뉴리스트
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/projects/] : ', data);
-                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -32,7 +30,6 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 4416");
             })
             .always(function () {});
         jqxhr.always(function () {});
@@ -41,10 +38,8 @@ var PageScript = function () {
         $.ajax({
             url: '/api/v1/projects/docs/' + doc_id,
             type: 'GET',
-            //data: data,
             async: true,
             success: function (args) {
-                console.log('[args] : ', args);
                 $('#txt_title').val(args.title);
                 $('#status_sel').val(args.status);
                 if (args.link != null) $('#txt_link').val(args.link);
@@ -69,8 +64,6 @@ var PageScript = function () {
             },
             error: function (err) {
                 alert('fail\n\nerror code 4157');
-                console.log('fail : error code 4157');
-                console.log(err.responseText);
             }
         });
         // 하단 참가자 목록
@@ -81,7 +74,6 @@ var PageScript = function () {
             async: true,
             success: function (args) {
                 if (IsValidObj(args) && IsValidObj(args.results) && args.results.length > 0) {
-                    console.log('[/api/v1/projects/docs/' + doc_id + '/members?page=1&rows=100] : ', args);
                     var html = '';
                     $(args.results).each(function (idx) {
                         var result = args.results[idx];
@@ -108,8 +100,6 @@ var PageScript = function () {
             },
             error: function (err) {
                 alert('fail\n\nerror code 6454');
-                console.log('fail : error code 4556');
-                console.log(err.responseText);
             }
         });
     };
@@ -188,7 +178,6 @@ var PageScript = function () {
                 'trans_lang': $('#tran_sel').val(),
                 'due_date': date,
             };
-            console.log('[data] : ', data);
             $.ajax({
                 url: '/api/v1/projects/docs/' + doc_id,
                 type: 'PUT',
@@ -204,8 +193,6 @@ var PageScript = function () {
                 },
                 error: function (err) {
                     alert('fail : error code 4157');
-                    console.log('fail : error code 4157');
-                    console.log(err.responseText);
                 }
             });
         });

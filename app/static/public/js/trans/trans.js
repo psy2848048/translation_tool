@@ -14,16 +14,11 @@ var PageScript = function () {
 
         // 제목, 번역언어 기본정보 출력
         var doc_basic_info = AjaxExecute('/api/v1/projects/docs/' + doc_id, 'GET');
-        console.log('/api/v1/projects/docs/' + doc_id);
-        console.log('doc_basic_info');
-        console.log(doc_basic_info);
         $('#sp_title').html(doc_basic_info.title);
         $('#sp_tran').text(' (' + doc_basic_info.origin_lang + ' -> ' + doc_basic_info.trans_lang + ')');
 
         // 원문 로딩
         var jqxhr = $.get("/api/v1/toolkit/workbench/docs/" + doc_id, function (data) {
-                console.log('[/api/v1/toolkit/workbench/docs/' + doc_id + ' 9987] : ');
-                console.log(data);
                 if (data.results != null && data.results != undefined && data.results.length > 0) {
                     origin_lang = data.results[0].origin_lang;
                     trans_lang = data.results[0].trans_lang;
@@ -66,7 +61,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error : 5565");
+                alert("error : 5565");
             })
             .always(function () {});
         jqxhr.always(function () {
@@ -92,15 +87,13 @@ var PageScript = function () {
                 },
                 async: true,
                 success: function (args) {
-                    console.log('9658 args : ', args);
                     if (args.result == 'OK') {
                         local.getDocReplies();
                         $('#new_comment_div2').find('input[type=text]').val('');
                     }
                 },
                 error: function (e) {
-                    console.log('fail code : 5595');
-                    console.log(e.responseText);
+                    alert('fail code : 5595');
                 }
             });
         });
@@ -120,25 +113,22 @@ var PageScript = function () {
             $(this).blur();
             var sentence_id = $('#commentDiv').attr('data-sentence-id');
             var url = '/api/v1/toolkit/workbench/docs/' + doc_id + '/sentences/' + sentence_id + '/comments';
-            console.log('url 4458 : ', url);
             var data = {
                 'comment': $('#new_comment_div input[type=text]').val()
             };
-            console.log('data 1145 : ', data);
             $.ajax({
                 url: url,
                 type: 'POST',
                 data: data,
                 async: true,
                 success: function (args) {
-                    console.log('args 1254 : ', args);
                     if (args.result == 'OK') {
                         local.getComments('1', doc_id, sentence_id);
                         $('#new_comment_div').find('input[type=text]').val('');
                     }
                 },
                 error: function (e) {
-                    console.log('fail 4592 : ' + e.responseText);
+                    alert('fail 4592 : ' + e.responseText);
                 }
             });
         });
@@ -147,20 +137,17 @@ var PageScript = function () {
             if (confirm('정말로 삭제하시겠습니까?')) {
                 var sentence_id = $('#commentDiv').attr('data-sentence-id');
                 var url = '/api/v1/toolkit/workbench/docs/sentences/comments/' + $(this).attr('data-id');
-                console.log('url 2893 : ', url);
                 $.ajax({
                     url: url,
                     type: 'DELETE',
                     async: true,
                     success: function (args) {
-                        console.log('args 9876 : ', args);
                         if (args.result == 'OK') {
                             local.getComments('1', doc_id, sentence_id);
                         }
                     },
                     error: function (e) {
-                        console.log('fail code : 4554');
-                        console.log(e.responseText);
+                        alert('fail code : 4554');
                     }
                 });
             }
@@ -175,14 +162,12 @@ var PageScript = function () {
                     type: 'DELETE',
                     async: true,
                     success: function (args) {
-                        console.log('args 7774 : ', args);
                         if (args.result == 'OK') {
                             local.getDocReplies();
                         }
                     },
                     error: function (e) {
-                        console.log('fail code : 4411');
-                        console.log(e.responseText);
+                        alert('fail code : 4411');
                     }
                 });
             }
@@ -197,8 +182,6 @@ var PageScript = function () {
                 return false;
             }
             var jqxhr = $.get('/api/v1/search?q=' + keyword + '&target=tb&ol=' + origin_lang + '&tl=' + trans_lang + '&tid=' + project_id, function (data) {
-                    console.log('## 단어검색 ##');
-                    console.log(data);
                     // 현재 출력된 단어들과 대조해서 출력되어 있을 경우 무시
                     var is_newword = true;
                     $('#tran2section table td div span.boldWord').each(function (idx, res) {
@@ -238,8 +221,6 @@ var PageScript = function () {
                                     var trans_word = $(this).closest('div').find('input[type=text]').val();
                                     var word_id = $(this).attr('data-id');
                                     var url = '/api/v1/toolkit/termbase/' + word_id;
-                                    console.log('url : ', url);
-                                    console.log('trans_word : ', trans_word);
                                     $.ajax({
                                         url: url,
                                         type: 'PUT',
@@ -250,7 +231,6 @@ var PageScript = function () {
                                             trans_text: trans_word
                                         },
                                         success: function (args) {
-                                            console.log(args);
                                             if (args.result == 'OK') {
                                                 local.showMessage('수정되었습니다.');
                                             } else {
@@ -259,7 +239,6 @@ var PageScript = function () {
                                         },
                                         error: function (e) {
                                             local.showMessage('fail 386');
-                                            console.log(e.responseText);
                                         }
                                     });
                                 });
@@ -300,7 +279,6 @@ var PageScript = function () {
                                     origin_text: new_word,
                                     trans_text: new_word_trans
                                 };
-                                console.log('data : ', data);
                                 $.ajax({
                                     url: '/api/v1/toolkit/termbase/',
                                     type: 'post',
@@ -308,10 +286,9 @@ var PageScript = function () {
                                     async: true,
                                     success: function (args) {
                                         if(args.result == 'OK') local.showMessage('등록되었습니다.');
-                                        console.log(args);
                                     },
                                     error: function (e) {
-                                        console.log('fail 113 : ' + e.responseText);
+                                        alert('fail 1139');
                                     }
                                 });
                             });
@@ -320,7 +297,7 @@ var PageScript = function () {
                 })
                 .done(function () {})
                 .fail(function () {
-                    console.log("1548 error");
+                    alert("1548 error");
                 })
                 .always(function () {});
             jqxhr.always(function () {});
@@ -425,8 +402,6 @@ var PageScript = function () {
     this.getComments = function (user, doc, sentence) {
         //var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence + '/comments';
         var url = '/api/v1/toolkit/workbench/docs/' + doc_id + '/sentences/' + sentence + '/comments';
-        console.log('5124 url');
-        console.log(url);
         //var data = {};
         $.ajax({
             url: url,
@@ -434,23 +409,20 @@ var PageScript = function () {
             //data: data,
             async: true,
             success: function (args) {
-                console.log('args 9756 : ', args);
                 var result = '';
                 if (args.results != undefined) {
                     if (args.results.length > 0) {
                         $(args.results).each(function (idx, res) {
-                            console.log('res 4586 : ', res);
                             result += '<p>' + res.name + ' : ' + res.comment + ' <img data-id="' + res.comment_id + '" src="/static/public/img/comment_del2.png"></p>';
                         });
                     } else {
                         result = '<p>등록된 의견이 없습니다.</p>';
                     }
                 }
-                console.log('result : ', result);
                 $('#comments').html(result);
             },
             error: function (e) {
-                console.log('fail 8431 : ' + e.responseText);
+                alert('fail 8431');
             }
         });
     };
@@ -458,16 +430,12 @@ var PageScript = function () {
     this.saveTranStatus = function (thisObj, xy) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
         var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/status/' + xy;
-        console.log('[6545 url]');
-        console.log(url);
         var x = thisObj.closest('tr').find('.fa-times');
         var y = thisObj.closest('tr').find('.fa-check');
         $.ajax({
             url: url,
             type: 'PUT',
             success: function (args) {
-                console.log('[2145 args]');
-                console.log(args);
                 if (args.result == 'OK') {
                     if (xy == '1') {
                         // 번역상태 미완료 -> 완료로 변경
@@ -481,7 +449,7 @@ var PageScript = function () {
                 }
             },
             error: function (e) {
-                console.log('fail 4595 : ' + e.responseText);
+                alert('fail 4595');
             }
         });
     };
@@ -489,8 +457,6 @@ var PageScript = function () {
     this.saveTrans = function (thisObj) {
         var sentence_id = thisObj.closest('tr').find('td:nth-of-type(1)').text();
         var url = '/api/v1/toolkit/workbench/docs/sentences/' + sentence_id + '/trans';
-        console.log('4975 [번역문저장 url]');
-        console.log(url);
         var trans_type = '';
 
         if (thisObj.val().trim() == '') trans_type = 'X';
@@ -505,14 +471,11 @@ var PageScript = function () {
             trans_type: trans_type,
             trans_text: thisObj.val()
         };
-        console.log('3391 [data]');
-        console.log(data);
         $.ajax({
             url: url,
             type: 'PUT',
             data: data,
             success: function (args) {
-                console.log('args 397 : ', args);
                 if (args.result != 'OK') {
                     local.showMessage('번역문이 저장되지 않았습니다.');
                 } else {
@@ -525,7 +488,6 @@ var PageScript = function () {
             },
             error: function (e) {
                 local.showMessage('fail 281');
-                console.log(e.responseText);
             }
         });
     };
@@ -552,13 +514,6 @@ var PageScript = function () {
         var jqxhr = $.get(url, {
                 sentence: thisText
             }, function (data) {
-
-                console.log('## 결과 ################################');
-                console.log('[2154 url]');
-                console.log(url);
-                console.log('[data] ', data);
-                console.log('## 결과 ################################');
-
                 var tm_html = '';
                 if (data.tm != undefined && data.tm.length > 0) {
                     for (var i = 0; i < data.tm.length; i++) {
@@ -593,8 +548,6 @@ var PageScript = function () {
                             transBgClass = 'tColor';
                             break;
                     }
-                    console.log('[transType] 5556 : ', transType);
-                    console.log('[transBgClass] 8546 : ', transBgClass);
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
@@ -635,8 +588,6 @@ var PageScript = function () {
                              trans_text: trans_word
                          },
                          success: function (args) {
-                             console.log('6695 [args]');
-                             console.log(args);
                              if (args.result == 'OK') {
                                  local.showMessage('수정되었습니다.');
                              } else {
@@ -645,7 +596,6 @@ var PageScript = function () {
                          },
                          error: function (e) {
                              local.showMessage('fail 386');
-                             console.log(e.responseText);
                          }
                      });
                  });
@@ -682,7 +632,6 @@ var PageScript = function () {
             data: data,
             async: true,
             success: function (args) {
-                console.log('[args 5326] ', args);
                 var mt_html = '';
 
                 mt_html += '<tr>';
@@ -715,8 +664,6 @@ var PageScript = function () {
                             transBgClass = 'tColor';
                             break;
                     }
-                    console.log('[transType] 8457 : ', transType);
-                    console.log('[transBgClass] 3696 : ', transBgClass);
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(3) textarea').val($(this).find('td:nth-of-type(3)').text()).keyup();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(2)').hide();
                     $('#mainTbl tr:nth-of-type(' + parseInt(this_idx + 1) + ') td:nth-of-type(4) i:nth-of-type(1)').show();
@@ -726,32 +673,18 @@ var PageScript = function () {
                 });
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                //console.log('fail 4102 : ' + e.responseText);
-                console.log('### xhr ###');
-                console.log(xhr);
-                console.log('### xhr.status ###');
-                console.log(xhr.status);
-                console.log('### xhr.responseText ###');
-                console.log(xhr.responseText);
-                console.log('### thrownError ###');
-                console.log(thrownError);
-                console.log('### ajaxOptions ###');
-                console.log(ajaxOptions);
+                alert('fail 4102');
             }
         });
     };
     // 문서댓글 출력
     this.getDocReplies = function () {
-        console.log('/api/v1/toolkit/workbench/docs/' + doc_id + '/comments?page=' + page + '&rows=' + rows);
-        //var data = {};
         $.ajax({
             url: '/api/v1/toolkit/workbench/docs/' + doc_id + '/comments?page=' + page + '&rows=' + rows,
             type: 'GET',
             //data: data,
             async: true,
             success: function (args) {
-                console.log('5481 args');
-                console.log(args);
                 if (args != null && args != undefined) {
                     if (parseInt(args.total_cnt) > 0 && parseInt(args.results.length) > 0) {
                         $('#total_comment').html('의견공유 (' + args.total_cnt + ')');
@@ -773,8 +706,7 @@ var PageScript = function () {
                 }
             },
             error: function (e) {
-                console.log('fail code : 8459');
-                console.log(e.responseText);
+                alert('fail code : 8459');
             }
         });
     };
@@ -810,7 +742,6 @@ this.showComment = function (sid, thisObj) {
     var sentence_id;
     if (IsValidStr(sid)) sentence_id = sid;
     else sentence_id = $(thisObj).closest('tr').find('td:nth-of-type(1)').text();
-    console.log(sentence_id);
     $('#sp_sentence').text(sentence_id);
     $('#comments').empty();
     $('#commentDiv').attr('data-sentence-id', sentence_id);

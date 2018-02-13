@@ -109,9 +109,6 @@ var pageScript = function () {
             social_id: $('#hd_social_id').val().trim(),
             picture: $('#hd_picture').val().trim()
         };
-
-        console.log('######### 4596 ###########');
-        console.log(data);
  
         local.mask();
         $('#dvLoading').show();
@@ -125,7 +122,7 @@ var pageScript = function () {
                 alert(res.result_ko);
                 if (res.result == 200) {
                     location.href = '/static/front/user/login.html';
-                } else console.log(res);
+                } 
 
                 $('#mask').hide();
                 $('#dvLoading').hide();
@@ -134,9 +131,7 @@ var pageScript = function () {
                 $('#mask').hide();
                 $('#dvLoading').hide();
                 
-                alert(e.responseJSON.result_ko);
-                console.log('[fail : 1658]');
-                console.log(e.responseJSON.result + ' : ' + e.responseJSON.result_ko);
+                alert('fail : 1658');
             }
         });
     };

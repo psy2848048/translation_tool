@@ -111,7 +111,6 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
         }
         /* 확장자 체크 */
         var ext = getFileExtension(files[i].name);
-        //console.log('[1254] ext : ', ext);
         if (ext == '') alert('파일 확장자에 문제가 있습니다!');
         else {
             for (var j = 0; j < reg_ext.length; j++) {
@@ -125,7 +124,6 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
         }
         f_data.append('file', files[i]);
     }
-    console.log('f_data : ', f_data);
     if (is_allowed_ext) {
         $.ajax({
             url: server_url,
@@ -139,12 +137,9 @@ function onFileSelect(id, server_url, max_mb_size, reg_ext, ext_msg, result_p) {
                     $('#' + result_p).text('업로드가 완료되었습니다.');
                     setTimeout(hidePopup, 1000);
                 } else $(result_p).text('업로드에 문제가 있습니다.');
-                console.log('[4576] res.result : ', res.result);
             },
             error: function (xhr, ajaxOptions, thrownError) {
-                console.log('[9786] xhr.status : ', xhr.status);
-                console.log('[6458] thrownError : ', thrownError);
-                console.log('[3197] xhr.responseText : ', xhr.responseText);
+                $(result_p).text('업로드에 문제가 있습니다.');
             }
         });
     } else {
@@ -214,8 +209,6 @@ function logout() {
         },
         error: function (err) {
             alert('로그아웃에 실패했습니다.\n\n급할경우 브라우저를 모두 닫아도 로그아웃 됩니다.');
-            console.log('############ 8549 ############');
-            console.log(err);
         }
     });
 }
@@ -227,15 +220,15 @@ function getSession() {
         type: 'GET',
         async: true,
         success: function (res) {
-            console.log(res);
+            $('#sp_user_nick').text(res.user_id);
+            $('#sp_user_email').text(res.user_nickname);  
+
             _USER_ID = res.user_id;
             _USER_NICK = res.user_nickname;
             $('#hd_id').val(res.user_id);
             $('#hd_nick').val(res.user_nickname);
         },
         error: function (e) {
-            console.log('############ 5496 ############');
-            console.log(e);
         }
     });
 }
@@ -263,24 +256,24 @@ var AjaxExecute = function (url, method, data) {
         success: function (res) {
             result = res;  
 
-            console.log('##### AjaxExecute Success #####');
-            console.log(res);
+            //console.log('##### AjaxExecute Success #####');
+            //console.log(res);
         },
         error: function (xhr, ajaxOptions, thrownError) {
             if(IsValidStr(xhr.result_ko)) result = xhr.result_ko;
             else result = 'err';
 
-            console.log('##### AjaxExecute Error #####');
-            console.log('### xhr ###');
-            console.log(xhr);
-            console.log('### xhr.status ###');
-            console.log(xhr.status);
-            console.log('### xhr.responseText ###');
-            console.log(xhr.responseText);
-            console.log('### thrownError ###');
-            console.log(thrownError);
-            console.log('### ajaxOptions ###');
-            console.log(ajaxOptions);
+            //console.log('##### AjaxExecute Error #####');
+            //console.log('### xhr ###');
+            //console.log(xhr);
+            //console.log('### xhr.status ###');
+            //console.log(xhr.status);
+            //console.log('### xhr.responseText ###');
+            //console.log(xhr.responseText);
+            //console.log('### thrownError ###');
+            //console.log(thrownError);
+            //console.log('### ajaxOptions ###');
+            //console.log(ajaxOptions);
         }
     });        
     return result;
@@ -299,7 +292,7 @@ function hexToBase64(str) {
 // ReplaceAll prototype 선언
 String.prototype.ReplaceAll = function(org, dest) {
     return this.split(org).join(dest);
-}
+};      
 
 // 개행문자 제거
 function RemoveBr(value){

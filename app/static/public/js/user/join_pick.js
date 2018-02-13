@@ -18,37 +18,35 @@ var pageScript = function () {
     this.clickEvents = function () {
         $('#googleLink').on('click', function () {
             var url = '/api/v1/auth/google/signin';
-            //location.href = 'signup.html?type=g';
             $.ajax({
                 url: url,
                 type: 'GET',
                 //data: data,
                 async: true,
                 success: function (res) {
-                    console.log('##### res #####');
-                    console.log(res);
+                    //console.log('##### res #####');
+                    //console.log(res);
                 },
                 error: function (err) {
-                    console.log('##### err #####');
-                    console.log(err);
+                    //console.log('##### err #####');
+                    //console.log(err);
                 }
             });
         });
         $('#facebookLink').on('click', function () {
             var url = '/api/v1/auth/facebook/signin';
-            //location.href = 'signup.html?type=g';
             $.ajax({
                 url: url,
                 type: 'GET',
                 //data: data,
                 async: true,
                 success: function (res) {
-                    console.log('##### res #####');
-                    console.log(res);
+                    //console.log('##### res #####');
+                    //console.log(res);
                 },
                 error: function (err) {
-                    console.log('##### err #####');
-                    console.log(err);
+                    //console.log('##### err #####');
+                    //console.log(err);
                 }
             });
         });

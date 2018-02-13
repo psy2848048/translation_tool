@@ -6,8 +6,6 @@ var PageScript = function () {
         cur_path = $(location).attr('pathname');
     this.getProjects = function () {
         local.show();
-        console.log('[current pc] : ', new Date());
-        console.log('[current pc gmt basic] : ', new Date().toGMTString());
         var jqxhr_l = $.get('/api/v1/projects?rows=1000', function (data) {
                 var menu = '',
                     list = '';
@@ -26,13 +24,11 @@ var PageScript = function () {
 
             })
             .fail(function () {
-                console.log("error 9958");
+                alert("error 9958");
             })
             .always(function () {});
         jqxhr_l.always(function () {});
         var jqxhr = $.get('/api/v1/projects?rows=' + rows + '&page=' + page, function (data) {
-                console.log('[/api/v1/projects?rows=' + rows + '&page=' + page + '] : ', data);
-                console.log('[/api/v1/projects?rows=' + rows + '&page=' + page + ' data.results[0]] : ', data.results[0]);
                 var menu = '',
                     list = '';
                 if (data != undefined && data.result != '') {
@@ -42,7 +38,7 @@ var PageScript = function () {
                         list += '   <td style="min-width:220px;display: inline-block;white-space: nowrap;overflow:hidden;vertical-align:middle;text-align:left;">';
                         list += '       <a href="project_view.html?project=' + res.id + '">' + res.name + '</a>';
                         list += '   </td>';
-                        var prog = res.progress == undefined ? '0' : res.progress;
+                        var prog = res.progress_percent == undefined ? '0' : res.progress_percent;
                         list += '   <td>' + prog + '%</td>';
                         list += '   <td>' + res.status + '</td>';
                         list += '   <td>' + res.founder + '</td>';
@@ -78,7 +74,7 @@ var PageScript = function () {
 
             })
             .fail(function () {
-                console.log("error 5462");
+                alert("error 5462");
             })
             .always(function () {});
         jqxhr.always(function () {

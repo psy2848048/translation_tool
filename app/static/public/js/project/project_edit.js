@@ -69,7 +69,6 @@ var PageScript = function () {
                 status: $('#status_sel').val(),
                 due_date: date
             };
-            console.log('[data 4251] : ', data);
             $.ajax({
                 url: '/api/v1/projects/' + project_id,
                 type: 'PUT',
@@ -85,7 +84,6 @@ var PageScript = function () {
                 },
                 error: function (e) {
                     alert('fail\n\n오류코드 : 7591');
-                    console.log(e.responseText);
                 }
             });
         });
@@ -106,7 +104,6 @@ var PageScript = function () {
             type: 'GET',
             async: true,
             success: function (res) {
-                console.log('[/api/v1/projects/' + project_id + '] : ', res);
                 if (res != undefined && res != '') {
                     $('#txt_title').val(res.name);
                     $('#status_sel').val(res.status);
@@ -136,14 +133,11 @@ var PageScript = function () {
                 }
             },
             error: function (e) {
-                console.log('fail 8526');
-                console.log(e.responseText);
+                alert('fail 8526');
             }
         });
         // 좌측 프로젝트 메뉴리스트
         var jqxhr = $.get('/api/v1/projects?rows=1000', function (data) {
-                //console.log('[/api/v1/projects/] : ', data);
-                //console.log('[/api/v1/projects/ data.results[0] : ', data.results[0]);
                 // 좌측 프로젝트 리스트
                 var menu = '',
                     list = '';
@@ -162,7 +156,7 @@ var PageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 3594");
+                alert("error 3594");
             })
             .always(function () {});
         jqxhr.always(function () {});

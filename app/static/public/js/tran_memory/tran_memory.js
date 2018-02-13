@@ -28,7 +28,6 @@ var pageScript = function () {
                 trans_lang: thisTr.find('td:eq(3) input[type=text]').val(),
                 trans_text: thisTr.find('td:eq(4) textarea').val()
             };
-            console.log('[data] : ', data);
             $.ajax({
                 url: '/api/v1/toolkit/transMemory/' + thisTr.find('td:eq(0)').text(),
                 type: 'PUT',
@@ -36,16 +35,13 @@ var pageScript = function () {
                 async: true,
                 success: function (args) {
                     if (args.result == 'OK') {
-                        //alert('정상적으로 저장되었습니다.');
-                        //location.href='project_view.html?project=' + project_id;
+
                     } else {
                         alert('저장에 실패했습니다.\n\n오류코드 : 6456');
                     }
                 },
                 error: function (err) {
                     alert('fail : error code 2154');
-                    console.log('fail : error code 2154');
-                    console.log(err.responseText);
                 }
             });
         });
@@ -68,16 +64,13 @@ var pageScript = function () {
                 type: 'DELETE',
                 async: true,
                 success: function (res) {
-                    console.log('[5462 res] : ', res);
                     if (res.result == 'OK') {
                         alert('문장이 삭제되었습니다.');
                         location.href = location.href;
-                        //local.showList();
                     }
                 },
                 error: function (e) {
-                    console.log('fail 6653');
-                    console.log(e.responseText);
+                    alert('fail 6653');
                 }
             });
         });
@@ -142,7 +135,6 @@ var pageScript = function () {
         local.show();
 
         var list = $.get('/api/v1/toolkit/transMemory?origin_lang=' + local.o_lang + '&trans_lang=' + local.t_lang + '&rows=' + rows + '&page=' + page, function (data) {
-                console.log('8546 [/api/v1/toolkit/transMemory?origin_lang=' + local.o_lang + '&trans_lang=' + local.t_lang + '&rows=' + rows + '&page=' + page + '] ', data);
                 var row = '';
                 row += '<tr>';
                 row += '    <th>#</th>';
@@ -182,7 +174,7 @@ var pageScript = function () {
             })
             .done(function () {})
             .fail(function () {
-                console.log("error 3396");
+                alert("error 3396");
             })
             .always(function () {});
         list.always(function () {
