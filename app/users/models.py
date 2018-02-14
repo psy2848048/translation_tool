@@ -120,7 +120,7 @@ def update_picture(email, picture):
 
         #: 썸네일 저장
         #: 원본 사이즈가 (100,100) 이하인 경우는 원본 그대로 저장
-        tname = _pname + '_thumbnail' + mtype
+        tname = _pname + 't' + mtype
         img = Image.open(io.BytesIO(pic))
 
         imgsize = img.size
