@@ -441,7 +441,7 @@ input[type=button] {
   height: 50px;
   vertical-align: middle;
   text-align: center;
-  background: url(/api/v1/users/me/picture);
+  /* background: url();  */
   background-size: 100%;
   /* border: 1px solid #9b9aa6; */
   background-repeat: no-repeat;

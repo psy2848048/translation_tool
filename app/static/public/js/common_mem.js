@@ -21,6 +21,8 @@ $(function () {
         }else{
             $('#sp_user_nick').text(_USER_NICK);
             $('#sp_user_email').text(_USER_ID);    
+            //$('.circle').css({'background':'url(' + _USER_PICTURE + ')', 'width':'50px', 'height':'50px'}); // 프로필사진 
+            $('.circle').html('<img src="/api/v1/users/me/picture/LWc8edU_20180214051410_thumbnail.jpeg" style="width:50px;height:50px;border-radius: 50%;">');
         }
     }, 2000);
 });
