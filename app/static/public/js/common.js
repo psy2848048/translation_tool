@@ -23,7 +23,8 @@ function checkBrowserType() {
 
 var _OFFSET = new Date().getTimezoneOffset();
 var _USER_ID = '',
-    _USER_NICK = '';  
+    _USER_NICK = '',
+    _USER_PICTURE;  
 
 
 // 특정 파라미터값 추출
@@ -216,8 +217,7 @@ function logout() {
         success: function (res) {
             if (res.result == 200) {
                 alert(res.result_ko);
-                location.reload();
-                //location.href = '/';
+                location.href = '/';
             }
         },
         error: function (err) {
@@ -235,11 +235,15 @@ function getSession() {
         success: function (res) {
             $('#sp_user_email').text(res.user_id);  
             $('#sp_user_nick').text(res.user_nickname);
+            //$('.circle').css({'background':'url('+ res.user_picture +')'}); // 프로필사진 
 
             _USER_ID = res.user_id;
             _USER_NICK = res.user_nickname;
+            _USER_PICTURE = res.user_picture;
+
             $('#hd_id').val(res.user_id);
             $('#hd_nick').val(res.user_nickname);
+            $('#hd_picture').val(res.user_picture);
         },
         error: function (e) {
         }
