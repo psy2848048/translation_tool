@@ -29,11 +29,11 @@ def export_doc(output_type, did):
 
     #: 번역 상태 100%인지 확인
     res = conn.execute(text("""SELECT d.title, d.origin_lang
-                                    , IF(CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) is not NULL
-                                      , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
-                                FROM `marocat v1.1`.doc_trans_sentences ts 
-                                JOIN ( doc_origin_sentences os, docs d ) ON ( os.doc_id = d.id AND os.id = ts.id )
-                                WHERE d.id = :did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
+                            , IF(CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) is not NULL
+                                , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
+                            FROM `marocat v1.1`.docs d 
+                            JOIN ( doc_origin_sentences os, doc_trans_sentences ts ) ON ( os.doc_id = d.id AND os.id = ts.origin_id )
+                            WHERE d.id=:did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
 
     progress_percent = int(res[2])
     doc_title = res[0]
