@@ -216,7 +216,8 @@ function logout() {
         success: function (res) {
             if (res.result == 200) {
                 alert(res.result_ko);
-                location.href = '/';
+                location.reload();
+                //location.href = '/';
             }
         },
         error: function (err) {
