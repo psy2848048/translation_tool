@@ -17,6 +17,7 @@ S3 = boto3.client(
         # aws_session_token=SESSION_TOKEN,
     )
 BUCKET_NAME = 'marocat'
+BUCKET_FOLDER = 'profile/'
 
 
 class User(UserMixin):
@@ -47,7 +48,7 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             #: 업로드할 파일 이름짓기
             t = common.create_token(email)
             udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-            _pname = 'profile/picture-' + udate
+            _pname = t + '_' + udate
 
             mimetype = re.split('/', r.headers['Content-Type'])
             if mimetype[1] != 'png':
@@ -56,12 +57,12 @@ def insert_user(signup_type, name, email, password, social_id, picture):
                 mtype = '.' + mimetype[1]
 
             #: 원본 이미지 저장
-            pname = _pname + '-' + mtype
-            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
+            pname = _pname + mtype
+            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, BUCKET_FOLDER+pname)
 
             #: 썸네일 저장
             #: 원본 사이즈가 (100,100) 이하인 경우는 원본 그대로 저장
-            tname = _pname + 'thumbnail' + mtype
+            tname = _pname + '_thumbnail' + mtype
             img = Image.open(io.BytesIO(pic))
 
             imgsize = img.size
@@ -71,9 +72,9 @@ def insert_user(signup_type, name, email, password, social_id, picture):
                 img.save(b, format=mimetype[1].upper())
                 timg_bytes = b.getvalue()
 
-                S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
+                S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, BUCKET_FOLDER+tname)
             else:
-                S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, tname)
+                S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, BUCKET_FOLDER+tname)
 
             # purl = S3.generate_presigned_url(
             #     ClientMethod='get_object',
@@ -279,7 +280,8 @@ def cert_local_user(email, cert_token):
 def select_user(input_id):
     conn = db.engine.connect()
 
-    res = conn.execute(text("""SELECT id, name, email, is_certified
+    res = conn.execute(text("""SELECT id, name, email, thumbnail_s3key as thumbnail
+                                    , is_certified
                                     , facebook_id, facebook_email, facebook_name
                                     , google_id, google_email, google_name
                               FROM `marocat v1.1`.users 
@@ -294,12 +296,13 @@ def select_user(input_id):
         user = User()
         user.id = res['email']
         user.nickname = res['name']
+        user.picture = '/api/v1/users/me/picture/' + res['thumbnail']
         return user, 1
 
 
 def select_user_profile_by_email(email):
     conn = db.engine.connect()
-    res = conn.execute(text("""SELECT id, name, email
+    res = conn.execute(text("""SELECT id, name, email, thumbnail_s3key as thumbnail
                                     , facebook_id, facebook_email, facebook_name, conn_facebook_time
                                     , google_id, google_email, google_name, conn_google_time
                               FROM `marocat v1.1`.users 
@@ -317,7 +320,7 @@ def select_user_profile_by_email(email):
             'id': res['id'],
             'email': res['email'],
             'name': res['name'],
-            # 'picture': res['picture'],
+            'picture': '/api/v1/users/me/picture/' + res['thumbnail'],
             'facebook': {
                 'id': res['facebook_id'],
                 'email': res['facebook_email'],

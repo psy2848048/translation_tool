@@ -9,13 +9,13 @@ def get_profile():
 
 
 @login_required
-def get_thumbnail():
+def get_thumbnail(picture_name):
     picture = model.select_user_thumbnail(current_user.idx)
     return send_file(picture, mimetype='image/jpeg')
 
 
 @login_required
-def get_thumbnail_original():
+def get_thumbnail_original(picture_name):
     picture = model.select_user_thumbnail_original(current_user.idx)
     return send_file(picture, mimetype='image/jpeg')
 
@@ -79,9 +79,10 @@ def change_picture():
                                           , result_ko='입력되지 않은 값이 있습니다'
                                           , result=460), 460)
 
-    is_done = model.update_picture(current_user.id, picture)
+    is_done, user_picture = model.update_picture(current_user.id, picture)
 
     if is_done is 1:
+        session['user_picture'] = user_picture
         return make_response(json.jsonify(result_en='Picture changed successfully!'
                                           , result_ko='프로필사진이 변경되었습니다!'
                                           , result=200), 200)

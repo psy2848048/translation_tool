@@ -15,19 +15,19 @@ S3 = boto3.client(
     # aws_session_token=SESSION_TOKEN,
 )
 BUCKET_NAME = 'marocat'
+BUCKET_FOLDER = 'profile/'
 
 
 def select_user_thumbnail(uid):
     conn = db.engine.connect()
     res = conn.execute(text("""SELECT thumbnail_s3key FROM `marocat v1.1`.users WHERE id=:uid;"""), uid=uid).fetchone()
-    s3key = res['thumbnail_s3key']
     # a = re.split('.', s3key)
     # mimetype = a[-1]
     # print(a)
 
     obj = S3.get_object(
         Bucket=BUCKET_NAME,
-        Key=s3key
+        Key=BUCKET_FOLDER + res['thumbnail_s3key']
     )
     return io.BytesIO(obj['Body'].read())
 
@@ -38,7 +38,7 @@ def select_user_thumbnail_original(uid):
 
     obj = S3.get_object(
         Bucket=BUCKET_NAME,
-        Key=res['picture_s3key']
+        Key=BUCKET_FOLDER + res['picture_s3key']
     )
     return io.BytesIO(obj['Body'].read())
 
@@ -108,19 +108,19 @@ def update_picture(email, picture):
         pic = copy.deepcopy(picture.read())
 
         #: 업로드할 파일 이름짓기
-        t = common.create_token(email)
+        t = common.create_token(email, size=7)
         udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-        _pname = 'profile/picture-' + udate
+        _pname = t + '_' + udate
         mimetype = re.split('/', picture.content_type)
         mtype = '.' + mimetype[1]
 
         #: 원본 이미지 저장
-        pname = _pname + '-' + mtype
-        S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, pname)
+        pname = _pname + mtype
+        S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, BUCKET_FOLDER+pname)
 
         #: 썸네일 저장
         #: 원본 사이즈가 (100,100) 이하인 경우는 원본 그대로 저장
-        tname = _pname + 'thumbnail' + mtype
+        tname = _pname + '_thumbnail' + mtype
         img = Image.open(io.BytesIO(pic))
 
         imgsize = img.size
@@ -130,9 +130,9 @@ def update_picture(email, picture):
             img.save(b, format=mimetype[1].upper())
             timg_bytes = b.getvalue()
 
-            S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, tname)
+            S3.upload_fileobj(io.BytesIO(timg_bytes), BUCKET_NAME, BUCKET_FOLDER+tname)
         else:
-            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, tname)
+            S3.upload_fileobj(io.BytesIO(pic), BUCKET_NAME, BUCKET_FOLDER+tname)
 
         # purl = S3.generate_presigned_url(
         #     ClientMethod='get_object',
@@ -144,7 +144,7 @@ def update_picture(email, picture):
     except:
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
-        return 2
+        return 2, None
 
     try:
         res = conn.execute(u.update().where(u.c.email == email), picture_s3key=pname, thumbnail_s3key=tname
@@ -155,12 +155,14 @@ def update_picture(email, picture):
         #     trans.rollback()
         #     return 0
 
+        user_picture = '/api/v1/users/me/picture/' + tname
+
         trans.commit()
-        return 1
+        return 1, user_picture
     except:
         traceback.print_exc()
         trans.rollback()
-        return 0
+        return 0, None
 
 
 def delete_user(uid):
