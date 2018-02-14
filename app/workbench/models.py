@@ -27,21 +27,19 @@ def select_doc(did):
 
 def export_doc(output_type, did):
     conn = db.engine.connect()
+    udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
 
     #: 번역 상태 100%인지 확인
-    res = conn.execute(text("""SELECT d.title, d.origin_lang
+    res = conn.execute(text("""SELECT d.project_id as pid, d.id as did, d.title, d.origin_lang
                             , IF(CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) is not NULL
                                 , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
                             FROM `marocat v1.1`.docs d 
                             JOIN ( doc_origin_sentences os, doc_trans_sentences ts ) ON ( os.doc_id = d.id AND os.id = ts.origin_id )
                             WHERE d.id=:did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
 
-    progress_percent = int(res[2])
-    doc_title = res[0]
-    if res[1].upper() == 'ZH':
-        file_title = 'output.{}'.format(output_type)
-    else:
-        file_title = res[0] + '.' + output_type
+    progress_percent = int(res['progress_percent'])
+    doc_title = res['title']
+    file_title = 'mycattool-' + str(res['pid']) + '-' + str(res['did']) + '-' + udate + '.' + output_type
 
     #: 100%라면 csv 파일로 만들기
     if progress_percent == 100:
