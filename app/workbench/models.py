@@ -4,6 +4,7 @@ import traceback
 from datetime import datetime
 import csv
 import io
+import os
 
 
 def select_doc(did):
@@ -87,6 +88,7 @@ def export_doc(output_type, did):
                     f.write(r['trans_text'] + '\n\n')
 
             file = open('output.txt', 'rb').read()
+            os.remove('output.txt')
 
         return (file, file_title), True
     else:
