@@ -76,6 +76,7 @@ var pageScript = function () {
                     processData: false,
                     data: f_data,
                     success: function (res) {
+                        $('.circle').css({'background':'url(/static/public/img/noman.png)'}); // 프로필사진 초기화
                         alert(res.result_ko);
                         location.href = '/static/front/user/userinfo.html';
                     },
@@ -107,7 +108,10 @@ var pageScript = function () {
             var ajax_result = AjaxExecute('/api/v1/users/me/nickname', 'PUT', {
                 nickname: nick
             });
-            if (IsValidStr(ajax_result.result_ko)) alert(ajax_result.result_ko);
+            if (IsValidStr(ajax_result.result_ko)) {
+                alert(ajax_result.result_ko);
+                location.href=location.href;
+            }
             else alert(ajax_result);
         });
         // 비밀번호 변경 버튼
