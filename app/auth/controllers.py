@@ -162,6 +162,7 @@ def local_signin():
         if is_ok is True:
             login_user(user, remember=True)
             session['user_nickname'] = user.nickname
+            session['user_picture'] = user.picture
 
             return make_response(json.jsonify(result_en="Successfully sign-in!"
                                               , result_ko="로그인 성공!"
@@ -188,6 +189,8 @@ def social_callback(social_type, social_id, social_name, social_email, picture):
         if current_user.is_authenticated is False:
             login_user(user, remember=True)
             session['user_nickname'] = user.nickname
+            session['user_picture'] = user.picture
+
             return redirect('/static/front/project/projects.html')
 
         #: 소셜 존재함 + 로그인 상태
