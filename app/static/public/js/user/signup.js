@@ -1,9 +1,3 @@
-$('#hd_nick').val(getUrlParameter('name') == undefined ? '' : getUrlParameter('name'));
-$('#hd_email').val(getUrlParameter('email') == undefined ? '' : getUrlParameter('email'));
-$('#hd_social_id').val(getUrlParameter('social_id') == undefined ? '' : getUrlParameter('social_id'));
-$('#hd_picture').val(getUrlParameter('picture') == undefined ? '' : getUrlParameter('picture'));
-$('#hd_type').val(getUrlParameter('signup_type') == undefined ? '' : getUrlParameter('signup_type'));
-
 var pageScript = function () {
     var local = this;
     //type = getUrlParameter('type');
@@ -13,14 +7,7 @@ var pageScript = function () {
                 alert('로그온 상태입니다.');
                 location.href = '/static/front/project/projects.html';
             }
-        }, 500);        
-        // setTimeout(function () {
-        //     if ($('#hd_nick').val() == '{{name}}') $('#hd_nick').val('');
-        //     if ($('#hd_email').val() == '{{email}}') $('#hd_email').val('');
-        //     if ($('#hd_social_id').val() == '{{social_id}}') $('#hd_social_id').val('');
-        //     if ($('#hd_picture').val() == '{{picture}}') $('#hd_picture').val('');
-        //     if ($('#hd_type').val() == '{{signup_type}}') $('#hd_type').val('local');
-        // }, 1000);
+        }, 500);    
     };
     this.preEvents = function () {        
         local.social_init();      
@@ -109,6 +96,8 @@ var pageScript = function () {
             social_id: $('#hd_social_id').val().trim(),
             picture: $('#hd_picture').val().trim()
         };
+        console.log(data);
+        return false;
  
         local.mask();
         $('#dvLoading').show();
@@ -136,22 +125,19 @@ var pageScript = function () {
         });
     };
     this.social_init = function () {
-        if ($('#hd_social_id').val() != '') {
-            $('#nick').val($('#hd_nick').val());
-            $('#email').val($('#hd_email').val());
-        }
-    };
-    // this.social_text = function () {
-    //     if (type != undefined && type.trim() != '') {
-    //         $('#con_social').html('');
-    //         $(type.split(',')).each(function (idx, res) {
-    //             if (res.trim() == 'g') $('#con_social').append('구글');
-    //             else if (res.trim() == 'f') $('#con_social').append('페이스북');
+        setTimeout(function(){
+            $('#hd_nick').val(getUrlParameter('name') == undefined ? '' : getUrlParameter('name'));
+            $('#hd_email').val(getUrlParameter('email') == undefined ? '' : getUrlParameter('email'));
+            $('#hd_social_id').val(getUrlParameter('social_id') == undefined ? '' : getUrlParameter('social_id'));
+            $('#hd_picture').val(getUrlParameter('picture') == undefined ? '' : getUrlParameter('picture'));
+            $('#hd_type').val(getUrlParameter('signup_type') == undefined ? '' : getUrlParameter('signup_type'));
 
-    //             if (type.split(',').length != parseInt(idx) + 1) $('#con_social').append(', ');
-    //         });
-    //     }
-    // };
+            if ($('#hd_social_id').val() != '') {
+                $('#nick').val($('#hd_nick').val());
+                $('#email').val($('#hd_email').val());
+            }
+        }, 1000);
+    };
     this.bind = function () {
         local.loginCheck();
         local.preEvents();
