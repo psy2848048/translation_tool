@@ -10,16 +10,18 @@ def select_trans_memory(uid, origin_lang, trans_lang, page, rows):
     conn = db.engine.connect()
     meta = MetaData(bind=db.engine)
 
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.translation_memory
-                            WHERE user_id = :uid AND origin_lang = :ol AND trans_lang = :tl AND is_deleted = FALSE ;""")
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.translation_memory tm
+                            JOIN user_tmlist ut ON ut.tm_id = tm.id
+                            WHERE user_id = :uid AND origin_lang = :ol AND trans_lang = :tl AND tm.is_deleted = FALSE ;""")
                        , uid=uid, ol=origin_lang, tl=trans_lang).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(text("""SELECT id as tmid, origin_lang, trans_lang, origin_text, trans_text 
-                                  FROM `marocat v1.1`.translation_memory 
-                                  WHERE user_id = :uid AND origin_lang = :ol AND trans_lang = :tl
-                                        AND is_deleted = FALSE
-                                  ORDER BY id DESC 
+    results = conn.execute(text("""SELECT tm.id as tmid, origin_lang, trans_lang, origin_text, trans_text 
+                                  FROM `marocat v1.1`.translation_memory tm
+                                  JOIN user_tmlist ut ON ut.tm_id = tm.id
+                                  WHERE ut.user_id = :uid AND origin_lang = :ol AND trans_lang = :tl
+                                        AND tm.is_deleted = FALSE
+                                  ORDER BY tm.id DESC 
                                   LIMIT :row_count OFFSET :offset;""")
                            , uid=uid, ol=origin_lang, tl=trans_lang, row_count=rows, offset=rows * (page - 1))
     tm = [dict(res) for res in results]
@@ -27,32 +29,12 @@ def select_trans_memory(uid, origin_lang, trans_lang, page, rows):
     return tm, total_cnt
 
 
-def insert_trans_memory(origin_lang, trans_lang, origin_text, trans_text):
-    conn = db.engine.connect()
-    trans = conn.begin()
-    meta = MetaData(bind=db.engine)
-    tm = Table('translation_memory', meta, autoload=True)
-
-    try:
-        res = conn.execute(tm.insert(), origin_lang=origin_lang, trans_lang=trans_lang
-                           , origin_text=origin_text, trans_text=trans_text)
-        if res.rowcount != 1:
-            trans.rollback()
-            return False
-
-        trans.commit()
-        return True
-    except:
-        traceback.print_exc()
-        trans.rollback()
-        return False
-
-
 def insert_trans_memory_csv_file(uid, csv_file, origin_lang, trans_lang):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tm = Table('translation_memory', meta, autoload=True)
+    ut = Table('user_tmlist', meta, autoload=True)
 
     # file = TextIOWrapper(csv_file)
     file = io.StringIO(csv_file.stream.read().decode("UTF8"), newline=None)
@@ -62,19 +44,18 @@ def insert_trans_memory_csv_file(uid, csv_file, origin_lang, trans_lang):
         for row in data:
             #: CSV 파일 형식이 `원문언어, 번역언어, 원문단어, 번역단어`순인 경우
             if len(row) == 4:
-                res = conn.execute(tm.insert(), user_id=uid, origin_lang=row[0], trans_lang=row[1]
+                res = conn.execute(tm.insert()
+                                   , origin_lang=row[0], trans_lang=row[1]
                                    , origin_text=row[2], trans_text=row[3])
-                if res.rowcount != 1:
-                    trans.rollback()
-                    return False
-
+                tid = res.lastrowid
+                conn.execute(ut.insert(), user_id=uid, tm_id=tid)
             #: CSV 파일 형식이 `원문단어, 번역단어`순인 경우
             elif len(row) == 2:
-                res = conn.execute(tm.insert(), user_id=uid, origin_lang=origin_lang, trans_lang=trans_lang
+                res = conn.execute(tm.insert()
+                                   , origin_lang=origin_lang, trans_lang=trans_lang
                                    , origin_text=row[0], trans_text=row[1])
-                if res.rowcount != 1:
-                    trans.rollback()
-                    return False
+                tid = res.lastrowid
+                conn.execute(ut.insert(), user_id=uid, tm_id=tid)
             else:
                 trans.rollback()
                 return False
@@ -87,6 +68,27 @@ def insert_trans_memory_csv_file(uid, csv_file, origin_lang, trans_lang):
         return False
 
 
+# def insert_trans_memory(origin_lang, trans_lang, origin_text, trans_text):
+#     conn = db.engine.connect()
+#     trans = conn.begin()
+#     meta = MetaData(bind=db.engine)
+#     tm = Table('translation_memory', meta, autoload=True)
+#
+#     try:
+#         res = conn.execute(tm.insert(), origin_lang=origin_lang, trans_lang=trans_lang
+#                            , origin_text=origin_text, trans_text=trans_text)
+#         if res.rowcount != 1:
+#             trans.rollback()
+#             return False
+#
+#         trans.commit()
+#         return True
+#     except:
+#         traceback.print_exc()
+#         trans.rollback()
+#         return False
+
+
 def update_trans_memory(tid, origin_lang, trans_lang, origin_text, trans_text):
     conn = db.engine.connect()
     trans = conn.begin()
@@ -94,7 +96,8 @@ def update_trans_memory(tid, origin_lang, trans_lang, origin_text, trans_text):
     tm = Table('translation_memory', meta, autoload=True)
 
     try:
-        res = conn.execute(tm.update(tm.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang
+        res = conn.execute(tm.update(tm.c.id == tid)
+                           , origin_lang=origin_lang, trans_lang=trans_lang
                            , origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
         if res.rowcount != 1:
             trans.rollback()
@@ -113,10 +116,15 @@ def delete_trans_memory(tid):
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     tm = Table('translation_memory', meta, autoload=True)
+    ut = Table('user_tmlist', meta, autoload=True)
 
     try:
-        res = conn.execute(tm.update(tm.c.id == tid), is_deleted=True, update_time=datetime.utcnow())
-        if res.rowcount != 1:
+        res1 = conn.execute(tm.update(tm.c.id == tid), is_deleted=True, update_time=datetime.utcnow())
+        if res1.rowcount != 1:
+            trans.rollback()
+            return False
+        res2 = conn.execute(ut.update(ut.c.tm_id == tid), is_deleted=True, update_time=datetime.utcnow())
+        if res2.rowcount != 1:
             trans.rollback()
             return False
 

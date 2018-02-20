@@ -27,7 +27,10 @@ def select_doc(did):
 
 def export_doc(output_type, did):
     conn = db.engine.connect()
-    udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+    meta = MetaData(bind=db.engine)
+
+    tm = Table('translation_memory', meta, autoload=True)
+    ut = Table('user_tmlist', meta, autoload=True)
 
     #: 번역 상태 100%인지 확인
     res = conn.execute(text("""SELECT d.project_id as pid, d.id as did, d.title, d.origin_lang
@@ -39,58 +42,72 @@ def export_doc(output_type, did):
 
     progress_percent = int(res['progress_percent'])
     doc_title = res['title']
+    udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
     file_title = 'mycattool-' + str(res['pid']) + '-' + str(res['did']) + '-' + udate + '.' + output_type
 
-    #: 100%라면 csv 파일로 만들기
-    if progress_percent == 100:
-        res = conn.execute(text("""SELECT os.id as osid
-                                          , origin_lang, trans_lang
-                                          , os.text as origin_text
-                                          , IF(ts.text is not NULL, ts.text, '') as trans_text
-                                  FROM `marocat v1.1`.doc_origin_sentences os JOIN docs d ON d.id = os.doc_id
-                                                                              LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
-                                  WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
-
-        #: CSV 파일로 출력하기
-        if output_type == 'csv':
-            output = io.StringIO()
-            writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
-            writer.writerows(res)
-            file = output.getvalue().encode('utf-8')
-
-        #: TXT 파일로 출력하기
-        elif output_type == 'txt':
-            with open('output.txt', 'w') as f:
-                f.write('제목: ' + doc_title + '\n')
-                f.write('원문언어: ' + res[0]['origin_lang'].upper() + '\n')
-                f.write('번역언어: ' + res[0]['trans_lang'].upper() + '\n\n')
-
-                for r in res:
-                    f.write(r['origin_text'] + '\n')
-
-                f.write('\n\n')
-
-                for r in res:
-                    f.write(r['trans_text'] + '\n')
-
-                f.write('\n\n')
-                f.write('-'*2*len(res[0]['trans_text']) + '\n\n')
-
-                for r in res:
-                    a = '{}-{}: '.format(r['osid'], r['origin_lang'].upper())
-                    f.write(a)
-                    f.write(r['origin_text'] + '\n')
-
-                    b = '{}-{}: '.format(r['osid'], r['trans_lang'].upper())
-                    f.write(b)
-                    f.write(r['trans_text'] + '\n\n')
-
-            file = open('output.txt', 'rb').read()
-            os.remove('output.txt')
-
-        return (file, file_title), True
-    else:
+    #: 100% 아니라면 취소~~~
+    if progress_percent != 100:
         return (None, None), False
+
+    res = conn.execute(text("""SELECT os.id as osid
+                                      , origin_lang, trans_lang
+                                      , os.text as origin_text
+                                      , IF(ts.text is not NULL, ts.text, '') as trans_text
+                              FROM `marocat v1.1`.doc_origin_sentences os JOIN docs d ON d.id = os.doc_id
+                                                                          LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
+                              WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
+
+    #: ciceron@ciceron.me 계정의 저장소에 결과 넣기~
+    try:
+        for r in res:
+            res2 = conn.execute(tm.insert()
+                                , origin_lang=r['origin_lang'], trans_lang=r['trans_lang']
+                                , origin_text=r['origin_text'], trans_text=r['trans_text'])
+            tid = res2.lastrowid
+            conn.execute(ut.insert(), user_id=7, doc_id=did, tm_id=tid)
+    except:
+        print('Wrong! (insert tm)')
+        traceback.print_exc()
+        pass
+
+    #: CSV 파일로 출력하기
+    if output_type == 'csv':
+        output = io.StringIO()
+        writer = csv.writer(output, quoting=csv.QUOTE_NONNUMERIC)
+        writer.writerows(res)
+        file = output.getvalue().encode('utf-8')
+
+    #: TXT 파일로 출력하기
+    elif output_type == 'txt':
+        with open('output.txt', 'w') as f:
+            f.write('제목: ' + doc_title + '\n')
+            f.write('원문언어: ' + res[0]['origin_lang'].upper() + '\n')
+            f.write('번역언어: ' + res[0]['trans_lang'].upper() + '\n\n')
+
+            for r in res:
+                f.write(r['origin_text'] + '\n')
+
+            f.write('\n\n')
+
+            for r in res:
+                f.write(r['trans_text'] + '\n')
+
+            f.write('\n\n')
+            f.write('-'*2*len(res[0]['trans_text']) + '\n\n')
+
+            for r in res:
+                a = '{}-{}: '.format(r['osid'], r['origin_lang'].upper())
+                f.write(a)
+                f.write(r['origin_text'] + '\n')
+
+                b = '{}-{}: '.format(r['osid'], r['trans_lang'].upper())
+                f.write(b)
+                f.write(r['trans_text'] + '\n\n')
+
+        file = open('output.txt', 'rb').read()
+        os.remove('output.txt')
+
+    return (file, file_title), True
 
 
 def insert_or_update_trans(sid, trans_text, trans_type):

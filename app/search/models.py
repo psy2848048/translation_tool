@@ -19,13 +19,14 @@ def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
                      , tm_id, sm.origin_text, sm.trans_text
                      , username, user_id
                 FROM (SELECT tm.id as tm_id, origin_text, trans_text 
-                            , username, tm.user_id
+                            , username, ut.user_id
                       FROM `marocat v1.1`.translation_memory tm 
+                      JOIN user_tmlist ut ON ut.tm_id = tm.id
                       JOIN (SELECT user_id, u.name as username
                             FROM `marocat v1.1`.project_members pm 
                             JOIN users u ON ( u.id = pm.user_id )
                             WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
-                      ) t1 ON ( t1.user_id = tm.user_id )
+                      ) t1 ON ( t1.user_id = ut.user_id )
                       WHERE ( origin_text LIKE :first OR origin_text LIKE :second )
                       AND origin_lang=:ol AND trans_lang=:tl AND tm.is_deleted = FALSE
                 ) sm
@@ -42,7 +43,7 @@ def select_en_termbase(tid, query, origin_lang, trans_lang):
     conn = db.engine.connect()
 
     #: 검색 대상(query)의 마지막이 특수문자라면 지우기
-    p = re.compile('[-=.#/?:$}]')
+    p = re.compile('[!-=.#/?:$}]')
     m = p.match(query[-1])
     if m:
         nouns = query[:-1].split()
@@ -57,11 +58,12 @@ def select_en_termbase(tid, query, origin_lang, trans_lang):
                 text("""SELECT tb.id as term_id, origin_text, trans_text
                              , username, tb.user_id
                         FROM `marocat v1.1`.termbase tb 
+                        JOIN user_tblist ut ON ut.tb_id = tb.id
                         JOIN (SELECT user_id, u.name as username
                             FROM `marocat v1.1`.project_members pm 
                             JOIN users u ON ( u.id = pm.user_id )
                             WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
-                        ) t1 ON ( t1.user_id = tb.user_id )
+                        ) t1 ON ( t1.user_id = ut.user_id )
                         WHERE origin_text LIKE :noun 
                         AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
                         GROUP BY username, trans_text;""")
@@ -89,11 +91,12 @@ def select_ko_termbase(tid, query, origin_lang, trans_lang):
             text("""SELECT tb.id as term_id, origin_text, trans_text
                          , username, tb.user_id
                     FROM `marocat v1.1`.termbase tb 
+                    JOIN user_tblist ut ON ut.tm_id = tm.id
                     JOIN (SELECT user_id, u.name as username
                         FROM `marocat v1.1`.project_members pm 
                         JOIN users u ON ( u.id = pm.user_id )
                         WHERE project_id=:pid AND u.is_deleted=FALSE AND pm.is_deleted=FALSE
-                    ) t1 ON ( t1.user_id = tb.user_id )
+                    ) t1 ON ( t1.user_id = ut.user_id )
                     WHERE origin_text LIKE :noun 
                     AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
                     GROUP BY username, trans_text;""")

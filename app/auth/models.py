@@ -46,9 +46,9 @@ def insert_user(signup_type, name, email, password, social_id, picture):
             pic = copy.deepcopy(r.content)
 
             #: 업로드할 파일 이름짓기
-            t = common.create_token(email)
+            t = common.create_token(email, 7)
             udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-            _pname = t + '_' + udate
+            _pname = t + udate
 
             mimetype = re.split('/', r.headers['Content-Type'])
             if mimetype[1] != 'png':
