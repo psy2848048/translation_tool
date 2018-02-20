@@ -1,0 +1,147 @@
+<!DOCType html>
+<html="ko">
+
+    <head>
+        <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+        <META http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+        <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+        <meta http-equiv="Expires" content="-1">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <title>마이캣툴 웹번역툴</title>
+        <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+        <link href="/static/public/css/reset.css" rel="stylesheet" />
+        <link href="/static/public/css/site.css" rel="stylesheet" />
+        <link href="/static/public/css/project/project_doc_edit.css" rel="stylesheet" />
+        <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    </head>
+
+    <body>
+        <div id="mask"></div>
+        <div id="mainWrap">
+            <header id="menuArea">
+            </header>
+            <section id="mainArea">
+                <article id="rightMenuArticle">
+                </article>
+                <article>
+                    &nbsp;
+                </article>
+                <article>
+                    <h2>문서 수정</h2>
+                    <hr>
+                    <table id="form_tbl">
+                        <tr>
+                            <td>제목</td>
+                            <td>
+                                <input type="text" placeholder="문서제목을 입력해주세요(필수)" id="txt_title">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>상태</td>
+                            <td>
+                                <select name="" id="status_sel">
+                                    <option value="신규">신규</option>
+                                    <option value="진행중">진행중</option>
+                                    <option value="완료">완료</option>
+                                    <option value="취소">취소</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>링크</td>
+                            <td>
+                                <input type="text" placeholder="번역문이 사용된 곳의 http 링크를 입력해주세요(선택)" id="txt_link">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>원문</td>
+                            <td>
+                                <select name="" id="org_sel">
+                                    <option value="zh">ZH</option>
+                                    <option value="en">EN</option>
+                                    <option value="ko">KO</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>번역문</td>
+                            <td>
+                                <select name="" id="tran_sel">
+                                    <option value="ko">KO</option>
+                                    <option value="en">EN</option>
+                                    <option value="zh">ZH</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>만기일시</td>
+                            <td>
+                                <div id="limited_date"></div>
+                            </td>
+                        </tr>
+                        <!-- <tr>
+                            <td>등록방식</td>
+                            <td>
+                                <input type="radio" name="rdo_upload_method" id="rdo_file">
+                                <label for="rdo_file">파일</label>
+                                <input type="radio" name="rdo_upload_method" id="rdo_text">
+                                <label for="rdo_text">텍스트</label>
+                            </td>
+                        </tr> -->
+                    </table>
+
+
+                    <!-- <div id="dv_file" style="display:none;">
+                        <h3>파일로 업로드</h3>
+                        <div>
+                            <input type="file">
+                        </div>
+                    </div>
+                    <div id="dv_text" style="display:none;">
+                        <h3>기본 텍스트로 작성하기</h3>
+                        <textarea></textarea>
+                    </div> -->
+                    <hr>
+                    <input type="button" value=" 저 장 ">
+                </article>
+                <article>&nbsp;</article>
+                <article>
+                    <h3>
+                        참가자
+                    </h3>
+                    <div id="listContents">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox">
+                                    </th>
+                                    <th>번호</th>
+                                    <th>이름</th>
+                                    <th>이메일</th>
+                                    <th>문서읽기</th>
+                                    <th>문서수정</th>
+                                    <th>문서삭제</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </article>
+            </section>
+        </div>
+        <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+        <script src="/static/public/js/date_module.js"></script>
+        <script src="/static/public/js/common.js"></script>
+        <script src="/static/public/js/common_mem.js"></script>
+        <script src="/static/public/js/project/project_doc_edit.js"></script>
+    </body>
+
+    </html>

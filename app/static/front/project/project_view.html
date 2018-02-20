@@ -1,0 +1,143 @@
+<!DOCType html>
+<html="ko">
+
+    <head>
+        <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+        <META http-equiv="X-UA-Compatible" content="IE=edge" />
+        <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+        <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+        <meta http-equiv="Expires" content="-1">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Cache-Control" content="no-cache">
+        <title>마이캣툴 웹번역툴</title>
+        <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+        <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+        <link href="/static/public/css/reset.css" rel="stylesheet" />
+        <link href="/static/public/css/site.css" rel="stylesheet" />
+        <link href="/static/public/css/pagebar.css" rel="stylesheet" />
+        <link href="/static/public/css/project/project_view.css" rel="stylesheet" />
+        <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+    </head>
+
+    <body>
+        <div id="mask"></div>
+        <div id="mainWrap">
+            <header id="menuArea">
+            </header>
+            <section id="mainArea">
+                <article id="rightMenuArticle">
+                </article>
+                <article>
+                    <div id="dvTitle">
+                        <h2 id="h2_title"></h2>
+                        <input type="button" value=" 초대 " id="invite_btn">
+                        <input type="button" value=" 편집 " id="edit_btn">
+                        <input type="button" value=" 삭제 " id="del_btn">
+                    </div>
+                    <div id="dvContent">
+                        <hr>
+                        <table id="tblProjectDetail">
+                            <tr>
+                                <td>일련번호</td>
+                                <td>
+                                    <span id="sp_project_id"></span>
+                                </td>
+                                <td>상태</td>
+                                <td>
+                                    <span id="sp_status"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>원문언어</td>
+                                <td>
+                                    <span id="sp_org_lang"></span>
+                                </td>
+                                <td>번역언어</td>
+                                <td>
+                                    <span id="sp_trans_lang"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>생성일시</td>
+                                <td>
+                                    <span id="reg_date"></span>
+                                </td>
+                                <td>만기일시</td>
+                                <td>
+                                    <span id="duration_date"></span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>프로젝트 참가자</td>
+                                <td colspan=3>
+                                    <span id="sp_members"></span>
+                                    <input type="button" value="참가자 초대" id="invite_btn_min">
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </article>
+                <article>
+                    <div id="listTitleGroup">
+                        <h3>문서 목록</h3>
+                        <ul>
+                            <li>
+                                <a href="#">신규</a>
+                            </li>
+                            <li>
+                                <a href="#">삭제</a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div id="listContents">
+                        <table>
+                            <colgroup>
+                                <col style="width:4%;">
+                                <col style="width:4%;">
+                                <col style="width:10%;">
+                                <col style="width:42%;">
+                                <col style="width:6%;">
+                                <col style="width:6%;">
+                                <col style="width:6%;">
+                                <col style="width:6%;">
+                                <col style="width:18%;">
+                                <col style="width:8%;">
+                            </colgroup>
+                            <tr>
+                                <th>
+                                    <input type="checkbox">
+                                </th>
+                                <th>번호</th>
+                                <th>진행률</th>
+                                <th>제목</th>
+                                <th>상태</th>
+                                <th>링크</th>
+                                <th>원문</th>
+                                <th>번역문</th>
+                                <th>만기일시</th>
+                                <th>편집</th>
+                            </tr>
+                        </table>
+                        <div id="page_bar">
+                            <ul>
+                            </ul>
+                        </div>
+                        <div id="dvLoading"></div>
+                    </div>
+                </article>
+            </section>
+        </div>
+        <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+        <script src="/static/public/js/jquery-ui-1.12.1.min.js"></script>
+        <script src="/static/public/js/common.js"></script>
+        <script src="/static/public/js/common_mem.js"></script>
+        <script src="/static/public/js/pagebar.js"></script>
+        <script src="/static/public/js/project/project_view.js"></script>
+    </body>
+
+    </html>

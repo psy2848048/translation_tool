@@ -5,6 +5,9 @@
     padding:0;
     margin-bottom: 30px;
 }
+#faqSection div:nth-of-type(1){
+    border-top:3px solid #999;
+}
 
 #faqSection div h4,
 #faqSection div p{

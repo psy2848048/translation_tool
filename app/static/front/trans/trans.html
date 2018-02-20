@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/trans/trans.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mask"></div>
+    <div id="dvLoading"></div>
+    <div id="mainWrap">
+        <div id="topGroups">
+            <h1>
+                <img src="/static/public/img/mycattool_logo.png" onclick="javascript:location.href='../../index.html';">
+                <span id="sp_dummy">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span id="sp_title"></span>
+                <span id="sp_tran"></span>
+            </h1>
+            <ul>
+                <li class="tmColor" title="TM">문장저장소</li>
+                <!-- <li class="tbColor" title="TB">단어저장소</li> -->
+                <li class="mtColor" title="MT">실시간번역</li>
+                <li class="tColor" title="T">자체번역</li>
+                <li><span id="sp_user"></span></li>
+            </ul>
+        </div>
+        <div id="transArea">
+            <table id="mainTbl">
+                <colgroup>
+                    <col width="4%" style="text-align:center;">
+                    <col width="42%">
+                    <col width="42%">
+                    <col width="4%" style="text-align:center;">
+                    <col width="4%" style="text-align:center;">
+                    <col width="4%" style="text-align:center;">
+                </colgroup>
+                <tr>
+                    <th>#</th>
+                    <th>원문</th>
+                    <th>번역문</th>
+                    <th>
+                        <i class="fa fa-check" aria-hidden="true" title="번역 참가자 간의 완료여부 소통수단 입니다" style="cursor:pointer;"></i>
+                    </th>
+                    <th>
+                        <img src="/static/public/img/tool_icon2.png" width="17px" title="사용된 번역툴 입니다" style="cursor:pointer;">
+                    </th>
+                    <th>
+                        <img src="/static/public/img/talk_icon.png" width="17px" title="번역 참가자 간의 소통댓글 입니다" style="cursor:pointer;">
+                    </th>
+                </tr>
+            </table>
+        </div>
+        <div id="resultArea">
+            <div id="dvLoading2" style="display:none;"></div>
+
+
+            <section id="tran1section">
+                <h2>문장번역</h2>
+                <div id="originSentence">좌측 원문 문장을 선택해주세요</div>
+                <table id="resultTbl">
+                    <colgroup>
+                        <col width="4%" style="text-align:center;">
+                        <col width="45%">
+                        <col width="6%" style="text-align:center;">
+                        <col width="45%">
+                    </colgroup>
+                    <div id="loading_img1"></div>
+                </table>
+            </section>
+
+
+            <section id="tran2section">
+                <h2>단어장</h2>
+                <table>
+                    <tr>
+                        <th>
+                            <input type="text" id="txtPublicSearch" placeholder="좌측 원문에 사용되는 언어의 단어를 입력하세요">
+                            <input type="button" value=" 검 색 " id="btnPublicSearch">
+                        </th>
+                    </tr>
+                    <tr>
+                        <td>
+                        </td>
+                    </tr>
+                </table>
+                <div id="loading_img2"></div>
+            </section>
+
+
+            <!-- <table id="resultTbl2" style="display:block;">
+                <tr>
+                    <td>
+                        <iframe id="Dic" src="http://124.137.201.223/iframe/KoreanDic.jsp?color=gray" width="100%" height="60px" border="0" frameborder="0"
+                            scrolling="no" topmargin="0" leftmargin="0"></iframe>
+                    </td>
+                </tr>
+            </table> -->
+
+            <div id="doc_chat" style="display:none;">
+                <h2 id="total_comment">의견공유</h2>
+                <ul id="comment_refresh">                    
+                    <li id="counter"></li>
+                    <li><input type="button" value="새로고침"></li>
+                </ul>
+                <div id="doc_chat_content">
+                </div>
+                <div id="new_comment_div2">
+                    <input type="text" placeholder="좌측 번역에 대한 의견을 입력해주세요">
+                    <input type="button" value=" 입 력 ">
+                </div>
+            </div>
+
+            <table id="tabTbl">
+                <tr>
+                    <td>번역자원</td>
+                    <td>의견공유</td>
+                </tr>
+            </table>
+
+
+        </div>
+    </div>
+    <div id="instant_div" style="display: none;">
+    </div>
+    <div id="commentDiv" data-sentence-id="" style="display:none;">
+        <span id="close_button">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </span>
+        <h4>
+            <span id="sp_sentence"></span>번 번역문장에 대한 의견 입니다.</h4>
+        <div id="comments"></div>
+        <div id="new_comment_div">
+            <input type="text" placeholder="해당 번역문장에 대한 의견을 입력해주세요">
+            <input type="button" value=" 입 력 ">
+        </div>
+    </div>
+    <input type="hidden" name="" id="hd_id">
+    <input type="hidden" name="" id="hd_nick">
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/trans/trans.js"></script>
+</body>
+
+</html>

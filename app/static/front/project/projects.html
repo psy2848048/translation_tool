@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/pagebar.css" rel="stylesheet" />
+    <link href="/static/public/css/project/projects.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+        <div id="mask"></div>
+        <div id="mainWrap">
+        <header id="menuArea">
+        </header>
+        <section id="mainArea">
+            <article id="rightMenuArticle">
+            </article>
+
+            <div>&nbsp;</div>
+            <article>
+                <div id="listTitleGroup">
+                    <h2>프로젝트</h2>
+                    <ul>
+                        <li>
+                            <a href="./project_reg.html">신규</a>
+                        </li>
+                    </ul>
+                </div>
+                <div id="listContents">
+                    <div id="dvLoading2"></div>
+                    <table>
+                        <colgroup>
+                            <col style="width:7%;">
+                            <col style="width:29%;">
+                            <col style="width:10%;">
+                            <col style="width:7%;">
+                            <col style="width:13%;">
+                            <col style="width:17%;">
+                            <col style="width:17%;">
+                        </colgroup>
+                        <tr>
+                            <th>번호</th>
+                            <th>프로젝트명</th>
+                            <th>진행률</th>
+                            <th>상태</th>
+                            <th>개설자</th>
+                            <th>생성일시</th>
+                            <th>만기일시</th>
+                        </tr>
+                    </table>
+                    <div id="page_bar">
+                        <ul>
+                        </ul>
+                    </div>
+                    <div id="loading_img"></div>
+                </div>
+            </article>
+        </section>
+    </div>
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/common_mem.js"></script>
+    <script src="/static/public/js/pagebar.js"></script>
+    <script src="/static/public/js/project/projects.js"></script>
+</body>
+
+</html>

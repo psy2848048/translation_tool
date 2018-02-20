@@ -1,240 +1,556 @@
-﻿html, .root {
+﻿/*************************************************/
+
+
+/* 기본 전역 자간지정 */
+
+
+/*************************************************/
+
+html,
+.root {
   font-size: 16px;
   line-height: 21px;
 }
-body, .article {
+
+body,
+.article {
   font-family: sans-serif;
   font-size: 1em;
   line-height: 1.3125em;
   margin: auto;
 }
-h1, .h1 {
+::-webkit-scrollbar {
+  width: 0px; /* remove scrollbar space */
+  background: transparent; /* optional: just make scrollbar invisible */
+}
+/* optional: show position indicator in red */
+::-webkit-scrollbar-thumb {
+  background: #FF0000;
+}
+h1,
+.h1 {
   font-size: 1.75em;
   line-height: 1.5em;
   margin-top: 0.75em;
   margin-bottom: 1.5em;
 }
-h2, .h2 {
+
+h2,
+.h2 {
   font-size: 1.4375em;
   line-height: 1.82608696em;
   margin-top: 0.91304348em;
   margin-bottom: 0.91304348em;
 }
-h3, .h3 {
+
+h3,
+.h3 {
   font-size: 1.1875em;
   line-height: 1.10526316em;
   margin-top: 1.10526316em;
   margin-bottom: 0em;
 }
-h4, .h4 {
+
+h4,
+.h4 {
   font-size: 1em;
   line-height: 1.3125em;
   margin-top: 1.3125em;
   margin-bottom: 0em;
 }
-h5, .h5 {
+
+h5,
+.h5 {
   font-size: 1em;
   line-height: 1.3125em;
   margin-top: 1.3125em;
   margin-bottom: 0em;
 }
-p, ul, ol, pre, table, blockquote {
+
+p,
+ul,
+ol,
+pre,
+table,
+blockquote {
   margin-top: 0em;
   margin-bottom: 1.3125em;
 }
-ul ul, ol ol, ul ol, ol ul {
+
+ul ul,
+ol ol,
+ul ol,
+ol ul {
   margin-top: 0em;
   margin-bottom: 0em;
 }
 
-/* Let's make sure all's aligned */
-hr, .hr {
-  border: 1px solid;
-  margin: -1px 0;
+hr,
+.hr {
+  border: 0;
+  height: 0;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 }
-a, b, i, strong, em, small, code {
+
+a,
+b,
+i,
+strong,
+em,
+small,
+code {
   line-height: 0;
 }
-/*
-sub, sup {
-  line-height: 0;
-  position: relative;
-  vertical-align: baseline;
-}
-sup {
-  top: -0.5em;
-}
-sub {
-  bottom: -0.25em;
-}
-*/
+
 
 /*************************************************/
 
-/* HEIGHT:100% 적용 */
-html, body{
-  /*height:100%; 
-  overflow:auto;*/
-  /*background-color: #E9F4F8;*/
 
-  /*background-image: url('../img/macbook.jpg');
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;*/     
+/* 전역 자동 지정 */
+
+
+/*************************************************/
+
+
+/* h2 ~ h5 좌측 메뉴띠 */
+
+article h2,
+article h3,
+article h4,
+article h5 {
+  display: inline;
+  padding-top: 5px;
+  padding-bottom: 0;
+  padding-left: 5px;
 }
 
-section > p{
+article h2 {
+  border-left: 10px solid rgb(233, 176, 122);
+}
+
+article h3 {
+  border-left: 8px solid rgb(202, 201, 120);
+}
+
+article h4 {
+  border-left: 6px solid rgb(98, 150, 106);
+}
+
+article h5 {
+  border-left: 4px solid rgb(122, 148, 233);
+}
+
+
+/* 글자 이쁘게 정렬 */
+
+section>p {
   text-align: justify;
 }
 
+input[type=button] {
+  cursor: pointer;
+}
+
+
 /*************************************************/
 
+
+/* 전역 공통 클래스 */
+
+
+/*************************************************/
+
+
 /* 위첨자 */
+
 .super {
   vertical-align: super;
   font-size: 0.7em;
-  background:transparent;
-} 
+  background: transparent;
+}
+
+
 /* 아래첨자 */
+
 .sub {
   vertical-align: sub;
   font-size: 0.7em;
   background: transparent;
 }
 
-/* 글자잘림 : width 지정 해줘야함 */
-.oneline_wrap{
-  display:inline-block;
-  white-space:nowrap;
-  overflow:hidden;
+
+/* 글자잘림 : width 지정 해줘야함! */
+
+.oneline_wrap {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+
+  width: calc(95%);
+  text-align: left;
+  vertical-align: middle;  
 }
-/* 글자잘림 + ... : width 지정 해줘야함 */
-.oneline_wrap_comma{
-  display:inline-block;
-  white-space:nowrap;
-  overflow:hidden;
+
+
+/* 글자잘림 + ... : width 지정 해줘야함! */
+
+.oneline_wrap_comma {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
+
+/* TM, TB, MT 색깔정의 */
+
+.tmColor {
+  background-color: #ff7ae9;
+}
+
+.tbColor {
+  background-color: #ffca7a;
+}
+
+.mtColor {
+  background-color: #7acaff
+}
+.tColor {
+  background-color: #e6d7a6
+}
+
+.RightButtonDiv {
+  width: 100%;
+  text-align: right;
+}
+
+.RightButtonDiv input[type=button] {
+  border: 1px solid rgb(52, 138, 218);
+  border-radius: 5px;
+  background-color: rgb(57, 152, 230);
+  color: #fff;
+  font-size: 13px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+
 /*************************************************/
 
-#mainWrap{
-  position:relative;
-  border:0px solid #999;
-  border-radius: 5px;
-  box-sizing: border-box; 
-  width:1000px; /* 고정 */
-  margin:0 auto;
-  /*background-color: #fff;*/
-}
 
-#mainHeader{
+/* 전역 공통 아이디 */
+
+
+/*************************************************/
+
+
+/* 공통 최상위 와꾸 */
+
+#mainWrap {
   position: relative;
-  top:0;
-  border-bottom:1px solid #f0f0f0;
-  padding-bottom:10px;
-  margin-bottom:10px;
-  width:100%;
-  height:60px;
+  border: 0px solid #999;
+  border-radius: 5px;
+  box-sizing: border-box;
+  /* 넓이고정 : 아이패드 까지 최적화 */
+  width: 980px;
+  /* 모든 페이지 높이 100% 고정 */
+  height: 100%;
+  /* 최대넓이 : 아이패드 프로 가로 넓이까지 */
+  max-width: 1300px;
+  margin: 0 auto;
 }
 
-#mainHeader ul{
-  border:0px solid green;
-  display:inline-block;
-  height:60px;
-  line-height:60px;
-  vertical-align:bottom;
+
+/*************************************************/
+
+
+/* 방문자 헤더 */
+
+
+/*************************************************/
+
+#mainHeader {
+  position: relative;
+  top: 0;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 60px;
+}
+
+#mainHeader ul {
+  border: 0px solid green;
+  display: inline-block;
+  height: 60px;
+  line-height: 60px;
+  vertical-align: bottom;
   box-sizing: border-box;
 }
 
-#mainHeader ul:nth-of-type(1){
-  float:left;
+#mainHeader ul li {
+  border: 0px solid orange;
+  float: left;
 }
 
-#mainHeader ul:nth-of-type(2){
-  float:right;
+#mainHeader ul li a {
+  color: #333;
 }
 
-#mainHeader ul li{
-  border:0px solid orange; 
-  float:left;
+
+/* 좌측 로고영역 */
+
+#mainHeader ul:nth-of-type(1) {
+  float: left;
 }
 
-#mainHeader ul:nth-of-type(1) li{
-  height:50px;
-  padding-top:10px;
+#mainHeader ul:nth-of-type(1) li {
+  height: 50px;
+  padding-top: 10px;
 }
 
-#mainHeader ul:nth-of-type(1) li img{
-  height:50px;
+#mainHeader ul:nth-of-type(1) li img {
+  height: 50px;
 }
 
-#mainHeader ul:nth-of-type(2) li{
-  padding-left:15px;
-  padding-right:15px;  
+
+/* 우측 방문자 메뉴영역 */
+
+#mainHeader ul:nth-of-type(2) {
+  float: right;
+}
+
+#mainHeader ul:nth-of-type(2) li {
+  padding-left: 15px;
+  padding-right: 15px;
   line-height: 100px;
   box-sizing: border-box;
   vertical-align: bottom;
 }
 
-#mainHeader ul:nth-of-type(2) li a{
+#mainHeader ul:nth-of-type(2) li:hover {
+  opacity: 0.8;
+}
+
+#mainHeader ul:nth-of-type(2) li a {
   text-decoration: none;
-  font-weight:bolder;
+  font-weight: bolder;
 }
 
-#mainHeader li a{
-  color:#333;
+
+/*************************************************/
+
+
+/* 회원 좌측메뉴 */
+
+
+/*************************************************/
+
+#menuArea ul li {
+  border-bottom: 0px solid #999;
+  margin: 5px;
+  padding: 10px;
+  color: rgb(233, 232, 238);
+  border-radius: 5px;
+  margin:0 auto;
 }
 
-#mainHeader ul:nth-of-type(2) li:hover{
+#menuArea ul li a {
+  text-decoration: none;
+  color: #fff;
+  cursor: pointer;
+}
+#menuArea ul li a:hover {
   opacity:0.8;
 }
 
-#menuArea ul li a{
-  text-decoration: none;
-  color:#fff;
-  cursor:pointer;
+#menuArea ul:nth-of-type(1) li {
+  width:100%;
+  text-align: left;
 }
 
-#mainFooter{
-  clear:both;
-  position:relative;
-  bottom:0;
-  border:0px solid blue;
-  border-top:1px solid #f0f0f0;
+#logoArea>li:nth-of-type(1){
   width:100%;
-  text-align: center;  
-  font-size:12px;
-  padding:10px;
+  text-align: center !important;
+}
+
+
+/* 회원 좌측로고 */
+
+#logoArea ul li {
+  background-color: transparent !important;
+}
+
+
+/*************************************************/
+
+
+/* 회원단 공통 */
+
+
+/*************************************************/
+
+
+/* 회원단 우측상위 전역 검색박스 */
+
+#topSearch {
+  border: 0px solid blue;
+  width: 350px;
+  margin: 0;
+  display: inline-block;
+  box-sizing: border-box;
+  position: relative;
+}
+
+#topSearch li {
+  border: 0px solid red;
+  float: left;
+}
+
+#topSearch li input[type=text] {
+  border: 1px solid #D4DBDF;
+  border-radius: 5px;
+  width: 340px;
+  height: 45px;
+  font-size: 15px;
+  padding-left: 10px;
   box-sizing: border-box;
 }
 
-#mainFooter ul{
-  border:0px solid orange;
-  display:inline-block;
+#topSearch li img {
+  border: 0px solid #D4DBDF;
+  position: absolute;
+  right: 20px;
+  top: 9px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+#topSearch li img:hover {
+  opacity: 1;
+}
+
+
+/* 회원단 우측상위 전역 회원사진 */
+
+.circle {
+  border-radius: 50%;
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  vertical-align: middle;
+  text-align: center;
+  /* background: url();  */
+  background-size: 100%;
+  /* border: 1px solid #9b9aa6; */
+  background-repeat: no-repeat;
+  background-position-y: center;
+  background-color: #fff;
+}
+
+
+/*************************************************/
+
+
+/* 공통 하단푸터 */
+
+
+/*************************************************/
+
+#mainFooter {
+  clear: both;
+  position: relative;
+  bottom: 0;
+  border: 0px solid blue;
+  border-top: 1px solid #f0f0f0;
+  width: 100%;
+  text-align: center;
+  font-size: 12px;
+  padding: 10px;
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+
+#mainFooter ul {
+  border: 0px solid orange;
+  display: inline-block;
   margin-bottom: 0;
 }
 
-#mainFooter ul li{  
-  border:0px solid green;
-  float:left;
-  padding-left:5px;
-  padding-right:5px;
+#mainFooter ul li {
+  border: 0px solid green;
+  float: left;
+  padding-left: 5px;
+  padding-right: 5px;
 }
 
-#mainFooter p{
+#mainFooter p {
   margin-bottom: 0;
 }
 
-#mainFooter a{
-  color:#333;
+#mainFooter a {
+  color: #333;
   text-decoration: none;
 }
 
-#mainFooter a:hover{
+#mainFooter a:hover {
+  opacity: 0.8;
+}
+
+
+/*******************************************************/
+
+#page_bar{
+  border:0px solid red;
+  width:100%;
+  text-align:center;
+}
+#page_bar ul{
+  display:inline-block;
+  border:0px solid blue;
+  margin-bottom:0;
+}
+#page_bar ul li{
+  border:0px solid orange;
+  border-radius:5px;
+  float:left;
+  padding:2px;
+  padding-left:8px;
+  padding-right:8px;
+  margin:2px;
+  cursor:pointer;
+  background-color:rgb(228, 173, 23);
+  color:#fff;
+  font-size:12px;
+}
+#page_bar ul li:hover{
+  opacity:0.7;
+}
+
+#page_bar ul li a{
+  text-decoration: none;
+  color:#fff;
+}
+
+#page_bar ul li:nth-of-type(1),
+#page_bar ul li:nth-last-of-type(1){
+  background-color:#1797E4;
+}
+
+#page_bar ul li:nth-of-type(2),
+#page_bar ul li:nth-last-of-type(2){
+  background-color:rgba(23, 149, 228, 0.733);
+}
+
+/*******************************************************/
+
+#spUser a{
+  color:rgb(78, 128, 204);
+  text-decoration: none;
+}
+
+#spUser a:hover{
   opacity:0.8;
 }
 
-#logoArea ul li{
-  background-color:transparent !important;
-}

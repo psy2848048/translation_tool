@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/pagebar.css" rel="stylesheet" />
+    <link href="/static/public/css/tran_memory/tran_memory.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mask"></div>
+    <div id="mainWrap">
+        <header id="menuArea">
+        </header>
+        <section id="mainArea">
+            <article id="rightMenuArticle">
+            </article>
+            <div>&nbsp;</div>
+            <article id="mainArticle">
+                <div id="listTitleGroup">
+                    <h2>문장 저장소</h2>
+
+                    <div id="search_box">
+                        <select name="" id="">
+                            <option value="1">영어 -> 한국어</option>
+                            <option value="2">영어 -> 중국어</option>
+                            <option value="3">중국어 -> 한국어</option>
+                            <option value="4">중국어 -> 영어</option>
+                            <option value="5">한국어 -> 영어</option>
+                            <option value="6">한국어 -> 중국어</option>
+                        </select>
+                        <!-- 추후에 붙일 예정 <input type="text" name="" id=""> -->
+                        <input type="button" value="검색">
+                    </div>
+
+                    <ul>
+                        <li id="new_li_btn">신규</li>
+                    </ul>
+                    <table>
+                    </table>
+                </div>
+                <br>
+                <div id="page_bar">
+                    <ul>
+                    </ul>
+                </div>
+                <div id="loading_img"></div>
+            </article>
+        </section>
+        <footer id="mainFooter">
+        </footer>
+    </div>
+    <div id="upload_div" style="display:none;">
+        <h3>문장번역 업로드</h3>
+        <i class="fa fa-times" aria-hidden="true"></i>
+        <hr>
+        <form>
+            <input type="file" id="file_upload_frm">
+        </form>
+        <p id="upload_result">아직 업로드가 진행되지 않았습니다.</p>
+        <div>
+            <h4>CSV 파일로 추가하는 방법</h4>
+            <p>1.
+                <a href="/static/tm_sample.csv">이곳</a>을 클릭해서 샘플 CSV 파일을 받아주세요.</p>
+            <p>2. 샘플파일에 작성되어 있는 원문언어, 번역언어, 원문, 번역 순서대로 CSV 추가하여 파일을 만들어주세요.</p>
+            <p>3. 업로드 해주세요.</p>
+        </div>
+    </div>
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/common_mem.js"></script>
+    <script src="/static/public/js/tran_memory/tran_memory.js"></script>
+    <script src="/static/public/js/pagebar.js"></script>
+</body>
+
+</html>

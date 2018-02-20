@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 회원가입</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/user/signup.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mainWrap">
+        <div id="join_box">
+            <a href="/static/index.html">
+                <img src="/static/public/img/mycattool_logo.png">
+            </a>
+            <h1>마이캣툴 회원가입</h1>
+            <p id="desc">마이캣툴의 서비스를 이용하기 위해서는 아래의 기본정보를 모두 작성해 주셔야 합니다.</p>
+            <table>
+                <tr>
+                    <td>닉네임</td>
+                    <td>
+                        <input type="text" name="" id="nick" value="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>로그인 이메일</td>
+                    <td>
+                        <input type="text" name="" id="email" value="">
+                    </td>
+                </tr>
+                <tr>
+                    <td>로그인 비밀번호</td>
+                    <td>
+                        <input type="password" name="" id="pass">
+                    </td>
+                </tr>
+                <tr>
+                    <td>로그인 비밀번호 확인</td>
+                    <td>
+                        <input type="password" name="" id="pass_confirm">
+                    </td>
+                </tr>
+            </table>
+            <div id="join_div">
+                <p>
+                    <input type="checkbox" id="chk_agree">
+                    <label for="chk_agree">
+                        <a target="_blank" href="../terms.html">이용약관</a> 동의</label>
+                    <input type="checkbox" name="" id="chk_policy">
+                    <label for="chk_policy">
+                        <a target="_blank" href="../privacy.html">개인정보 보호정책</a> 동의</label>
+                </p>
+                <p>
+                    <input type="button" value="회원가입" class="add">
+                </p>
+            </div>
+        </div>
+    </div>
+    <div id="mask"></div>
+    <div id="dvLoading"></div>
+    <input type="hidden" name="" id="hd_nick" value="">
+    <input type="hidden" name="" id="hd_email" value="">
+    <input type="hidden" name="" id="hd_social_id" value="">
+    <input type="hidden" name="" id="hd_picture" value="">
+    <input type="hidden" name="" id="hd_type" value="">
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/user/signup.js"></script>
+</body>
+
+</html>

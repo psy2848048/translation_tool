@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/user/userinfo.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mainWrap">
+        <header id="menuArea">
+        </header>
+        <section id="mainArea">
+            <article id="rightMenuArticle">
+            </article>
+
+            <div>&nbsp;</div>
+            <article>
+                <ul>
+                    <li>
+                        <h3>정보변경</h3>
+                        <table class="account_tbl">
+                            <tr>
+                                <td>로그인 이메일</td>
+                                <td>
+                                    <span id="sp_user_email">
+                                </td>
+                                <td>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    로그인 비밀번호
+                                </td>
+                                <td>
+                                    <input type="password" name="" id="local_pass" placeholder="비밀번호">
+                                    <input type="password" name="" id="local_pass_confirm" placeholder="비밀번호 확인">
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="local_connect_btn" value="변경" class="myinfo_btn">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>닉네임</td>
+                                <td>
+                                    <input type="text" name="" id="txt_name">
+                                    <span id="sp_nick_desc"></span>
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="nick_btn" value=" 변경 " class="myinfo_btn">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>사진 변경</td>
+                                <td>
+                                    <span id="sp_user_picture" class="circle"></span>
+                                    <input type="file" name="" id="file_frm">
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="picture_btn" value=" 변경 " class="myinfo_btn">
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="dummy"></div>
+                    </li>
+                    <li>
+                        <h3>연결된 계정</h3>
+                        <table class="account_tbl">
+                            <tr>
+                                <td>
+                                    <i class="fa fa-google" aria-hidden="true"></i> 구글
+                                </td>
+                                <td>
+                                    <span id="sp_google_desc">구글 계정과 연동되지 않은 상태입니다.</span>
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="google_btn">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <i class="fa fa-facebook" aria-hidden="true"></i> 페이스북
+                                </td>
+                                <td>
+                                    <span id="sp_facebook_desc">페이스북 계정과 연동되어 있습니다.</span>
+                                </td>
+                                <td>
+                                    <input type="button" name="" id="facebook_btn">
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="dummy"></div>
+                    </li>
+                    <li>
+                        <h3>회원탈퇴</h3>
+                        <table class="account_tbl">
+                            <tr>
+                                <td>탈퇴하기</td>
+                                <td>탈퇴관련 규정은
+                                    <a target="_blank" href="/static/front/terms.html">이용약관</a>과
+                                    <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>을 준수합니다.</td>
+                                <td>
+                                    <input type="button" name="" id="remove_btn" value="탈퇴하기" class="remove_btn">
+                                </td>
+                            </tr>
+                        </table>
+                    </li>
+                </ul>
+            </article>
+        </section>
+        <footer id="mainFooter">
+        </footer>
+    </div>
+    <div id="mask"></div>
+    <div id="dvLoading"></div>
+    <input type="hidden" name="" id="hd_social_result" value="">
+    <input type="hidden" name="" id="hd_social_result_ko" value="">
+    <input type="hidden" name="" id="hd_social_result_en" value="">
+    <!-- <input type="hidden" name="" id="hd_msg" value=""> -->
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/common_mem.js"></script>
+    <script src="/static/public/js/user/userinfo.js"></script>
+</body>
+
+</html>

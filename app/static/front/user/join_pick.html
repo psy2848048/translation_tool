@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴 회원가입</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/user/join_pick.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mainWrap">
+        <div id="join_box">
+            <a href="/static/index.html">
+                <img src="/static/public/img/mycattool_logo.png">
+            </a>
+            <h1>마이캣툴 회원가입</h1>
+            <hr>
+            <!-- <div>
+                <span>버전</span>
+                <select id="selVersion">
+                    <option value="무료버전">무료버전</option>
+                    <option value="유료버전">유료버전</option>
+                </select>
+            </div> -->
+            <div id="lang_div">
+                <span>웹사이트 테마</span>
+                <select id="selLang">
+                    <option value="한국어">한국어</option>
+                    <!-- <option value="영어">영어</option> -->
+                    <!-- <option value="중국어">중국어</option> -->
+                </select>
+            </div>
+            <p id="p_msg">가장 편리한 가입방법을 선택하세요. 기존에 계정을 가져고 계신 분은
+                <a href="login.html">이곳을 클릭</a>해서 로그인 하세요.</p>
+            <ul>
+                <li>
+                    <a id="googleLink" href="/api/v1/auth/google/signin">
+                        <img src="/static/public/img/google.jpg">
+                    </a>
+                    <p>소셜 구글</p>
+                </li>
+                <li>
+                    <a id="facebookLink" href="/api/v1/auth/facebook/signin">
+                        <img src="/static/public/img/facebook.png">
+                    </a>
+                    <p>소셜 페이스북</p>
+                </li>
+                <li>
+                    <a href="signup.html?signup_type=local">
+                        <img src="/static/public/img/email.png">
+                    </a>
+                    <p>회원님 이메일</p>
+                </li>
+            </ul>
+            <hr>
+            <p class="join_desc">사용에는
+                <a target="_blank" href="/static/front/terms.html">이용약관</a>과
+                <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>이 적용됩니다.</p>
+        </div>
+    </div>
+    <input type="hidden" name="" id="hd_msg" value="{{result_ko}}">
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/user/join_pick.js"></script>
+</body>
+
+</html>

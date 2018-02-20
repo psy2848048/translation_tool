@@ -6,7 +6,6 @@ request_pic/
 request_sounds/
 request_text/
 translate_result/
-app/docs
 .coverage
 .cache/
 .tox/
@@ -15,3 +14,4 @@ src/warning_application.py
 .idea/
 .DS_Store
 test/.DS_Store
+app/sunnynote/*

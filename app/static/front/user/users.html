@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
+    <META http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="/static/public/js/html5shiv.min.js"></script>
+        <script src="/static/public/js/respond.min.js"></script>
+    <![endif]-->
+    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
+    <meta http-equiv="Expires" content="-1">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <title>마이캣툴 웹번역툴</title>
+    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/public/css/reset.css" rel="stylesheet" />
+    <link href="/static/public/css/site.css" rel="stylesheet" />
+    <link href="/static/public/css/user/users.css" rel="stylesheet" />
+    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+</head>
+
+<body>
+    <div id="mask"></div>
+    <div id="mainWrap">
+        <header id="menuArea">
+        </header>
+        <section id="mainArea">
+            <article id="rightMenuArticle">
+            </article>
+
+            <div>&nbsp;</div>
+            <article>
+                <div id="listTitleGroup">
+                    <h2>프로젝트 참가자</h2>
+                    <ul>
+                        <li>삭제</li>
+                    </ul>
+                </div>
+                <div id="listContents">
+                    <table>
+                        <tr>
+                            <th>
+                                <input type="checkbox">
+                            </th>
+                            <th>번호</th>
+                            <th>이름</th>
+                            <th>이메일</th>
+                            <th>문서생성</th>
+                            <th>프로젝트 읽기</th>
+                            <th>프로젝트 수정</th>
+                            <th>프로젝트 삭제</th>
+                        </tr>                        
+                    </table>
+                    <div id="page_bar">
+                        <ul>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+            <div>&nbsp;</div>
+            <article>
+                <div id="listTitleGroup2">
+                    <h3>사용자 검색</h3>
+                    <ul id="ul_user_search">
+                        <li>
+                            <input type="text" id="txt_search" placeholder="검색할 이메일을 입력해주세요 ">
+                        </li>
+                        <li>
+                            검색
+                        </li>
+                        <li>추가</li>
+                    </ul>
+                </div>
+                <div id="listContents2">
+                    <table>
+                        <tr>
+                            <th>
+                                <input type="checkbox">
+                            </th>
+                            <th>번호</th>
+                            <th>이름</th>
+                            <th>이메일</th>
+                        </tr>
+                    </table>
+                    <!-- <div id="loading_img"></div> -->
+                </div>
+            </article>
+        </section>
+        <footer id="mainFooter">
+        </footer>
+    </div>
+    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
+    <script src="/static/public/js/common.js"></script>
+    <script src="/static/public/js/common_mem.js"></script>
+    <script src="/static/public/js/pagebar.js"></script>
+    <script src="/static/public/js/user/users.js"></script>
+</body>
+
+</html>
