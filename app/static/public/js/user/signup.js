@@ -96,8 +96,6 @@ var pageScript = function () {
             social_id: $('#hd_social_id').val().trim(),
             picture: $('#hd_picture').val().trim()
         };
-        console.log(data);
-        return false;
  
         local.mask();
         $('#dvLoading').show();
