@@ -91,7 +91,7 @@ def select_ko_termbase(tid, query, origin_lang, trans_lang):
             text("""SELECT tb.id as term_id, origin_text, trans_text
                          , username, tb.user_id
                     FROM `marocat v1.1`.termbase tb 
-                    JOIN user_tblist ut ON ut.tm_id = tm.id
+                    JOIN user_tblist ut ON ut.tb_id = tb.id
                     JOIN (SELECT user_id, u.name as username
                         FROM `marocat v1.1`.project_members pm 
                         JOIN users u ON ( u.id = pm.user_id )
