@@ -120,9 +120,9 @@ def signout():
     """
     로그아웃
     """
+    logout_user()
     for key in list(session.keys()):
         session.pop(key)
-    logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!"
                                       , result_ko='로그아웃 성공!'
                                       , result=200), 200)
