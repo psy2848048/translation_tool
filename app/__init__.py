@@ -75,6 +75,9 @@ app.register_blueprint(termbase, url_prefix='/api/v1/toolkit/termbase')
 from app.search.urls import search
 app.register_blueprint(search, url_prefix='/api/v1/search')
 
+from app.steem.urls import steem
+app.register_blueprint(steem, url_prefix='/api/v1/steem')
+
 #: 등록된 url 확인하기
 print(app.url_map)
 

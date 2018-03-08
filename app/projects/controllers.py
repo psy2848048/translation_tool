@@ -51,7 +51,7 @@ def add_project():
     if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
+        due_date = common.convert_datetime4mysql(due_date)
 
     is_done = model.insert_project(uid, name, due_date)
 
@@ -85,7 +85,7 @@ def add_doc(pid):
     if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
+        due_date = common.convert_datetime4mysql(due_date)
 
     if type == 'text':
         # 내용을 문장 단위로 나누기 - 내용을 통으로 넣으면 배열로 문장이 하나씩 갈라져 나온다
@@ -149,7 +149,7 @@ def modify_project_info(pid):
     if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
+        due_date = common.convert_datetime4mysql(due_date)
 
     is_done = model.update_project_info(pid, name, status, due_date)
 
