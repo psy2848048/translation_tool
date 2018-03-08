@@ -44,10 +44,9 @@ def request_trans():
                   | {request_time} | {origin_lang} > {trans_lang} | $ {price} | {transaction_id} |
                   \n
                   > - 최종 공급가액에는 번역 및 초벌감수까지 포함되어 있습니다.
-                  > -  번역물 제공 후 과하지 않은 선에서 추가 문의 및 검수 요청은 가능합니다.
-                  """.format(name=name, request_time=datetime.now(),
-                             origin_lang=origin_lang, trans_lang=trans_lang,
-                             price=price, transaction_id=transaction_id),
+                  > -  번역물 제공 후 과하지 않은 선에서 추가 문의 및 검수 요청은 가능합니다.""".format(name=name, request_time=datetime.now(),
+                                                                           origin_lang=origin_lang, trans_lang=trans_lang,
+                                                                           price=price, transaction_id=transaction_id),
                   author='ciceron',
                   permlink=None,  # Manually set the permlink (defaults to None). If left empty, it will be derived from title automatically
                   reply_identifier=permlink,  # Identifier of the parent post/comment (only if this post is a reply/comment) (eg. @author/permlink)
