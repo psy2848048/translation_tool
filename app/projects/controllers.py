@@ -2,7 +2,6 @@ from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.projects.models as model
 from app import common
-import nltk
 
 
 @login_required
@@ -87,12 +86,7 @@ def add_doc(pid):
     elif due_date is not None:
         due_date = common.convert_datetime4mysql(due_date)
 
-    if type == 'text':
-        # 내용을 문장 단위로 나누기 - 내용을 통으로 넣으면 배열로 문장이 하나씩 갈라져 나온다
-        sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
-        is_done = model.insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences)
-    else:
-        is_done = False
+    is_done = model.insert_doc(pid, title, origin_lang, trans_lang, due_date, type, content)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

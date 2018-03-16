@@ -3,6 +3,9 @@ from sqlalchemy import Table, MetaData, text, and_
 import sqlalchemy.exc
 import traceback
 from datetime import datetime
+import nltk
+from markdown import markdown
+from bs4 import BeautifulSoup as BS
 
 
 def select_projects(uid, page, rows):
@@ -129,7 +132,7 @@ def insert_project(uid, name, due_date):
         return False
 
 
-def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences):
+def insert_doc(pid, title, origin_lang, trans_lang, due_date, doc_type, content):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -139,35 +142,26 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
 
     try:
         #: 문서 추가
-        res = conn.execute(d.insert(), project_id=pid, title=title
-                           , origin_lang=origin_lang, trans_lang=trans_lang, due_date=due_date, type=type)
+        res = conn.execute(d.insert(),
+                           project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang,
+                           due_date=due_date, type=doc_type, content=content)
         did = res.lastrowid
 
         if res.rowcount != 1:
             trans.rollback()
             return False
 
-        #: 문서의 문장들 저장
-        for sentence in sentences:
-            res = conn.execute(os.insert(), doc_id=did, text=sentence)
-
-            if res.rowcount != 1:
-                trans.rollback()
-                return False
-
-            osid = res.lastrowid
-            res = conn.execute(ts.insert(), origin_id=osid)
-
-            if res.rowcount != 1:
-                trans.rollback()
-                return False
+        #: 문서의 내용을 문장으로 나눠서 저장하기
+        is_done = insert_doc_content(did, doc_type, content)
+        if is_done is False:
+            return False
 
         #: 프로젝트 참가자들의 문서 권한 저장
         #  버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
-        res = conn.execute(text("""INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
-                             SELECT user_id, project_id, :did, True, True, True
-                             FROM `marocat v1.1`.project_members
-                             WHERE project_id = :pid;"""), did=did, pid=pid)
+        res = conn.execute(text(
+            """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
+            SELECT user_id, project_id, :did, True, True, True
+            FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), did=did, pid=pid)
 
         if res.rowcount == 0:
             trans.rollback()
@@ -181,10 +175,38 @@ def insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type
         return False
 
 
-def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create_doc):
+def insert_doc_content(did, doc_type, content):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
+    os = Table('doc_origin_sentences', meta, autoload=True)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
+
+    if doc_type == 'md':
+        html = markdown(content)
+        soup = BS(html, 'lxml')
+        sentences = soup.find_all(text=True)
+    else:
+        sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
+
+    for sentence in sentences:
+        res = conn.execute(os.insert(), doc_id=did, text=sentence)
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+        osid = res.lastrowid
+        res = conn.execute(ts.insert(), origin_id=osid)
+
+        if res.rowcount != 1:
+            trans.rollback()
+            return False
+
+
+def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create_doc):
+    conn = db.engine.connect()
+    trans = conn.begin()
 
     try:
         #: 프로젝트 참가자 목록에 추가하기
@@ -254,7 +276,8 @@ def update_project_info(pid, name, status, due_date):
     p = Table('projects', meta, autoload=True)
 
     try:
-        res = conn.execute(p.update(p.c.id == pid), name=name, status=status, due_date=due_date, update_time=datetime.utcnow())
+        res = conn.execute(p.update(p.c.id == pid),
+                           name=name, status=status, due_date=due_date, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()

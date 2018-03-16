@@ -19,9 +19,6 @@ S3 = boto3.client(
     )
 BUCKET_NAME = 'marocat'
 
-import mistune
-from bs4 import BeautifulSoup as BS
-
 
 def ddos_check_and_write_log():
     """
@@ -194,16 +191,3 @@ def upload_photo_to_bytes_on_s3(picture, mimetype, name):
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
         return None, False
-
-
-def convert_md2text(md):
-    """
-    1. markdown parser 'mintune'을 써서 마크다운을 html로 바꾼다
-    2. beautifulsoup을 써서 텍스트만 뽑아낸다
-    :param md:
-    :return:
-    """
-    html = mistune.markdown(md, escape=True, hard_wrap=True)
-    soup = BS(html, 'html.parser')
-    return soup.text
-
