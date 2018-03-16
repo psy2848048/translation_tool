@@ -1,4 +1,5 @@
 from app import db
+import app.steem.models as steem
 from sqlalchemy import Table, MetaData, text, and_
 import sqlalchemy.exc
 import traceback
@@ -132,32 +133,32 @@ def insert_project(uid, name, due_date):
         return False
 
 
-def insert_doc(pid, title, origin_lang, trans_lang, due_date, doc_type, content):
+def insert_doc(pid, title, origin_lang, trans_lang, link, due_date, doc_type, content):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
-    os = Table('doc_origin_sentences', meta, autoload=True)
-    ts = Table('doc_trans_sentences', meta, autoload=True)
 
     try:
         #: 문서 추가
         res = conn.execute(d.insert(),
                            project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang,
-                           due_date=due_date, type=doc_type, content=content)
+                           link=link, due_date=due_date, type=doc_type, content=content)
         did = res.lastrowid
 
         if res.rowcount != 1:
             trans.rollback()
             return False
 
+        if doc_type == 'steemlink':
+            content = steem.get_post_content(link)
+
         #: 문서의 내용을 문장으로 나눠서 저장하기
         is_done = insert_doc_content(did, doc_type, content)
         if is_done is False:
             return False
 
-        #: 프로젝트 참가자들의 문서 권한 저장
-        #  버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
+        #: 프로젝트 참가자들의 문서 권한 저장 -버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
         res = conn.execute(text(
             """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
             SELECT user_id, project_id, :did, True, True, True
@@ -182,7 +183,7 @@ def insert_doc_content(did, doc_type, content):
     os = Table('doc_origin_sentences', meta, autoload=True)
     ts = Table('doc_trans_sentences', meta, autoload=True)
 
-    if doc_type == 'md':
+    if doc_type in ['md', 'steem']:
         html = markdown(content)
         soup = BS(html, 'lxml')
         sentences = soup.find_all(text=True)

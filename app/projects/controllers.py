@@ -65,6 +65,7 @@ def add_doc(pid):
     title = request.form.get('title', None)
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
+    link = request.form.get('link', None)
     due_date = request.form.get('due_date', None)
     type = request.form.get('type', None)
     content = request.form.get('content', None)
@@ -86,7 +87,7 @@ def add_doc(pid):
     elif due_date is not None:
         due_date = common.convert_datetime4mysql(due_date)
 
-    is_done = model.insert_doc(pid, title, origin_lang, trans_lang, due_date, type, content)
+    is_done = model.insert_doc(pid, title, origin_lang, trans_lang, link, due_date, type, content)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
