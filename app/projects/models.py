@@ -150,11 +150,8 @@ def insert_doc(pid, title, origin_lang, trans_lang, link, due_date, doc_type, co
             trans.rollback()
             return False
 
-        if doc_type == 'steemlink':
-            content = steem.get_post_content(link)
-
         #: 문서의 내용을 문장으로 나눠서 저장하기
-        is_done = insert_doc_content(did, doc_type, content)
+        is_done = insert_doc_content(did, link, doc_type, content)
         if is_done is False:
             return False
 
@@ -176,14 +173,20 @@ def insert_doc(pid, title, origin_lang, trans_lang, link, due_date, doc_type, co
         return False
 
 
-def insert_doc_content(did, doc_type, content):
+def insert_doc_content(did, link, doc_type, content):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     os = Table('doc_origin_sentences', meta, autoload=True)
     ts = Table('doc_trans_sentences', meta, autoload=True)
 
-    if doc_type in ['md', 'steem']:
+    if doc_type == 'steem':
+        post = steem.get_post_content(link)
+        html = markdown(post['body'])
+        soup = BS(html, 'lxml')
+        sentences = soup.find_all(text=True)
+        sentences.insert(0, post['title'])  # 제목도 번역해야하니까 추가해준다
+    elif doc_type == 'md':
         html = markdown(content)
         soup = BS(html, 'lxml')
         sentences = soup.find_all(text=True)

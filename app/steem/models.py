@@ -132,4 +132,4 @@ def write_comment(permlink, title, comment):
 def get_post_content(link):
     permlink = '@{}'.format(link.split('@', maxsplit=1)[-1])
     post = Post(post=permlink).export()
-    return post['body']
+    return post
