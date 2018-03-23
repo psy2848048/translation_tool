@@ -1,7 +1,6 @@
 from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.projects.models as model
-from app import common
 
 
 @login_required
@@ -47,11 +46,6 @@ def add_project():
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime4mysql(due_date)
-
     is_done = model.insert_project(uid, name, due_date)
 
     if is_done is True:
@@ -81,11 +75,6 @@ def add_doc(pid):
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
-
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime4mysql(due_date)
 
     is_done = model.insert_doc(pid, title, origin_lang, trans_lang, link, due_date, type, content)
 
@@ -140,11 +129,6 @@ def modify_project_info(pid):
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     if status not in ['신규', '진행중', '완료', '취소']:
         return make_response(json.jsonify(result='Status is wrong'), 461)
-
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime4mysql(due_date)
 
     is_done = model.update_project_info(pid, name, status, due_date)
 
