@@ -1,8 +1,6 @@
 from flask import request, make_response, json
 from flask_login import login_required, current_user
 import app.projects.models as model
-from app import common
-import nltk
 
 
 @login_required
@@ -48,11 +46,6 @@ def add_project():
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
-
     is_done = model.insert_project(uid, name, due_date)
 
     if is_done is True:
@@ -66,6 +59,7 @@ def add_doc(pid):
     title = request.form.get('title', None)
     origin_lang = request.form.get('origin_lang', None)
     trans_lang = request.form.get('trans_lang', None)
+    link = request.form.get('link', None)
     due_date = request.form.get('due_date', None)
     type = request.form.get('type', None)
     content = request.form.get('content', None)
@@ -82,17 +76,7 @@ def add_doc(pid):
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
-
-    if type == 'text':
-        # 내용을 문장 단위로 나누기 - 내용을 통으로 넣으면 배열로 문장이 하나씩 갈라져 나온다
-        sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
-        is_done = model.insert_doc_and_sentences(pid, title, origin_lang, trans_lang, due_date, type, sentences)
-    else:
-        is_done = False
+    is_done = model.insert_doc(pid, title, origin_lang, trans_lang, link, due_date, type, content)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
@@ -145,11 +129,6 @@ def modify_project_info(pid):
         return make_response(json.jsonify(result='Something Not Entered'), 460)
     if status not in ['신규', '진행중', '완료', '취소']:
         return make_response(json.jsonify(result='Status is wrong'), 461)
-
-    if len(due_date) < 3:
-        due_date = None
-    elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
 
     is_done = model.update_project_info(pid, name, status, due_date)
 

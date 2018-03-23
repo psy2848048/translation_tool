@@ -2,11 +2,7 @@
 from app import app
 from gevent.wsgi import WSGIServer
 
-#: HTTPS, SSL 설정
-cert = './cert_key/pfx.mycattool_com.crt'
-key = './cert_key/pfx.mycattool_com.key'
+https = WSGIServer(('0.0.0.0', app.config['PORT']), app, keyfile=app.config['SSL_KEY'], certfile=app.config['SSL_CERT'])
+https.serve_forever()
 
 # http = WSGIServer(('0.0.0.0', 5000), app)
-#https = WSGIServer(('0.0.0.0', 5001), app, keyfile=key, certfile=cert)
-https = WSGIServer(('0.0.0.0', 443), app, keyfile=key, certfile=cert)
-https.serve_forever()

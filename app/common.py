@@ -92,7 +92,7 @@ def ddos_check_and_write_log():
                                      , result=461), 461)
 
 
-def convert_datetime_4mysql(basedate):
+def convert_datetime4mysql(basedate):
     """
     client에서 보내주는 datetime이 MySQL 포맷에 맞지 않기 때문에 포맷형식을 바꿔주는 함수입니다
     """

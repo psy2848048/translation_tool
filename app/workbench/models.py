@@ -57,6 +57,8 @@ def export_doc(output_type, did):
                                                                           LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
                               WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
 
+    file = write_file_in_requested_format(output_type, doc_title, res)
+
     #: ciceron@ciceron.me 계정의 저장소에 결과 넣기~
     try:
         for r in res:
@@ -70,6 +72,10 @@ def export_doc(output_type, did):
         traceback.print_exc()
         pass
 
+    return (file, file_title), True
+
+
+def write_file_in_requested_format(output_type, doc_title, res):
     #: CSV 파일로 출력하기
     if output_type == 'csv':
         output = io.StringIO()
@@ -93,7 +99,7 @@ def export_doc(output_type, did):
                 f.write(r['trans_text'] + '\n')
 
             f.write('\n\n')
-            f.write('-'*2*len(res[0]['trans_text']) + '\n\n')
+            f.write('-' * 2 * len(res[0]['trans_text']) + '\n\n')
 
             for r in res:
                 a = '{}-{}: '.format(r['osid'], r['origin_lang'].upper())
@@ -106,8 +112,10 @@ def export_doc(output_type, did):
 
         file = open('output.txt', 'rb').read()
         os.remove('output.txt')
+    else:
+        file = None
 
-    return (file, file_title), True
+    return file
 
 
 def insert_or_update_trans(sid, trans_text, trans_type):

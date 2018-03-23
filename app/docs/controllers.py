@@ -55,7 +55,7 @@ def modify_doc_info(did):
     if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
-        due_date = common.convert_datetime_4mysql(due_date)
+        due_date = common.convert_datetime4mysql(due_date)
 
     is_done = model.update_doc_info(did, title, status, link, origin_lang, trans_lang, due_date)
 

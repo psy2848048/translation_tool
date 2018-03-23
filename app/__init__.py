@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
-from flask import Flask, g, redirect, abort, make_response, jsonify
+from flask import Flask, g, redirect, make_response, jsonify
 from flask_session import Session
 from flask_cors import CORS
 from flask_caching import Cache
-from flasgger import Swagger
 from flask_sqlalchemy import SQLAlchemy
 from flask_sslify import SSLify
+import os
 
 # Define the WSGI application object
 app = Flask(__name__, static_url_path='/static', template_folder='/static/front')
@@ -13,8 +13,14 @@ app.static_folder = 'static'
 app.template_folder = 'static/front'
 
 #: Configurations
-import config
-app.config.from_object(config)
+import configs
+
+if os.environ.get('PURPOSE') == 'PROD':
+    app.config.from_object(configs.ProdConfig)
+elif os.environ.get('PURPOSE') == 'DEV':
+    app.config.from_object(configs.DevConfig)
+else:
+    app.config.from_object(configs.Config)
 
 #: Swagger
 #Swagger(app)
@@ -31,12 +37,7 @@ cors = CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": "tru
 #: Flask_SSLify
 sslify = SSLify(app)
 
-###: DB 연결
-# 저는 configs에 설정해서 바로 연결해서 쓸 수 있도록 했습니다.
-
-# Import SQLAlchemy
-# from flask.ext.sqlalchemy import SQLAlchemy
-# from flask_sqlalchemy import SQLAlchemy
+#: DB 연결 - configs에 설정해서 바로 연결해서 쓸 수 있도록 했습니다.
 
 # Define the database object which is imported
 # by modules and controllers
@@ -138,4 +139,4 @@ def forbidden(error):
 
 @app.route('/')
 def hello_world():
-    return redirect('/static/index.html')
+    return redirect('/static/front/user/login.html')
