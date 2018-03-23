@@ -59,9 +59,6 @@ class Config(object):
     AWS_SECRET_ACCESS_KEY = 'ga52eRa1EZ/WMnEy8OadBsQQAtesok014NFW8Weh'
     REGION = 'ap-northeast-1'
 
-    #: STEEM
-    STEEM_POSTING_KEY = ['5Jhz19vXUKHRVWsxBQpd58VdHvCSXAxNHW2rri645G7pWxy1onx']
-
     # Application threads. A common general assumption is using 2 per available processor cores
     # - to handle incoming requests using one and performing background operations using the other.
     # THREADS_PER_PAGE = 2
@@ -79,6 +76,9 @@ class DevConfig(Config):
     HOST = ''
     #SESSION_COOKIE_DOMAIN=".ciceron.me"
     #SESSION_COOKIE_PATH="/"
+
+    #: STEEM (계정: ciceron)
+    STEEM_POSTING_KEY = ['5Jhz19vXUKHRVWsxBQpd58VdHvCSXAxNHW2rri645G7pWxy1onx']
 
 
 class TestConfig(Config):
