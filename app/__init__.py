@@ -139,4 +139,4 @@ def forbidden(error):
 
 @app.route('/')
 def hello_world():
-    return redirect('/static/index.html')
+    return redirect('/static/front/user/login.html')
