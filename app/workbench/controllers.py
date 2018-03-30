@@ -32,8 +32,10 @@ def output_doc_to_file(did):
         response.headers['Content-Disposition'] = cd
 
         #: mimetype 설정
-        if output_type == 'csv':
-            response.mimetype = 'text/csv'
+        if output_type == 'txt':
+            response.mimetype = 'text/text'
+        else:
+            response.mimetype = 'text/{}'.format(output_type)
         return response
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)

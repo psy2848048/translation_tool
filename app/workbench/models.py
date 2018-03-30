@@ -47,6 +47,7 @@ def export_doc(output_type, did):
 
     #: 100% 아니라면 취소~~~
     if progress_percent != 100:
+        print('Not Completed Doc! (export_doc)')
         return (None, None), False
 
     res = conn.execute(text("""SELECT os.id as osid
@@ -84,7 +85,7 @@ def write_file_in_requested_format(output_type, doc_title, res):
         file = output.getvalue().encode('utf-8')
 
     #: TXT 파일로 출력하기
-    elif output_type == 'txt':
+    elif output_type == 'txt' or output_type == 'md':
         with open('output.txt', 'w') as f:
             f.write('제목: ' + doc_title + '\n')
             f.write('원문언어: ' + res[0]['origin_lang'].upper() + '\n')

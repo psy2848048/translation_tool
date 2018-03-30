@@ -196,13 +196,13 @@ def insert_doc_content(did, doc_type, content):
     os = Table('doc_origin_sentences', meta, autoload=True)
     ts = Table('doc_trans_sentences', meta, autoload=True)
 
-    if doc_type == 'steemit':
+    if doc_type == 'steemit' or doc_type == 'md':
         s = content.split('\n')
         sentences = [sentence for sentence in s if len(sentence) > 0 and re.match("\s|---.*|```.*", sentence) is None]
-    elif doc_type == 'md':
-        html = markdown(content)
-        soup = BS(html, 'lxml')
-        sentences = soup.find_all(text=True)
+    # elif doc_type == 'md':
+        # html = markdown(content)
+        # soup = BS(html, 'lxml')
+        # sentences = soup.find_all(text=True)
     else:
         sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
 
