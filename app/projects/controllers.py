@@ -39,14 +39,19 @@ def get_proejct_members(pid):
 
 @login_required
 def add_project():
+    """
+    :param: public_display_setting : full, only_members
+    :return:
+    """
     uid = current_user.idx
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
+    public_display_setting = request.form.get('public_display_setting', 'only_members')
 
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_project(uid, name, due_date)
+    is_done = model.insert_project(uid, name, due_date, public_display_setting)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

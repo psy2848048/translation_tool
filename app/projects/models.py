@@ -102,7 +102,7 @@ def select_project_members(pid, page, rows):
     return project_members, total_cnt
 
 
-def insert_project(uid, name, due_date):
+def insert_project(uid, name, due_date, public_display_setting):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -116,7 +116,7 @@ def insert_project(uid, name, due_date):
 
     try:
         #: 프로젝트 추가
-        res = conn.execute(p.insert(), name=name, due_date=due_date)
+        res = conn.execute(p.insert(), name=name, due_date=due_date, public_display_setting=public_display_setting)
         pid = res.lastrowid
 
         if res.rowcount != 1:
