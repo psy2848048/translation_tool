@@ -102,7 +102,7 @@ def select_project_members(pid, page, rows):
     return project_members, total_cnt
 
 
-def insert_project(uid, name, due_date, public_display_setting):
+def insert_project(uid, name, due_date, open_grade):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -116,7 +116,7 @@ def insert_project(uid, name, due_date, public_display_setting):
 
     try:
         #: 프로젝트 추가
-        res = conn.execute(p.insert(), name=name, due_date=due_date, public_display_setting=public_display_setting)
+        res = conn.execute(p.insert(), name=name, due_date=due_date, open_grade=open_grade)
         pid = res.lastrowid
 
         if res.rowcount != 1:
@@ -124,7 +124,7 @@ def insert_project(uid, name, due_date, public_display_setting):
             return False
 
         #: 프로젝트 추가한 사람을 프로젝트 참가자에 등록
-        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True
+        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True, is_admin=True
                            , can_read=True, can_modify=True, can_delete=True, can_create_doc=True)
 
         if res.rowcount != 1:

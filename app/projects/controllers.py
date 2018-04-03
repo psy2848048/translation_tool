@@ -46,12 +46,12 @@ def add_project():
     uid = current_user.idx
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
-    public_display_setting = request.form.get('public_display_setting', 'only_members')
+    open_grade = request.form.get('open_grade', 'member')
 
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_project(uid, name, due_date, public_display_setting)
+    is_done = model.insert_project(uid, name, due_date, open_grade)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
