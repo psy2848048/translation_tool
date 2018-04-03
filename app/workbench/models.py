@@ -1,5 +1,5 @@
-from app import db
-from sqlalchemy import Table, MetaData, text
+from app import app, db, mail
+from sqlalchemy import Table, MetaData, text, and_
 import traceback
 from datetime import datetime
 import csv
@@ -32,32 +32,19 @@ def export_doc(output_type, did):
     tm = Table('translation_memory', meta, autoload=True)
     ut = Table('user_tmlist', meta, autoload=True)
 
-    #: 번역 상태 100%인지 확인
-    res = conn.execute(text("""SELECT d.project_id as pid, d.id as did, d.title, d.origin_lang
-                            , IF(CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) is not NULL
-                                , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
-                            FROM `marocat v1.1`.docs d 
-                            JOIN ( doc_origin_sentences os, doc_trans_sentences ts ) ON ( os.doc_id = d.id AND os.id = ts.origin_id )
-                            WHERE d.id=:did AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), did=did).fetchone()
-
-    progress_percent = int(res['progress_percent'])
-    doc_title = res['title']
-    udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
-    file_title = 'mycattool-' + str(res['pid']) + '-' + str(res['did']) + '-' + udate + '.' + output_type
-
-    # #: 100% 아니라면 취소~~~
-    # if progress_percent != 100:
-    #     print('Not Completed Doc! (export_doc)')
-    #     return (None, None), False
-
     #: 문장들 꺼내기
     res = conn.execute(text("""SELECT os.id as osid
+                                      , d.project_id as pid, d.id as did, d.title
                                       , origin_lang, trans_lang
                                       , os.text as origin_text
                                       , IF(ts.text is not NULL, ts.text, '') as trans_text
                               FROM `marocat v1.1`.doc_origin_sentences os JOIN docs d ON d.id = os.doc_id
                                                                           LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
                               WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
+
+    doc_title = res[0]['title']
+    udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
+    file_title = 'mycattool-' + str(res[0]['pid']) + '-' + str(res[0]['did']) + '-' + udate + '.' + output_type
 
     file = write_file_in_requested_format(output_type, doc_title, res)
 
@@ -187,11 +174,56 @@ def update_sentence_status(sid, status):
             return False
 
         trans.commit()
+
+        #: 100%라면 관리자에게 완료 이메일 보내기
+        check_doc_comeplte(sid)
+
         return True
     except:
         traceback.print_exc()
         trans.rollback()
         return False
+
+
+def check_doc_comeplte(sid):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+    dm = Table('doc_members', meta, autoload=True)
+
+    #: 번역 상태 100%인지 확인
+    res1 = conn.execute(text(
+        """SELECT d.project_id as pid, p.name as project_name
+                , d.id as did, d.title as doc_title, d.origin_lang, d.trans_lang
+                , IF(CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) is not NULL
+                , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
+           FROM `marocat v1.1`.docs d JOIN projects p ON d.project_id = p.id
+           LEFT JOIN (doc_origin_sentences os, doc_trans_sentences ts) ON (os.doc_id = d.id AND os.id = ts.origin_id)
+           WHERE d.id = (SELECT doc_id FROM doc_origin_sentences WHERE id = 4160)
+           AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), sid=sid).fetchone()
+
+    #: 100% 아니라면 패스
+    progress_percent = int(res1['progress_percent'])
+    print(111, progress_percent)
+    if progress_percent != 100:
+        return False
+    else:
+        #: 관리자 이메일 꺼내기
+        res2 = conn.execute(text(
+            """SELECT email
+               FROM project_members pm 
+               JOIN (users u, docs d) ON (u.id = pm.user_id AND d.project_id=pm.project_id)
+               JOIN (SELECT doc_id as did FROM doc_origin_sentences WHERE id = :sid) t1 ON t1.did = d.id
+               WHERE is_admin = True"""), sid=sid).fetchall()
+        mail_to = [r['email'] for r in res2]
+        print(222, mail_to)
+
+        project_name = res1['project_name']
+        doc_title = res1['doc_title']
+        content = '`{}` 프로젝트의 `{}` 문서의 번역 작업이 완료됐습니다.'.format(project_name, doc_title)
+
+        mail.send_mail_directly(mail_from=app.config['MANAGER_MAIL'], mail_to=mail_to
+                                , subject='번역이 완료되었습니다', content=content)
+        return True
 
 
 def select_trans_comments(sid):
