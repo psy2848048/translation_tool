@@ -45,11 +45,12 @@ def export_doc(output_type, did):
     udate = str(datetime.utcnow().strftime('%Y%m%d%H%M%S'))
     file_title = 'mycattool-' + str(res['pid']) + '-' + str(res['did']) + '-' + udate + '.' + output_type
 
-    #: 100% 아니라면 취소~~~
-    if progress_percent != 100:
-        print('Not Completed Doc! (export_doc)')
-        return (None, None), False
+    # #: 100% 아니라면 취소~~~
+    # if progress_percent != 100:
+    #     print('Not Completed Doc! (export_doc)')
+    #     return (None, None), False
 
+    #: 문장들 꺼내기
     res = conn.execute(text("""SELECT os.id as osid
                                       , origin_lang, trans_lang
                                       , os.text as origin_text
@@ -60,7 +61,7 @@ def export_doc(output_type, did):
 
     file = write_file_in_requested_format(output_type, doc_title, res)
 
-    #: ciceron@ciceron.me 계정의 저장소에 결과 넣기~
+    #: 관리자 계정의 문장저장소에 결과 넣기(일단, 무조건 ciceron@ciceron.me에 추가)
     try:
         for r in res:
             res2 = conn.execute(tm.insert()
@@ -84,7 +85,7 @@ def write_file_in_requested_format(output_type, doc_title, res):
         writer.writerows(res)
         file = output.getvalue().encode('utf-8')
 
-    #: TXT 파일로 출력하기
+    #: TXT 또는 Markdown 파일로 출력하기
     elif output_type == 'txt' or output_type == 'md':
         with open('output.txt', 'w') as f:
             f.write('제목: ' + doc_title + '\n')
@@ -113,6 +114,39 @@ def write_file_in_requested_format(output_type, doc_title, res):
 
         file = open('output.txt', 'rb').read()
         os.remove('output.txt')
+
+    #: DOCX 파일로 출력하기
+    elif output_type == 'docx':
+        from docx import Document
+        doc = Document()
+        doc.add_heading('{}'.format(doc_title), 0)
+
+        doc.add_paragraph('원문언어: ' + res[0]['origin_lang'].upper())
+        doc.add_paragraph('번역언어: ' + res[0]['trans_lang'].upper() + '\n')
+
+        doc.add_heading('원문', level=1)
+        for r in res:
+            doc.add_paragraph(r['origin_text'])
+
+        doc.add_page_break()
+
+        doc.add_heading('번역문', level=1)
+        for r in res:
+            doc.add_paragraph(r['trans_text'])
+
+        doc.add_page_break()
+
+        for r in res:
+            a = '{}-{}: '.format(r['osid'], r['origin_lang'].upper())
+            doc.add_paragraph(a + r['origin_text'])
+
+            b = '{}-{}: '.format(r['osid'], r['trans_lang'].upper())
+            doc.add_paragraph(b + r['trans_text'])
+
+        doc.save('output.docx')
+        file = open('output.docx', 'rb').read()
+        os.remove('output.docx')
+
     else:
         file = None
 
