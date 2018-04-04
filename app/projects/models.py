@@ -102,7 +102,7 @@ def select_project_members(pid, page, rows):
     return project_members, total_cnt
 
 
-def insert_project(uid, name, due_date):
+def insert_project(uid, name, due_date, open_grade):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -116,7 +116,7 @@ def insert_project(uid, name, due_date):
 
     try:
         #: 프로젝트 추가
-        res = conn.execute(p.insert(), name=name, due_date=due_date)
+        res = conn.execute(p.insert(), name=name, due_date=due_date, open_grade=open_grade)
         pid = res.lastrowid
 
         if res.rowcount != 1:
@@ -124,7 +124,7 @@ def insert_project(uid, name, due_date):
             return False
 
         #: 프로젝트 추가한 사람을 프로젝트 참가자에 등록
-        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True
+        res = conn.execute(pm.insert(), user_id=uid, project_id=pid, is_founder=True, is_admin=True
                            , can_read=True, can_modify=True, can_delete=True, can_create_doc=True)
 
         if res.rowcount != 1:
@@ -139,27 +139,29 @@ def insert_project(uid, name, due_date):
         return False
 
 
-def insert_doc(pid, title, origin_lang, trans_lang, link, due_date, doc_type, content):
+def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content, open_grade):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
     d = Table('docs', meta, autoload=True)
+    dm = Table('doc_members', meta, autoload=True)
 
     if len(due_date) < 3:
         due_date = None
     elif due_date is not None:
         due_date = common.convert_datetime4mysql(due_date)
 
-    if doc_type == 'steemit':
-        permlink = '@{}'.format(link.split('@', maxsplit=1)[-1])
-        post = Post(post=permlink).export()
-        content = post['title'] + '\n' + post['body']
-
     try:
+        #: insert_doc_content() 안에 넣을까하다가 `docs`에 원본 그대로도 저장해야하니까 여기서 처리
+        if doc_type == 'steemit':
+            permlink = '@{}'.format(link.split('@', maxsplit=1)[-1])
+            post = Post(post=permlink).export()
+            content = post['title'] + '\n' + post['body']
+
         #: 문서 추가
         res = conn.execute(d.insert(),
                            project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang,
-                           link=link, due_date=due_date, type=doc_type, content=content)
+                           link=link, due_date=due_date, type=doc_type, content=content, open_grade=open_grade)
         did = res.lastrowid
 
         if res.rowcount != 1:
@@ -172,10 +174,15 @@ def insert_doc(pid, title, origin_lang, trans_lang, link, due_date, doc_type, co
             return False
 
         #: 프로젝트 참가자들의 문서 권한 저장 -버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
-        res = conn.execute(text(
-            """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
-            SELECT user_id, project_id, :did, True, True, True
-            FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), did=did, pid=pid)
+        if open_grade == 'all':
+            res = conn.execute(text(
+                """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
+                SELECT user_id, project_id, :did, True, True, True
+                FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), did=did, pid=pid)
+            conn.execute(dm.update(and_(dm.c.user_id == uid, dm.c.project_id == pid)), is_creator=True)
+        else:
+            res = conn.execute(dm.insert(), user_id=uid, project_id=pid, doc_id=did, is_creator=True
+                               , can_read=True, can_modify=True, can_delete=True)
 
         if res.rowcount == 0:
             trans.rollback()
@@ -196,13 +203,16 @@ def insert_doc_content(did, doc_type, content):
     os = Table('doc_origin_sentences', meta, autoload=True)
     ts = Table('doc_trans_sentences', meta, autoload=True)
 
-    if doc_type == 'steemit':
-        s = content.split('\n')
-        sentences = [sentence for sentence in s if len(sentence) > 0 and re.match("\s|---.*|```.*", sentence) is None]
-    elif doc_type == 'md':
+    # if doc_type == 'steemit' or doc_type == 'md':
+    if doc_type in ['steemit', 'md']:
+        #: 마크다운 포맷 다 지우고 문자만 뽑아내기
         html = markdown(content)
         soup = BS(html, 'lxml')
-        sentences = soup.find_all(text=True)
+        s1 = soup.text
+        s2 = s1.split('\n')
+        sentences = [s for s in s2 if re.match('\S', s) is not None]
+        #: 마크다운 포맷 살리기
+        # sentences = content.split('\n')
     else:
         sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
 

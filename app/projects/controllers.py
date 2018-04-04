@@ -39,14 +39,19 @@ def get_proejct_members(pid):
 
 @login_required
 def add_project():
+    """
+    :param: public_display_setting : full, only_members
+    :return:
+    """
     uid = current_user.idx
     name = request.form.get('name', None)
     due_date = request.form.get('due_date', None)
+    open_grade = request.form.get('open_grade', 'member')
 
     if name is None:
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_project(uid, name, due_date)
+    is_done = model.insert_project(uid, name, due_date, open_grade)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
@@ -63,8 +68,9 @@ def add_doc(pid):
     due_date = request.form.get('due_date', None)
     type = request.form.get('type', None)
     content = request.form.get('content', None)
+    open_grade = request.form.get('open_grade', 'all')
 
-    #: 사용자 권한 검사
+    #: 사용자 권한 검사 - `문서 추가` 권한 필요
     uid = current_user.idx
     user_auth = model.select_project_access_auth(uid, pid)
     if user_auth['can_create_doc'] != 1:
@@ -76,7 +82,7 @@ def add_doc(pid):
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_doc(pid, title, origin_lang, trans_lang, link, due_date, type, content)
+    is_done = model.insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, type, content, open_grade)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)

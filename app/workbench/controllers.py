@@ -15,7 +15,7 @@ def get_trans_comments(did, sid):
     return make_response(json.jsonify(results=comments), 200)
 
 
-@login_required
+# @login_required
 def output_doc_to_file(did):
     output_type = request.values.get('type', None)
 
@@ -32,11 +32,13 @@ def output_doc_to_file(did):
         response.headers['Content-Disposition'] = cd
 
         #: mimetype 설정
-        if output_type == 'csv':
-            response.mimetype = 'text/csv'
+        if output_type == 'txt':
+            response.mimetype = 'text/text'
+        else:
+            response.mimetype = 'text/{}'.format(output_type)
         return response
     else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
+        return make_response(json.jsonify(result='Something Wrong'), 461)
 
 
 @login_required
