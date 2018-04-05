@@ -12,6 +12,7 @@ import google_auth_oauthlib.flow
 #: flask_login
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.session_protection = 'strong'
 
 #: flask_oauthlib
 oauth = OAuth()
@@ -123,8 +124,10 @@ def signout():
     """
     로그아웃
     """
-    for key in list(session.keys()):
-        session.pop(key)
+    if current_user:
+        user = current_user
+        user.authenticated = False
+    session.clear()
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!",
                                       result_ko='로그아웃 성공!',
@@ -163,7 +166,7 @@ def local_signin():
 
         #: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
         if is_ok is True:
-            login_user(user, remember=True)
+            login_user(user)
             session['user_nickname'] = user.nickname
             session['user_picture'] = user.picture
 
