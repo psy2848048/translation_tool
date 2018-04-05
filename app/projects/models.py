@@ -59,26 +59,29 @@ def select_project_info(pid):
     return project_info
 
 
-def select_project_docs(pid, page, rows):
+def select_project_docs(uid, pid, page, rows):
     conn = db.engine.connect()
 
     #: 프로젝트의 총 문서 개수
-    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.docs WHERE project_id = :pid AND is_deleted = FALSE;"""), pid=pid).fetchone()
+    res = conn.execute(text("""SELECT count(*) FROM `marocat v1.1`.docs d JOIN doc_members dm ON d.id = dm.doc_id
+                               WHERE d.project_id = :pid AND dm.user_id = :uid AND dm.can_read = TRUE 
+                               AND d.is_deleted = FALSE AND dm.is_deleted = FALSE;"""), uid=uid, pid=pid).fetchone()
     total_cnt = res[0]
 
-    results = conn.execute(
-        text("""SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
-                     , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
-               FROM `marocat v1.1`.docs d 
-               LEFT JOIN (SELECT os.doc_id as did,  CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
-                          FROM `marocat v1.1`.doc_trans_sentences ts
-                          JOIN doc_origin_sentences os ON os.id = ts.origin_id
-                          GROUP BY os.doc_id ) t1 ON ( t1.did = d.id )
-               WHERE d.project_id = :pid AND d.is_deleted = FALSE
-               GROUP BY d.id
-               ORDER BY d.create_time DESC 
-               LIMIT :row_count OFFSET :offset""")
-        , pid=pid, row_count=rows, offset=rows * (page - 1))
+    results = conn.execute(text(
+        """SELECT d.id, d.title, d.status, d.link, d.origin_lang, d.trans_lang, d.due_date
+                 , IF(progress_percent is not NULL, progress_percent, 0) as progress_percent
+           FROM `marocat v1.1`.docs d 
+           JOIN doc_members dm ON d.id = dm.doc_id
+           LEFT JOIN (SELECT os.doc_id as did,  CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR) as progress_percent
+                      FROM `marocat v1.1`.doc_trans_sentences ts
+                      JOIN doc_origin_sentences os ON os.id = ts.origin_id
+                      GROUP BY os.doc_id ) t1 ON ( t1.did = d.id )
+           WHERE d.project_id = :pid AND dm.user_id = :uid AND dm.can_read = TRUE 
+             AND d.is_deleted = FALSE AND dm.is_deleted = FALSE
+           GROUP BY d.id
+           ORDER BY d.create_time DESC 
+           LIMIT :row_count OFFSET :offset"""), uid=uid, pid=pid, row_count=rows, offset=rows * (page - 1))
     project_docs = [dict(res) for res in results]
 
     return project_docs, total_cnt
@@ -139,7 +142,7 @@ def insert_project(uid, name, due_date, open_grade):
         return False
 
 
-def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content, open_grade):
+def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -174,15 +177,11 @@ def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_typ
             return False
 
         #: 프로젝트 참가자들의 문서 권한 저장 -버전1에서는 프로젝트 참가자 모두가 문서내 모든 권한을 갖고있다(True)
-        if open_grade == 'all':
-            res = conn.execute(text(
-                """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
-                SELECT user_id, project_id, :did, True, True, True
-                FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), did=did, pid=pid)
-            conn.execute(dm.update(and_(dm.c.user_id == uid, dm.c.project_id == pid)), is_creator=True)
-        else:
-            res = conn.execute(dm.insert(), user_id=uid, project_id=pid, doc_id=did, is_creator=True
-                               , can_read=True, can_modify=True, can_delete=True)
+        res = conn.execute(text(
+            """INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
+            SELECT user_id, project_id, :did, True, True, True
+            FROM `marocat v1.1`.project_members WHERE project_id = :pid;"""), did=did, pid=pid)
+        conn.execute(dm.update(and_(dm.c.user_id == uid, dm.c.project_id == pid)), is_creator=True)
 
         if res.rowcount == 0:
             trans.rollback()
