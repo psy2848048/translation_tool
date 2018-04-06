@@ -263,7 +263,7 @@ def social_callback(social_type, social_id, social_name, social_email, picture):
             return redirect(url_for('static', filename='front/user/signup.html', **results))
 
     print('이건 무슨 경우의 수일까..')
-    return redirect('/static/index.html')
+    return redirect('/static/front/user/login.html')
 
 
 #: 페이스북
@@ -365,6 +365,10 @@ def google_authorized():
 def google_oauth2callback():
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
+    error = request.values.get('error', None)
+    if error is not None:
+        return make_response(jsonify(error=error), 403)
+
     state = session['google_state']
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(app.config['GOOGLE_CLIENT_SECRETS_FILE'],
