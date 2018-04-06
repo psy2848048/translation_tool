@@ -198,13 +198,12 @@ def check_doc_comeplte(sid):
                 , CAST(FLOOR(SUM(ts.status) / COUNT(*) * 100) AS CHAR), 0) as progress_percent
            FROM `marocat v1.1`.docs d JOIN projects p ON d.project_id = p.id
            LEFT JOIN (doc_origin_sentences os, doc_trans_sentences ts) ON (os.doc_id = d.id AND os.id = ts.origin_id)
-           WHERE d.id = (SELECT doc_id FROM doc_origin_sentences WHERE id = 4160)
+           WHERE d.id = (SELECT doc_id FROM doc_origin_sentences WHERE id = :sid)
            AND ts.is_deleted = FALSE AND os.is_deleted = FALSE"""), sid=sid).fetchone()
 
     #: 100% 아니라면 패스
     progress_percent = int(res1['progress_percent'])
-    print(111, progress_percent)
-    if int(progress_percent) == 100:
+    if int(progress_percent) >= 100:
         #: 관리자 이메일 꺼내기
         res2 = conn.execute(text(
             """SELECT email
@@ -213,7 +212,6 @@ def check_doc_comeplte(sid):
                JOIN (SELECT doc_id as did FROM doc_origin_sentences WHERE id = :sid) t1 ON t1.did = d.id
                WHERE is_admin = True"""), sid=sid).fetchall()
         mail_to = [r['email'] for r in res2]
-        print(222, mail_to)
 
         project_name = res1['project_name']
         doc_title = res1['doc_title']
