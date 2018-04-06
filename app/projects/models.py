@@ -164,7 +164,7 @@ def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_typ
         #: 문서 추가
         res = conn.execute(d.insert(),
                            project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang,
-                           link=link, due_date=due_date, type=doc_type, content=content, open_grade=open_grade)
+                           link=link, due_date=due_date, type=doc_type, content=content)
         did = res.lastrowid
 
         if res.rowcount != 1:
