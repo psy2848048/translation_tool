@@ -204,9 +204,7 @@ def check_doc_comeplte(sid):
     #: 100% 아니라면 패스
     progress_percent = int(res1['progress_percent'])
     print(111, progress_percent)
-    if progress_percent != 100:
-        return False
-    else:
+    if int(progress_percent) == 100:
         #: 관리자 이메일 꺼내기
         res2 = conn.execute(text(
             """SELECT email
@@ -224,6 +222,8 @@ def check_doc_comeplte(sid):
         mail.send_mail_directly(mail_from=app.config['MANAGER_MAIL'], mail_to=mail_to
                                 , subject='번역이 완료되었습니다', content=content)
         return True
+    else:
+        return False
 
 
 def select_trans_comments(sid):

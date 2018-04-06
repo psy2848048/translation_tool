@@ -12,6 +12,7 @@ import google_auth_oauthlib.flow
 #: flask_login
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.session_protection = 'strong'
 
 #: flask_oauthlib
 oauth = OAuth()
@@ -123,8 +124,10 @@ def signout():
     """
     로그아웃
     """
-    for key in list(session.keys()):
-        session.pop(key)
+    if current_user:
+        user = current_user
+        user.authenticated = False
+    session.clear()
     logout_user()
     return make_response(json.jsonify(result_en="Successfully sign-out!",
                                       result_ko='로그아웃 성공!',
@@ -163,7 +166,7 @@ def local_signin():
 
         #: 비밀번호가 일치한다면 login_user에 user 정보를 넣고, 로그인 완료!
         if is_ok is True:
-            login_user(user, remember=True)
+            login_user(user)
             session['user_nickname'] = user.nickname
             session['user_picture'] = user.picture
 
@@ -260,7 +263,7 @@ def social_callback(social_type, social_id, social_name, social_email, picture):
             return redirect(url_for('static', filename='front/user/signup.html', **results))
 
     print('이건 무슨 경우의 수일까..')
-    return redirect('/static/index.html')
+    return redirect('/static/front/user/login.html')
 
 
 #: 페이스북
@@ -362,6 +365,10 @@ def google_authorized():
 def google_oauth2callback():
     # Specify the state when creating the flow in the callback so that it can
     # verified in the authorization server response.
+    error = request.values.get('error', None)
+    if error is not None:
+        return make_response(jsonify(error=error), 403)
+
     state = session['google_state']
 
     flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(app.config['GOOGLE_CLIENT_SECRETS_FILE'],

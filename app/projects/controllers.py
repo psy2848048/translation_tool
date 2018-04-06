@@ -21,10 +21,11 @@ def get_project_info(pid):
 
 @login_required
 def get_proejct_docs(pid):
+    uid = current_user.idx
     page = int(request.values.get('page', 1))
     rows = int(request.values.get('rows', 15))
 
-    project_docs, total_cnt = model.select_project_docs(pid, page, rows)
+    project_docs, total_cnt = model.select_project_docs(uid, pid, page, rows)
     return make_response(json.jsonify(total_cnt=total_cnt, results=project_docs), 200)
 
 
@@ -68,7 +69,6 @@ def add_doc(pid):
     due_date = request.form.get('due_date', None)
     type = request.form.get('type', None)
     content = request.form.get('content', None)
-    open_grade = request.form.get('open_grade', 'all')
 
     #: 사용자 권한 검사 - `문서 추가` 권한 필요
     uid = current_user.idx
@@ -82,7 +82,7 @@ def add_doc(pid):
     elif not content and type == 'text':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, type, content, open_grade)
+    is_done = model.insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, type, content)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
