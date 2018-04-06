@@ -21,8 +21,8 @@ class Config(object):
     #: Session
     SESSION_TYPE = 'redis'
     SESSION_COOKIE_NAME = "MyCatToolCookie"
-    REMEMBER_COOKIE_DURATION = timedelta(hours=3)
-    PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
+    REMEMBER_COOKIE_DURATION = timedelta(days=15)
+    # PERMANENT_SESSION_LIFETIME = timedelta(minutes=30)
     SECRET_KEY = os.urandom(24)
 
     #: Swagger
