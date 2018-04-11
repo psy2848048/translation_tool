@@ -1,73 +1,115 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
-    <META http-equiv="Content-type" content="text/html; charset=UTF-8">
-    <META http-equiv="X-UA-Compatible" content="IE=edge" />
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="/static/public/js/html5shiv.min.js"></script>
-        <script src="/static/public/js/respond.min.js"></script>
-    <![endif]-->
-    <meta http-equiv="Expires" content="Mon, 06 Jan 1990 00:00:01 GMT">
-    <meta http-equiv="Expires" content="-1">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Cache-Control" content="no-cache">
-    <title>마이캣툴 웹번역툴</title>
-    <link href="/static/public/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet">
-    <link href="/static/public/jquery-ui-1.12.1/jquery-ui.min.css" rel="stylesheet">
-    <link href="/static/public/css/reset.css" rel="stylesheet" />
-    <link href="/static/public/css/site.css" rel="stylesheet" />
-    <link href="/static/public/css/user/login.css" rel="stylesheet" />
-    <link href="/static/public/img/favicon.ico" type="image/x-icon" rel="shortcut icon" />
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<link rel="stylesheet" href="/static/public/css/user/style.css">
+	<title>MyCat Tool</title>
+	<script>
+	</script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.9/css/all.css" integrity="sha384-5SOiIsAziJl6AWe0HWRKTXlfcSHKmYV4RBF18PPJ173Kzn7jzMyFuTtk8JA7QQG1"
+	 crossorigin="anonymous">
 </head>
 
 <body>
-    <div id="mainWrap">
-        <div id="loginBox">
-            <a href="/static/index.html">
-                <img src="/static/public/img/mycattool_logo.png">
-            </a>
-            <p id="p_msg">가입하셨던 계정으로 로그인하세요.</p>
-            <div>
-                <!-- <a href="login_google.html"><img src="/static/public/img/google2.png"></a> -->
-                <a href="/api/v1/auth/google/signin">
-                    <img src="/static/public/img/google2.png">
-                </a>
+	<header class="header">
+		<div class="header-logo">
+			마이캣 툴<sub style="color: #999;">beta</sub>
+		</div>
+	</header>
+    <div class="main">
+        <div class="main-section">
+            <div class="main-section-right-top">
+                <div style="height: 60px; line-height: 60px;">
+                    <a href="#">홈</a>&nbsp;&nbsp;
+                    <a href="#">사용 방법</a>
+                    &nbsp; &nbsp; &nbsp; &nbsp;
+                </div>
             </div>
-            <div>
-                <!-- <a href="login_facebook.html"><img src="/static/public/img/facebook3.png"></a> -->
-                <a href="/api/v1/auth/facebook/signin">
-                    <img src="/static/public/img/facebook3.png">
-                </a>
+            <div class="main-section-inside" style="max-width: 640px;">
+                <h1>번역가를 위한 최상의 도구</h1>
+                <p>무료이고, 간편합니다.</p>
+                <div class="table">
+                    <div class="table-row">
+                        <div class="table-cell">
+                            <input type="email" placeholder="이메일 입력">
+                        </div>
+                        <div class="table-cell">
+                            <button type="submit">지금 시작하기</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <p>또는</p>
-            <div>
-                <input type="text" placeholder="로그인 이메일(아이디)" id="txt_id">
-                <input type="password" placeholder="로그인 비밀번호" id="txt_pass">
-                <input type="button" value=" 로그인 " id="loginBtn">
-                <p id="find_zone">
-                    <a href="find_pass.html">비밀번호 찾기</a>
-                </p>
+            <div class="main-section-left-bottom">
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left;"></div>
             </div>
-            <hr>
-            <p>
-                <a id="join_link" href="join_pick.html">첫방문 이신가요? 가입하기</a>
-            </p>
-            <br>
-            <p class="join_desc">사용에는
-                <a target="_blank" href="/static/front/terms.html">이용약관</a>과
-                <a target="_blank" href="/static/front/privacy.html">개인정보취급방침</a>이 적용됩니다.</p>
+            <div class="main-section-right-bottom">
+                <div style="width:10em; height: 10em; background-color: transparent; float: left;"></div>
+                <div style="width:10em; height: 10em; background-color: transparent; float: left;"></div>
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: 1;"></div>
+                <div class="clearfix"></div>
+                <div style="width:10em; height: 10em; background-color: transparent; float: left;"></div>
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: .8;"></div>
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: .9;"></div>
+                <div class="clearfix"></div>
+
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: .7;"></div>
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: .8;"></div>
+                <div style="width:10em; height: 10em; background-color: #fcfcfc; float: left; opacity: .6;"></div>
+                <div class="clearfix"></div>
+
+            </div>
+        </div>
+        <!-- <div class="main-section" style="background-color: #07b3e7;">
+            <div class="main-section-inside">
+                <h1></h1>
+                <span>
+                    Gazua!!
+                </span>
+            </div>
+        </div> -->
+        <div class="main-right">
+            <form class="main-right-inside" id="frmSignin">
+                <span class="main-right-title">
+                    로그인
+                </span>
+                <span>
+                    이메일
+                </span>
+                <div>
+                    <input type="email" name="email">
+                </div>
+                <span>
+                    패스워드
+                </span>
+                <div>
+                    <input type="password" name="password">
+                </div>
+                <div>
+                    <div style="float: left;">
+                        <button style="margin-right: 15px;">로그인</button>
+                    </div>
+                    <div style="float: right;">
+                        <span>또는</span>&nbsp;
+                        <a class="icon" href="/api/v1/auth/google/signin">
+                            <i class="fab fa-google-plus-g"></i>
+                        </a>&nbsp;
+                        <a class="icon" href="/api/v1/auth/facebook/signin">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                    </div>
+                </div>
+                <div>
+                    <a href="#">패스워드를 잊으셨습니까?</a>
+                </div>
+            </form>
         </div>
     </div>
-    <input type="hidden" name="" id="hd_social_result" value="">
-    <input type="hidden" name="" id="hd_social_result_ko" value="">
-    <input type="hidden" name="" id="hd_social_result_en" value="">
-    <!-- <input type="hidden" name="" id="hd_msg" value=""> -->
-    <script src="/static/public/js/jquery-1.12.4.min.js"></script>
-    <script src="/static/public/js/common.js"></script>
-    <script src="/static/public/js/user/login.js"></script>
-</body>
+    <script src="/static/public/js/user/main.js"></script>
+    </body>
 
 </html>
