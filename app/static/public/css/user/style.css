@@ -55,9 +55,26 @@
     .header .header-logo {
         width: auto;
         height: auto;
-        display: inline-block;
+        /* display: inline-block; */
         font-size: 2em;
         font-weight: 100;
+        float: left;
+    }
+    .header .header-menu {
+        width: auto;
+        height: auto;
+        float: right;
+        font-size: 1em;
+        font-weight: 400;
+    }
+    .header .header-menu>a {
+        width: auto;
+        height: auto;
+        position: relative;
+        background-color: #7033c7;
+        color: #fcfcfc;
+        padding: .5em 1.2em;
+        display: inline-block;
     }
     .main {
         width: 100%;
@@ -77,32 +94,29 @@
         background-color: #180b2a;
         position: relative;
     }
-    .main .main-section .main-section-right-top{
+    .main .main-section .main-section-right-top {
         width: auto;
         height: auto;
         position: absolute;
         right: 0;
         top: 0;
         background-color: transparent;
-        
     }
-    .main .main-section .main-section-left-bottom{
+    .main .main-section .main-section-left-bottom {
         width: auto;
         height: auto;
         position: absolute;
         left: 0;
         bottom: 0;
         background-color: transparent;
-        
     }
-    .main .main-section .main-section-right-bottom{
+    .main .main-section .main-section-right-bottom {
         width: auto;
         height: auto;
         position: absolute;
         right: 0;
         bottom: 0;
         background-color: transparent;
-        
     }
     .main .main-section .main-section-inside {
         width: 100%;
@@ -126,7 +140,7 @@
         right: 0;
         top: 0;
         padding: 20px;
-        z-index: 10;
+        /* z-index: 10; */
     }
     .main-right .main-right-inside {
         width: 80%;
@@ -138,7 +152,7 @@
         text-align: left;
         color: #fcfcfc;
     }
-    .main-right .main-right-inside *{
+    .main-right .main-right-inside * {
         vertical-align: middle;
     }
     .main-right .main-right-title {
@@ -163,7 +177,7 @@
         display: table-cell;
         padding: 5px;
     }
-    .icon{
+    .icon {
         width: 48px;
         height: 48px;
         position: relative;
@@ -313,5 +327,47 @@
 @media screen and (max-width: 640px) {
     .partition {
         width: 100% !important;
+    }
+    .main .main-section {
+        width: 100%;
+    }
+    .main .main-section .main-section-left-bottom,
+    .main .main-section .main-section-right-bottom {
+        display: none;
+    }
+    .main-right {
+        position: fixed;
+        width: 100%;
+        top: unset;
+        bottom: -100%;
+        height: auto;
+        background-color: #7033c7;
+        transition: bottom .2s ease-in-out;
+        padding-top: 50px;
+        padding-bottom: 50px;
+    }
+    .main-right.activated {
+        bottom: 0;
+    }
+    .main-right .main-right-inside {
+        width: 100%;
+        height: auto;
+        position: relative;
+        top: 0;
+        left: 0;
+        transform: translateY(0);
+        text-align: left;
+        color: #fcfcfc;
+    }
+    button {
+        padding: .8em 1em;
+        word-wrap: none;
+        white-space: nowrap;
+    }
+}
+
+@media screen and (min-width: 640px) {
+    .header .header-menu {
+        display: none;
     }
 }
