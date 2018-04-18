@@ -8,6 +8,8 @@ from steem.post import Post
 from markdown import markdown
 from bs4 import BeautifulSoup as BS
 import re
+from io import BytesIO
+from docx import Document
 
 
 def select_projects(uid, page, rows):
@@ -142,7 +144,7 @@ def insert_project(uid, name, due_date, open_grade):
         return False
 
 
-def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content):
+def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content, files):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -172,7 +174,7 @@ def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_typ
             return False
 
         #: 문서의 내용을 문장으로 나눠서 저장하기
-        is_done = insert_doc_content(did, doc_type, content)
+        is_done = insert_doc_content(did, doc_type, content, files)
         if is_done is False:
             return False
 
@@ -195,7 +197,7 @@ def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_typ
         return False
 
 
-def insert_doc_content(did, doc_type, content):
+def insert_doc_content(did, doc_type, content, files):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -212,10 +214,26 @@ def insert_doc_content(did, doc_type, content):
         sentences = [s for s in s2 if re.match('\S', s) is not None]
         #: 마크다운 포맷 살리기
         # sentences = content.split('\n')
+
+    elif doc_type == 'docx':
+        file_bin = files.read()
+        source_stream = BytesIO(file_bin)
+        document = Document(source_stream)
+        source_stream.close()
+
+        sentences = []
+        for para in document.paragraphs:
+            if len(para.text) > 0:
+                # sentences.extend(nltk.data.load('tokenizers/punkt/english.pickle').tokenize(para.text))
+                s1 = para.text
+                s2 = s1.split('\n')
+                sentences.extend([s for s in s2 if re.match('\S', s) is not None])
+
     else:
         sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
 
     try:
+        print(sentences)
         for sentence in sentences:
             res = conn.execute(os.insert(), doc_id=did, text=sentence)
 
