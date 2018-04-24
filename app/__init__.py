@@ -4,7 +4,6 @@ from flask_session import Session
 from flask_cors import CORS
 from flask_caching import Cache
 from flask_sqlalchemy import SQLAlchemy
-from flask_sslify import SSLify
 import os
 
 # Define the WSGI application object
@@ -33,9 +32,6 @@ Session(app)
 
 #: Flask-CORS
 cors = CORS(app, resources={r"/*": {"origins": "*", "supports_credentials": "true"}})
-
-#: Flask_SSLify
-sslify = SSLify(app)
 
 #: DB 연결 - configs에 설정해서 바로 연결해서 쓸 수 있도록 했습니다.
 
