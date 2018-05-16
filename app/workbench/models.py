@@ -331,3 +331,26 @@ def delete_doc_comment(cid):
         trans.rollback()
         return False
 
+
+def update_origin_sentence(uid, sid, original_text):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    os = Table('doc_origin_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(os.update(os.c.id == sid), text=original_text, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, None, None
+        print(111, res.last_updated_params())
+        updated_row = res.last_updated_params()
+        updated_sid = updated_row['id_1']
+        updated_text = updated_row['text']
+
+        trans.commit()
+        return True, updated_sid, updated_text
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False, None, None

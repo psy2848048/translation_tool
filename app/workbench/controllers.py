@@ -125,3 +125,19 @@ def delete_doc_comment(cid):
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 
+
+@login_required
+def modify_origin_sentence(sid):
+    uid = current_user.idx
+    original_text = request.form.get('original_text', None)
+
+    if not original_text:
+        return make_response(json.jsonify('Something Not Entered'), 460)
+
+    is_done, updated_sid, updated_text = model.update_origin_sentence(uid, sid, original_text)
+
+    if is_done is True:
+        return make_response(json.jsonify(#modified_user_id=uid,
+                                          sid=updated_sid, original_text=updated_text), 200)
+    else:
+        return make_response(json.jsonify(result='Something Wrong!'), 461)

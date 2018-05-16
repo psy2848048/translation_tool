@@ -35,3 +35,7 @@ workbench.add_url_rule('/docs/<int:did>/comments', view_func=ctrl.add_doc_commen
 
 # 문서 댓글 삭제
 workbench.add_url_rule('/docs/comments/<int:cid>', view_func=ctrl.delete_doc_comment, methods=['DELETE'])
+
+
+# 원문 수정
+workbench.add_url_rule('/docs/sentences/<int:sid>/origin', view_func=ctrl.modify_origin_sentence, methods=['PUT'])
