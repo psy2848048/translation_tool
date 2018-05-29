@@ -122,9 +122,12 @@ def select_doc_access_auth(uid, did):
                 WHERE user_id=:uid AND doc_id=:did AND is_deleted=FALSE;""")
         , uid=uid, did=did).fetchone()
 
-    user_auth = {
-        'can_read': int(res['can_read']),
-        'can_modify': int(res['can_modify']),
-        'can_delete': int(res['can_delete'])
-    }
+    if res is None:
+        user_auth = None
+    else:
+        user_auth = {
+            'can_read': int(res['can_read']),
+            'can_modify': int(res['can_modify']),
+            'can_delete': int(res['can_delete'])
+        }
     return user_auth
