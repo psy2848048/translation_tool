@@ -1,4 +1,5 @@
-from app import db, common
+from app import db, common, mail
+from flask import session
 from sqlalchemy import Table, MetaData, text, and_
 import sqlalchemy.exc
 import traceback
@@ -286,6 +287,12 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
                     , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete;""")
             , uid=uid, pid=pid, can_read=can_read, can_modify=can_modify, can_delete=can_delete)
 
+        #: 초대된 멤버에게 이메일 보내기
+        is_done = send_invitation_mail(pid, uid)
+        if is_done is False:
+            print('Something Wrong during sending invitation mail.')
+            return 0
+
         trans.commit()
         return 1
     except sqlalchemy.exc.IntegrityError:
@@ -296,6 +303,41 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
         traceback.print_exc()
         trans.rollback()
         return 0
+
+
+def send_invitation_mail(pid, uid):
+    conn = db.engine.connect()
+    meta = MetaData(bind=db.engine)
+    p = Table('projects', meta, autoload=True)
+    u = Table('users', meta, autoload=True)
+
+    # 프로젝트 이름 꺼내기
+    res = conn.execute(p.select(p.c.id == pid)).fetchone()
+    project_name = res['name']
+
+    # 초대된 사용자 이메일 꺼내기
+    res = conn.execute(u.select(u.c.id == uid)).fetchone()
+    user_email = res['email']
+
+    # 초대한 사람 닉네임
+    presenter_name = session['user_nickname']
+
+    # 이메일 내용 채우기
+    data = {
+        'project_name': project_name,
+        'presenter': presenter_name,
+        'project_link': 'https://mycattool.com/static/front/project/project_view.html?project={}'.format(pid)
+    }
+    with open('/Users/sunny/mycattool/app/static/front/user/email.html', 'r') as f:
+        html = f.read().format(**data)
+
+    from pprint import pprint
+    pprint(html)
+
+    is_done = mail.send_mail_directly('no-reply@ciceron.me', user_email, '[마이캣툴] {} 프로젝트에 초대되었습니다.'.format(project_name), html)
+    if is_done is False:
+        return False
+    return True
 
 
 def update_project_member(pid, mid, can_read, can_modify, can_delete, can_create_doc):
