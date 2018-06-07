@@ -73,9 +73,9 @@ def add_doc(pid):
 
     #: 사용자 권한 검사 - `문서 추가` 권한 필요
     uid = current_user.idx
-    user_auth = model.select_project_access_auth(uid, pid)
-    if user_auth['can_create_doc'] != 1:
-        return make_response(json.jsonify(result='You do not have authority to create documents'), 403)
+    # user_auth = model.select_project_access_auth(uid, pid)
+    # if user_auth['can_create_doc'] != 1:
+    #     return make_response(json.jsonify(result='You do not have authority to create documents'), 403)
 
     #: Request Data 검사
     if None in [title, origin_lang, trans_lang, type]:
@@ -129,9 +129,9 @@ def modify_project_info(pid):
 
     #: 사용자 권한 검사
     uid = current_user.idx
-    user_auth = model.select_project_access_auth(uid, pid)
-    if user_auth['can_modify'] != 1:
-        return make_response(json.jsonify(result='You do not have authority to modify project'), 403)
+    # user_auth = model.select_project_access_auth(uid, pid)
+    # if user_auth['can_modify'] != 1:
+    #     return make_response(json.jsonify(result='You do not have authority to modify project'), 403)
 
     #: Request Data 검사
     if None in [name, status]:
@@ -176,9 +176,9 @@ def modify_project_member(pid, mid):
 def delete_project(pid):
     #: 사용자 권한 검사
     uid = current_user.idx
-    user_auth = model.select_project_access_auth(uid, pid)
-    if user_auth['can_delete'] != 1:
-        return make_response(json.jsonify(result='You do not have authority to delete project'), 403)
+    # user_auth = model.select_project_access_auth(uid, pid)
+    # if user_auth['can_delete'] != 1:
+    #     return make_response(json.jsonify(result='You do not have authority to delete project'), 403)
 
     is_done = model.delete_project(pid)
 
@@ -191,9 +191,9 @@ def delete_project(pid):
 @login_required
 def delete_project_member(pid, mid):
     #: 프로젝트 개설자는 삭제될 수 없다
-    user_auth = model.select_project_access_auth(mid, pid)
-    if user_auth['is_founder'] == 1:
-        return make_response(json.jsonify(result=463), 200)
+    # user_auth = model.select_project_access_auth(mid, pid)
+    # if user_auth['is_founder'] == 1:
+    #     return make_response(json.jsonify(result=463), 200)
 
     is_done = model.delete_project_member(mid, pid)
 
