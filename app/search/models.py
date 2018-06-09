@@ -4,6 +4,7 @@ import re
 from ckonlpy.tag import Twitter
 twit = Twitter()
 from pprint import pprint
+import requests
 
 
 def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
@@ -36,6 +37,45 @@ def select_similarity_trans_memory(tid, query, origin_lang, trans_lang):
         , sentence=query, first=first, second=second, ol=origin_lang, tl=trans_lang, pid=tid).fetchall()
 
     results = [dict(r) for r in res if r['score'] > 50]
+
+    ## Blockchain input
+    user_id = results[0]['user_id']
+    sentence_id = results[0]['tm_id']
+
+    ## Get EOS ID for search user
+    res = conn.execute(text("""
+              SELECT eos_id 
+              FROM eos_name_mapping mapp 
+              JOIN users usr ON mapp.user_id = usr.id 
+              WHERE usr.email = :email LIMIT 1""")
+          , email=session.get('user_id'))
+    if len(res) > 0:
+        eos_id = res['eos_id']
+        payload = {
+            "user": eos_id
+          , "source_lang": origin_lang
+          , "target_lang": target_lang
+          , "sentence_id": sentence_id
+        }
+        try:
+            resp = requests.post("http://etos.ciceron.xyz:5000/api/block/action/search", data=payload, timeout=15)
+        except:
+            pass
+
+    res = conn.execute(text("""SELECT eos_id FROM eos_name_mapping WHERE user_id = :user_id LIMIT 1"""), user_id=user_id)
+    if len(res) > 0:
+        eos_id = res['eos_id']
+        payload = {
+            "user": eos_id
+          , "source_lang": origin_lang
+          , "target_lang": target_lang
+          , "sentence_id": sentence_id
+        }
+        try:
+            resp = requests.post("http://etos.ciceron.xyz:5000/api/block/action/confirm", data=payload, timeout=15)
+        except:
+            pass
+
     return results
 
 
