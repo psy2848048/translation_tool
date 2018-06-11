@@ -145,7 +145,7 @@ def insert_project(uid, name, due_date, open_grade):
         return False
 
 
-def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content, files):
+def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_type, content, files, tags):
     conn = db.engine.connect()
     trans = conn.begin()
     meta = MetaData(bind=db.engine)
@@ -167,7 +167,7 @@ def insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, doc_typ
         #: 문서 추가
         res = conn.execute(d.insert(),
                            project_id=pid, title=title, origin_lang=origin_lang, trans_lang=trans_lang,
-                           link=link, due_date=due_date, type=doc_type, content=content)
+                           link=link, due_date=due_date, type=doc_type, content=content, tags=tags)
         did = res.lastrowid
 
         if res.rowcount != 1:
@@ -234,7 +234,6 @@ def insert_doc_content(did, doc_type, content, files):
         sentences = nltk.data.load('tokenizers/punkt/english.pickle').tokenize(content)
 
     try:
-        print(sentences)
         for sentence in sentences:
             res = conn.execute(os.insert(), doc_id=did, text=sentence)
 

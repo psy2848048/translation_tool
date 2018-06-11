@@ -69,6 +69,7 @@ def add_doc(pid):
     due_date = request.form.get('due_date', None)
     type = request.form.get('type', None)
     content = request.form.get('content', None)
+    tags = request.form.getlist('tags', None)
     files = request.files.get('files', None)
 
     #: 사용자 권한 검사 - `문서 추가` 권한 필요
@@ -85,7 +86,7 @@ def add_doc(pid):
     elif not files and type == 'docx':
         return make_response(json.jsonify(result='Something Not Entered'), 460)
 
-    is_done = model.insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, type, content, files)
+    is_done = model.insert_doc(uid, pid, title, origin_lang, trans_lang, link, due_date, type, content, files, tags)
 
     if is_done is True:
         return make_response(json.jsonify(result='OK'), 200)
