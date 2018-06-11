@@ -19,10 +19,22 @@ def select_doc(did):
                                   											  LEFT JOIN doc_trans_sentences ts ON ts.origin_id = os.id AND ts.is_deleted = FALSE
 																			  LEFT JOIN ( SELECT origin_id, COUNT(*) as comment_cnt FROM trans_comments 
 								                                                          WHERE is_deleted = FALSE GROUP BY origin_id ) tc ON tc.origin_id = os.id
-                                  WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did)
+                                  WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
+
+    # 글자수(공백포함/비포함) & 단어수 계산
+    sentence_cnt = {
+        'with_space_cnt': 0,
+        'without_space_cnt': 0,
+        'word_cnt': 0
+    }
+    for r in res:
+        origin_text = r['origin_text']
+        sentence_cnt['with_space_cnt'] += len(origin_text)
+        sentence_cnt['without_space_cnt'] += len(origin_text.replace(' ', ''))
+        sentence_cnt['word_cnt'] += len(origin_text.split())
 
     doc_sentences = [dict(r) for r in res]
-    return doc_sentences
+    return doc_sentences, sentence_cnt
 
 
 def export_doc(output_type, did):

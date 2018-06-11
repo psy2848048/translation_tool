@@ -5,8 +5,8 @@ import app.workbench.models as model
 
 @login_required
 def get_doc(did):
-    doc_sentences = model.select_doc(did)
-    return make_response(json.jsonify(results=doc_sentences), 200)
+    doc_sentences, sentence_cnt = model.select_doc(did)
+    return make_response(json.jsonify(results=doc_sentences, sentence_cnt=sentence_cnt), 200)
 
 
 @login_required
