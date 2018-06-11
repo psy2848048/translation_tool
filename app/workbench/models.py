@@ -21,20 +21,8 @@ def select_doc(did):
 								                                                          WHERE is_deleted = FALSE GROUP BY origin_id ) tc ON tc.origin_id = os.id
                                   WHERE os.doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
 
-    # 글자수(공백포함/비포함) & 단어수 계산
-    sentence_cnt = {
-        'with_space_cnt': 0,
-        'without_space_cnt': 0,
-        'word_cnt': 0
-    }
-    for r in res:
-        origin_text = r['origin_text']
-        sentence_cnt['with_space_cnt'] += len(origin_text)
-        sentence_cnt['without_space_cnt'] += len(origin_text.replace(' ', ''))
-        sentence_cnt['word_cnt'] += len(origin_text.split())
-
     doc_sentences = [dict(r) for r in res]
-    return doc_sentences, sentence_cnt
+    return doc_sentences
 
 
 def export_doc(output_type, did):
@@ -366,3 +354,24 @@ def update_origin_sentence(uid, sid, original_text):
         traceback.print_exc()
         trans.rollback()
         return False, None, None
+
+
+def select_doc_sentence_cnt(did):
+    conn = db.engine.connect()
+
+    res = conn.execute(text("""SELECT text as origin_text FROM `marocat v1.1`.doc_origin_sentences WHERE doc_id=:did"""), did=did).fetchall()
+
+    sentence_cnt = {
+        'with_space_cnt': 0,    # 공백포함 글자수
+        'without_space_cnt': 0, # 공백비포함 글자수
+        'word_cnt': 0   # 단어수
+    }
+
+    for r in res:
+        origin_text = r['origin_text']
+        sentence_cnt['with_space_cnt'] += len(origin_text)
+        sentence_cnt['without_space_cnt'] += len(origin_text.replace(' ', ''))
+        sentence_cnt['word_cnt'] += len(origin_text.split())
+
+    return sentence_cnt
+

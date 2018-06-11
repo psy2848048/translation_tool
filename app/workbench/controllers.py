@@ -5,8 +5,8 @@ import app.workbench.models as model
 
 @login_required
 def get_doc(did):
-    doc_sentences, sentence_cnt = model.select_doc(did)
-    return make_response(json.jsonify(results=doc_sentences, sentence_cnt=sentence_cnt), 200)
+    doc_sentences = model.select_doc(did)
+    return make_response(json.jsonify(results=doc_sentences), 200)
 
 
 @login_required
@@ -141,3 +141,8 @@ def modify_origin_sentence(sid):
                                           sid=updated_sid, original_text=updated_text), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
+
+
+def get_doc_sentence_cnt(did):
+    sentence_cnt = model.select_doc_sentence_cnt(did)
+    return make_response(json.jsonify(results=sentence_cnt), 200)

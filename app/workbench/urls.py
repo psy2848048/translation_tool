@@ -39,3 +39,6 @@ workbench.add_url_rule('/docs/comments/<int:cid>', view_func=ctrl.delete_doc_com
 
 # 원문 수정
 workbench.add_url_rule('/docs/sentences/<int:sid>/origin', view_func=ctrl.modify_origin_sentence, methods=['PUT'])
+
+# 원문 글자수&단어수 조회
+workbench.add_url_rule('/docs/<int:did>/cnt', view_func=ctrl.get_doc_sentence_cnt, methods=['GET'])
