@@ -7,6 +7,145 @@ import io
 import os
 
 
+def select_origin_sentences(did):
+    conn = db.engine.connect()
+    res = conn.execute(text("""SELECT os.id as sid, os.text as sentence, 
+IF (ts.status is Null, 0, ts.status) as status
+FROM `marocat v1.1`.doc_origin_sentences os
+LEFT JOIN doc_trans_sentences ts ON os.id = ts.origin_id AND ts.status = 1
+WHERE doc_id = :did AND os.is_deleted = FALSE;"""), did=did).fetchall()
+
+    origin_sentences = [dict(r) for r in res]
+    return origin_sentences
+
+
+def select_target_sentences(oid):
+    conn = db.engine.connect()
+    # text, status, update_time,
+    res = conn.execute(text("""SELECT id as tid, status, text as sentence, update_time
+FROM `marocat v1.1`.doc_trans_sentences
+WHERE origin_id = :oid AND is_deleted = FALSE"""), oid=oid).fetchall()
+
+    target_sentences = [dict(r) for r in res]
+    return target_sentences
+
+
+def update_origin_sentence(uid, oid, sentence):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    os = Table('doc_origin_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(os.update(os.c.id == oid), text=sentence, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, None, None
+
+        updated_row = res.last_updated_params()
+        updated_sid = updated_row['id_1']
+        updated_text = updated_row['text']
+
+        trans.commit()
+        return True, updated_sid, updated_text
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False, None, None
+
+
+def delete_origin_sentence(uid, oid):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    os = Table('doc_origin_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(os.update(os.c.id == oid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, None
+        updated_row = res.last_updated_params()
+        deleted_sid = updated_row['id_1']
+
+        trans.commit()
+        return True, deleted_sid
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False, None
+
+
+def select_doc_sentence_cnt(did):
+    conn = db.engine.connect()
+
+    res = conn.execute(text("""SELECT text as origin_text FROM `marocat v1.1`.doc_origin_sentences WHERE doc_id=:did"""), did=did).fetchall()
+
+    sentence_cnt = {
+        'with_space_cnt': 0,    # 공백포함 글자수
+        'without_space_cnt': 0, # 공백비포함 글자수
+        'word_cnt': 0   # 단어수
+    }
+
+    for r in res:
+        origin_text = r['origin_text']
+        sentence_cnt['with_space_cnt'] += len(origin_text)
+        sentence_cnt['without_space_cnt'] += len(origin_text.replace(' ', ''))
+        sentence_cnt['word_cnt'] += len(origin_text.split())
+
+    return sentence_cnt
+
+
+def insert_trans_sentence(uid, oid, sentence):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(ts.insert(), origin_id=oid, text=sentence)
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, -1
+
+        tid = res.lastrowid
+
+        trans.commit()
+        return True, tid
+    except:
+        traceback.print_exc()
+        return False, -1
+
+
+def update_trans_sentence(uid, tid, sentence, status):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(ts.update(ts.c.id == tid), text=sentence, status=status, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, None
+
+        r = res.last_updated_params()
+        updated_row = {
+            'tid': r['id_1'],
+            'sentence': r['text'],
+            'status': r['status']
+        }
+
+        trans.commit()
+        return True, updated_row
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False, None
+
+
+########################################################################################################################
+
 def select_doc(did):
     conn = db.engine.connect()
 
@@ -330,48 +469,3 @@ def delete_doc_comment(cid):
         traceback.print_exc()
         trans.rollback()
         return False
-
-
-def update_origin_sentence(uid, sid, original_text):
-    conn = db.engine.connect()
-    trans = conn.begin()
-    meta = MetaData(bind=db.engine)
-    os = Table('doc_origin_sentences', meta, autoload=True)
-
-    try:
-        res = conn.execute(os.update(os.c.id == sid), text=original_text, update_time=datetime.utcnow())
-        if res.rowcount != 1:
-            trans.rollback()
-            return False, None, None
-        print(111, res.last_updated_params())
-        updated_row = res.last_updated_params()
-        updated_sid = updated_row['id_1']
-        updated_text = updated_row['text']
-
-        trans.commit()
-        return True, updated_sid, updated_text
-    except:
-        traceback.print_exc()
-        trans.rollback()
-        return False, None, None
-
-
-def select_doc_sentence_cnt(did):
-    conn = db.engine.connect()
-
-    res = conn.execute(text("""SELECT text as origin_text FROM `marocat v1.1`.doc_origin_sentences WHERE doc_id=:did"""), did=did).fetchall()
-
-    sentence_cnt = {
-        'with_space_cnt': 0,    # 공백포함 글자수
-        'without_space_cnt': 0, # 공백비포함 글자수
-        'word_cnt': 0   # 단어수
-    }
-
-    for r in res:
-        origin_text = r['origin_text']
-        sentence_cnt['with_space_cnt'] += len(origin_text)
-        sentence_cnt['without_space_cnt'] += len(origin_text.replace(' ', ''))
-        sentence_cnt['word_cnt'] += len(origin_text.split())
-
-    return sentence_cnt
-

@@ -1,7 +1,81 @@
-from flask import request, make_response, json
+from flask import request, make_response, json, jsonify
 from flask_login import login_required, current_user
 import app.workbench.models as model
 
+
+@login_required
+def get_origin_sentences(did):
+    origin_sentences = model.select_origin_sentences(did)
+    return make_response(jsonify(results=origin_sentences), 200)
+
+
+@login_required
+def get_target_sentences(oid):
+    target_sentences = model.select_target_sentences(oid)
+    return make_response(jsonify(results=target_sentences), 200)
+
+
+@login_required
+def get_doc_sentence_cnt(did):
+    sentence_cnt = model.select_doc_sentence_cnt(did)
+    return make_response(json.jsonify(sentence_cnt), 200)
+
+
+@login_required
+def modify_origin_sentence(oid):
+    uid = current_user.idx
+    sentence = request.form.get('sentence', None)
+
+    if not sentence:
+        return make_response(jsonify('Something Not Entered'), 460)
+
+    is_done, updated_oid, updated_sentence = model.update_origin_sentence(uid, oid, sentence)
+
+    if is_done is True:
+        return make_response(json.jsonify(oid=updated_oid, sentence=updated_sentence), 200)
+    else:
+        return make_response(jsonify(result='Something Wrong!'), 461)
+
+
+@login_required
+def delete_origin_sentence(oid):
+    uid = current_user.idx
+    is_done, deleted_oid = model.delete_origin_sentence(uid, oid)
+
+    if is_done is True:
+        return make_response(jsonify(oid=deleted_oid), 200)
+    else:
+        return make_response(jsonify(result='Something Wrong!'), 461)
+
+
+@login_required
+def add_trans_sentence(oid):
+    uid = current_user.idx
+    sentence = request.form.get('sentence', None)
+
+    is_done, new_tid = model.insert_trans_sentence(uid, oid, sentence)
+
+    if is_done is True:
+        return make_response(jsonify(tid=new_tid), 200)
+    else:
+        return make_response(jsonify(result='Something Wrong!'), 461)
+
+
+@login_required
+def modify_trans_sentence(tid):
+    uid = current_user.idx
+    sentence = request.form.get('sentence', None)
+    status = request.form.get('status', 0)
+
+    is_done, updated_res = model.update_trans_sentence(uid, tid, sentence, status)
+
+    if is_done is True:
+        return make_response(jsonify(updated_res), 200)
+    else:
+        return make_response(jsonify(result='Something Wrong!'), 461)
+
+
+########################################################################################################################
 
 @login_required
 def get_doc(did):
@@ -124,25 +198,3 @@ def delete_doc_comment(cid):
         return make_response(json.jsonify(result='OK'), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-
-@login_required
-def modify_origin_sentence(sid):
-    uid = current_user.idx
-    original_text = request.form.get('original_text', None)
-
-    if not original_text:
-        return make_response(json.jsonify('Something Not Entered'), 460)
-
-    is_done, updated_sid, updated_text = model.update_origin_sentence(uid, sid, original_text)
-
-    if is_done is True:
-        return make_response(json.jsonify(#modified_user_id=uid,
-                                          sid=updated_sid, original_text=updated_text), 200)
-    else:
-        return make_response(json.jsonify(result='Something Wrong!'), 461)
-
-
-def get_doc_sentence_cnt(did):
-    sentence_cnt = model.select_doc_sentence_cnt(did)
-    return make_response(json.jsonify(results=sentence_cnt), 200)
