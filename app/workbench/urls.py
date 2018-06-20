@@ -27,6 +27,9 @@ workbench.add_url_rule('/origin/<int:oid>/target', view_func=ctrl.add_trans_sent
 # 번역문 수정
 workbench.add_url_rule('/target/<int:tid>', view_func=ctrl.modify_trans_sentence, methods=['PUT'])
 
+# 번역문 삭제
+workbench.add_url_rule('/target/<int:tid>', view_func=ctrl.delete_trans_sentence, methods=['DELETE'])
+
 
 ########################################################################################################################
 

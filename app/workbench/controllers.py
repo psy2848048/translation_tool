@@ -67,10 +67,21 @@ def modify_trans_sentence(tid):
     sentence = request.form.get('sentence', None)
     status = request.form.get('status', 0)
 
-    is_done, updated_res = model.update_trans_sentence(uid, tid, sentence, status)
+    is_done, updated_trans = model.update_trans_sentence(uid, tid, sentence, status)
 
     if is_done is True:
-        return make_response(jsonify(updated_res), 200)
+        return make_response(jsonify(updated_trans), 200)
+    else:
+        return make_response(jsonify(result='Something Wrong!'), 461)
+
+
+@login_required
+def delete_trans_sentence(tid):
+    uid = current_user.idx
+    is_done, deleted_tid = model.delete_trans_sentence(uid, tid)
+
+    if is_done is True:
+        return make_response(jsonify(tid=deleted_tid), 200)
     else:
         return make_response(jsonify(result='Something Wrong!'), 461)
 

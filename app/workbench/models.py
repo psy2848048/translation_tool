@@ -144,6 +144,28 @@ def update_trans_sentence(uid, tid, sentence, status):
         return False, None
 
 
+def delete_trans_sentence(uid, tid):
+    conn = db.engine.connect()
+    trans = conn.begin()
+    meta = MetaData(bind=db.engine)
+    ts = Table('doc_trans_sentences', meta, autoload=True)
+
+    try:
+        res = conn.execute(ts.update(ts.c.id == tid), is_deleted=True, update_time=datetime.utcnow())
+        if res.rowcount != 1:
+            trans.rollback()
+            return False, None
+        updated_row = res.last_updated_params()
+        deleted_tid = updated_row['id_1']
+
+        trans.commit()
+        return True, deleted_tid
+    except:
+        traceback.print_exc()
+        trans.rollback()
+        return False, None
+
+
 ########################################################################################################################
 
 def select_doc(did):
