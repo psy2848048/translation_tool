@@ -19,15 +19,18 @@ def search():
         #: 문장저장소 검색
         if t == 'tm':
             temp = []
-            res = model.select_similarity_trans_memory(tid, query, origin_lang, trans_lang)
+            # res = model.select_similarity_trans_memory(tid, query, origin_lang, trans_lang)
+            res = model.select_similarity_trans_memory(query, origin_lang, trans_lang)
             results['tm'] = res
 
         #: 단어저장소 검색
         elif t == 'tb':
             if origin_lang.upper() == 'KO':
-                res = model.select_ko_termbase(tid, query, origin_lang, trans_lang)
+                # res = model.select_ko_termbase(tid, query, origin_lang, trans_lang)
+                res = model.select_termbase_in_ko(query, origin_lang, trans_lang)
             else:
-                res = model.select_en_termbase(tid, query, origin_lang, trans_lang)
+                # res = model.select_en_termbase(tid, query, origin_lang, trans_lang)
+                res = model.select_termbase_in_en(query, origin_lang, trans_lang)
             results['tb'] = res
 
         #: 프로젝트 검색

@@ -34,10 +34,10 @@ workbench.add_url_rule('/target/<int:tid>', view_func=ctrl.delete_trans_sentence
 ########################################################################################################################
 
 # 문서 문장 목록 조회, 번역편집툴에서 열기
-# workbench.add_url_rule('/docs/<int:did>', view_func=ctrl.get_doc, methods=['GET'])
+workbench.add_url_rule('/docs/<int:did>', view_func=ctrl.get_doc, methods=['GET'])
 
 # 번역내용 다운로드
-# workbench.add_url_rule('/docs/<int:did>/output', view_func=ctrl.output_doc_to_file, methods=['GET'])
+workbench.add_url_rule('/docs/<int:did>/output', view_func=ctrl.output_doc_to_file, methods=['GET'])
 
 
 # 번역문 저장
