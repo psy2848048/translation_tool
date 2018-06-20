@@ -280,7 +280,7 @@ def insert_project_member(pid, uid, can_read, can_modify, can_delete, can_create
             text("""INSERT INTO `marocat v1.1`.doc_members (user_id, project_id, doc_id, can_read, can_modify, can_delete)
                     SELECT DISTINCT :uid, pm.project_id, d.id, :can_read, :can_modify, :can_delete
                     FROM `marocat v1.1`.project_members pm 
-                    JOIN docs d ON (d.project_id = pm.project_id)
+                    JOIN docs d ON (d.project_id = pm.project_id AND d.is_deleted = FALSE)
                     WHERE pm.project_id=:pid
                     ON DUPLICATE KEY UPDATE is_deleted = FALSE, update_time = CURRENT_TIMESTAMP
                     , can_read=:can_read, can_modify=:can_modify, can_delete=:can_delete;""")
