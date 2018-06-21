@@ -27,8 +27,9 @@ def save_termbase():
     trans_text = request.form.get('trans_text', None)
     file = request.files.get('file', None)
 
+    tid = 0
     if not None in [origin_lang, trans_lang, origin_text, trans_text]:
-        is_done = model.insert_term(uid, origin_lang, trans_lang, origin_text, trans_text)
+        is_done, tid = model.insert_term(uid, origin_lang, trans_lang, origin_text, trans_text)
     elif file is not None:
         if file.mimetype != 'text/csv':
             return make_response(json.jsonify(result='File mimetype is not CSV'), 461)
@@ -38,7 +39,7 @@ def save_termbase():
         return make_response(json.jsonify('Something Not Entered'), 460)
 
     if is_done is True:
-        return make_response(json.jsonify(result='OK'), 200)
+        return make_response(json.jsonify(tid=tid), 200)
     else:
         return make_response(json.jsonify(result='Something Wrong!'), 461)
 

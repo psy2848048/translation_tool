@@ -191,3 +191,9 @@ def upload_photo_to_bytes_on_s3(picture, mimetype, name):
         print('Wrong! (S3 upload_fileobj)')
         traceback.print_exc()
         return None, False
+
+
+def create_md5_hash(sth):
+    md5 = hashlib.md5()
+    md5.update(sth.encode('utf-8'))
+    return md5.hexdigest()

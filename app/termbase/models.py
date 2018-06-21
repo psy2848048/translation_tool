@@ -1,5 +1,5 @@
 from sqlalchemy import Table, MetaData, text
-from app import db
+from app import db, common
 import traceback
 import io
 import csv
@@ -39,23 +39,24 @@ def insert_term(uid, origin_lang, trans_lang, origin_text, trans_text):
     ut = Table('user_tblist', meta, autoload=True)
 
     try:
-        #: 단어저장소에 단어 추가
-        res = conn.execute(tb.insert()
-                           , origin_lang=origin_lang, trans_lang=trans_lang
-                           , origin_text=origin_text, trans_text=trans_text)
+        origin_hash = common.create_md5_hash(origin_text)
+        trans_hash = common.create_md5_hash(trans_text)
+        res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang,
+                           origin_hash=origin_hash, trans_hash=trans_hash,
+                           origin_text=origin_text, trans_text=trans_text)
         if res.rowcount != 1:
             trans.rollback()
-            return False
+            return False, -1
 
         tid = res.lastrowid
         conn.execute(ut.insert(), user_id=uid, tb_id=tid)
 
         trans.commit()
-        return True
+        return True, tid
     except:
         traceback.print_exc()
         trans.rollback()
-        return False
+        return False, -1
 
 
 def insert_term_csv_file(uid, csv_file, origin_lang, trans_lang):
@@ -72,15 +73,21 @@ def insert_term_csv_file(uid, csv_file, origin_lang, trans_lang):
         for row in data:
             #: CSV 파일 형식이 `원문언어, 번역언어, 원문단어, 번역단어`순인 경우
             if len(row) == 4:
-                res = conn.execute(tb.insert(), origin_lang=row[0], trans_lang=row[1]
-                                   , origin_text=row[2], trans_text=row[3])
+                origin_hash = common.create_md5_hash(row[2])
+                trans_hash = common.create_md5_hash(row[3])
+                res = conn.execute(tb.insert(), origin_lang=row[0], trans_lang=row[1],
+                                   origin_hash=origin_hash, trans_hash=trans_hash,
+                                   origin_text=row[2], trans_text=row[3])
                 tid = res.lastrowid
                 conn.execute(ut.insert(), user_id=uid, tb_id=tid)
 
             #: CSV 파일 형식이 `원문단어, 번역단어`순인 경우
             elif len(row) == 2:
-                res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang
-                                   , origin_text=row[0], trans_text=row[1])
+                origin_hash = common.create_md5_hash(row[0])
+                trans_hash = common.create_md5_hash(row[1])
+                res = conn.execute(tb.insert(), origin_lang=origin_lang, trans_lang=trans_lang,
+                                   origin_hash=origin_hash, trans_hash=trans_hash,
+                                   origin_text=row[0], trans_text=row[1])
                 tid = res.lastrowid
                 conn.execute(ut.insert(), user_id=uid, tb_id=tid)
 
@@ -104,10 +111,15 @@ def update_term(tid, origin_lang, trans_lang, origin_text, trans_text):
 
     try:
         if None in [origin_lang, trans_lang, origin_text]:
-            res = conn.execute(tb.update(tb.c.id == tid), trans_text=trans_text, update_time=datetime.utcnow())
+            trans_hash = common.create_md5_hash(trans_text)
+            res = conn.execute(tb.update(tb.c.id == tid),
+                               trans_text=trans_text, trans_hash=trans_hash, update_time=datetime.utcnow())
         else:
-            res = conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang
-                               , origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
+            origin_hash = common.create_md5_hash(origin_text)
+            trans_hash = common.create_md5_hash(trans_text)
+            res = conn.execute(tb.update(tb.c.id == tid), origin_lang=origin_lang, trans_lang=trans_lang,
+                               origin_hash=origin_hash, trans_hash=trans_hash,
+                               origin_text=origin_text, trans_text=trans_text, update_time=datetime.utcnow())
 
         if res.rowcount != 1:
             trans.rollback()
