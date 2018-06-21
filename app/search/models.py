@@ -1,4 +1,4 @@
-from app import db
+from app import db, common
 from sqlalchemy import text
 import re
 from ckonlpy.tag import Twitter
@@ -31,18 +31,15 @@ LIMIT 3;"""), sentence=sentence, first=first, second=second, ol=origin_lang, tl=
     return results
 
 
-def select_exact_trans_memory(sentence, origin_lang, target_lang):
+def select_exact_trans_memory(sentence):
     conn = db.engine.connect()
-
-    # #: like에 넣을 부분 만들기 - 맨앞, 맨뒤 세음절
-    split_sentence = sentence.split()
-    first = "%{}%".format(' '.join(split_sentence[:3]))
-    second = "%{}%".format(' '.join(split_sentence[-3:]))
-
+    hash_sentence = common.create_md5_hash(sentence)
     res = conn.execute(
-        text(""""""), sentence=sentence, first=first, second=second, ol=origin_lang, tl=target_lang).fetchall()
+        text("""SELECT id as tmid, origin_lang, trans_lang, origin_text, trans_text 
+                FROM `marocat v1.1`.translation_memory WHERE origin_hash=:origin_hash OR trans_hash=:trans_hash;"""),
+        origin_hash=hash_sentence, trans_hash=hash_sentence).fetchall()
 
-    results = [dict(r) for r in res if r['score'] >= 70]
+    results = [dict(r) for r in res]
     return results
 
 
@@ -69,6 +66,28 @@ def select_termbase_in_en(sentence, origin_lang, trans_lang):
         WHERE origin_text LIKE :noun 
         AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE 
         GROUP BY trans_text;"""), noun=q, ol=origin_lang, tl=trans_lang).fetchall()
+        temp += [dict(r) for r in res]
+
+    #: 중복되는 단어 제거하기
+    terms = {frozenset(item.items()): item for item in temp}.values()
+    return list(terms)
+
+
+def select_termbase_in_ko(query, origin_lang, trans_lang):
+    conn = db.engine.connect()
+    tagged = twit.pos(query)
+
+    temp = []
+    for t in tagged:
+        if t[1] in ['Noun', 'Verb', 'Exclamation', 'Adverb', 'Conjunction', 'Suffix', 'Foreign', 'Unknown', 'Hashtag']:
+            q = "{}%".format(t[0])
+        else:
+            continue
+        res = conn.execute(
+            text("""SELECT tb.id as tbid, origin_text, trans_text
+                    FROM `marocat v1.1`.termbase tb
+                    WHERE origin_text LIKE :noun AND origin_lang = :ol AND trans_lang = :tl AND tb.is_deleted = FALSE
+                    GROUP BY trans_text;"""), noun=q, ol=origin_lang, tl=trans_lang).fetchall()
         temp += [dict(r) for r in res]
 
     #: 중복되는 단어 제거하기

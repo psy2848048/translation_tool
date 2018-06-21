@@ -16,18 +16,22 @@ def search():
 
     results = {}
     for t in targets:
-        #: 문장저장소 검색
-        if t == 'tm':
-            temp = []
+        #: 문장저장소 유사도 검색
+        if t == 'tmS':
             # res = model.select_similarity_trans_memory(tid, query, origin_lang, trans_lang)
             res = model.select_similarity_trans_memory(query, origin_lang, trans_lang)
-            results['tm'] = res
+            results['tmS'] = res
+
+        #: 문장저장소 일치 검색
+        if t == 'tmE':
+            res = model.select_exact_trans_memory(query)
+            results['tmE'] = res
 
         #: 단어저장소 검색
         elif t == 'tb':
             if origin_lang.upper() == 'KO':
-                # res = model.select_ko_termbase(tid, query, origin_lang, trans_lang)
                 res = model.select_termbase_in_ko(query, origin_lang, trans_lang)
+                # res = model.select_termbase_in_ko(query, origin_lang, trans_lang)
             else:
                 # res = model.select_en_termbase(tid, query, origin_lang, trans_lang)
                 res = model.select_termbase_in_en(query, origin_lang, trans_lang)
